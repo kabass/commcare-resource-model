@@ -23,14 +23,20 @@ def get_usage(config):
         if len(models) == models_len:
             # no models could run which means we're stuck
             models_remaining = [model.name for model in models]
-            print(usage_df.columns)
             raise Exception('Unmet dependencies for models: %s' % ', '.join(models_remaining))
 
     return usage_df
 
 
-# def get_storage(config, usage_data_frame):
-
+def get_storage(config, usage_data):
+    storage_df = pd.DataFrame()
+    for storage_key, storage_conf in config.storage.items():
+        storage = pd.concat([
+            usage_data[model.referenced_field] * model.unit_bytes
+            for model in storage_conf.data_models
+        ], axis=1)
+        storage_df[storage_key] = storage.sum(axis=1)
+    return storage_df
 
 
 if __name__ == '__main__':
@@ -40,7 +46,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     config = config_from_path(args.config)
-    # users = get_users_data_frame(config)
     usage = get_usage(config)
-
-    # storage = get_storage(config, usage)
+    storage = get_storage(config, usage)
