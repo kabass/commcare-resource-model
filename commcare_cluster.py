@@ -4,7 +4,7 @@ import humanize
 import pandas as pd
 
 from core.config import config_from_path
-from core.models import models_by_slug
+from core.models import models_by_slug, ComputeModel
 
 
 def get_usage(config):
@@ -72,6 +72,14 @@ def get_storage(config, usage_data):
     return storage_df
 
 
+def get_compute(config, usage_data):
+    keys = list(config.compute.keys())
+    return pd.concat([
+        ComputeModel(key, config.compute[key]).data_frame(usage_data)
+        for key in keys
+    ], keys=keys, axis=1)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('CommCare Cluster Model')
     parser.add_argument('config', help='Path to config file')
@@ -82,7 +90,8 @@ if __name__ == '__main__':
     usage = get_usage(config)
     storage = get_storage(config, usage)
 
-    # summarize at final date
-    summary_date = storage.iloc[-1].name
-    write_summary(config, 'output.xlsx', summary_date, storage)
-    write_raw_data('raw.xlsx', usage, storage)
+    compute = get_compute(config, usage)
+    # # summarize at final date
+    # summary_date = storage.iloc[-1].name
+    # write_summary(config, 'output.xlsx', summary_date, storage)
+    # write_raw_data('raw.xlsx', usage, storage)

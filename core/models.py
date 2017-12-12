@@ -141,3 +141,24 @@ class DerivedFactor(DerivedModel):
 # class  PersonCaseModel
 # month 1 = 1200 cases created
 # month >1 = 1
+
+
+class ComputeModel(object):
+    def __init__(self, key, config):
+        self.key = key
+        self.config = config
+
+    def data_frame(self, current_data_frame):
+        users = current_data_frame['users']
+        processes = pd.concat([
+            users / process.user_capacity
+            for process in self.config.processes
+        ], keys=[(p.name or self.key) for p in self.config.processes], axis=1)
+
+        total = processes.apply(sum, axis=1)
+        frame = pd.concat([
+            total * self.config.process_cores,
+            total * self.config.process_ram,
+            total * self.config.process_cores / self.config.cores_per_vm,
+        ], keys=['Cores', 'RAM', 'VMs'], axis=1)
+        return frame
