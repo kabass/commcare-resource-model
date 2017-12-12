@@ -25,6 +25,7 @@ class StorageDef(jsonobject.JsonObject):
 
 
 class ClusterConfig(jsonobject.JsonObject):
+    buffer = jsonobject.DecimalProperty(required=True)
     usage = jsonobject.DictProperty(UsageModelDef, required=True)
     storage = jsonobject.DictProperty(StorageDef, required=True)
 
