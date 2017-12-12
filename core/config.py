@@ -13,18 +13,20 @@ class UsageModelDef(jsonobject.JsonObject):
 
 
 class StorageSizeDef(jsonobject.JsonObject):
+    ssd = jsonobject.BooleanProperty(required=True)
     referenced_field = jsonobject.StringProperty(required=True)
     unit_bytes = jsonobject.IntegerProperty(required=True)
 
 
 class StorageDef(jsonobject.JsonObject):
     _allow_dynamic_properties = True
-    data_models = jsonobject.ListProperty(StorageSizeDef)
+    redundancy_factor = jsonobject.IntegerProperty(required=True)
+    data_models = jsonobject.ListProperty(StorageSizeDef, required=True)
 
 
 class ClusterConfig(jsonobject.JsonObject):
-    usage = jsonobject.DictProperty(UsageModelDef)
-    storage = jsonobject.DictProperty(StorageDef)
+    usage = jsonobject.DictProperty(UsageModelDef, required=True)
+    storage = jsonobject.DictProperty(StorageDef, required=True)
 
 
 def config_from_path(config_path):

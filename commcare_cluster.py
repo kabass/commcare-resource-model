@@ -32,7 +32,7 @@ def get_storage(config, usage_data):
     storage_df = pd.DataFrame()
     for storage_key, storage_conf in config.storage.items():
         storage = pd.concat([
-            usage_data[model.referenced_field] * model.unit_bytes
+            usage_data[model.referenced_field] * model.unit_bytes * storage_conf.redundancy_factor
             for model in storage_conf.data_models
         ], axis=1)
         storage_df[storage_key] = storage.sum(axis=1)
