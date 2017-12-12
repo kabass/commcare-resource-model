@@ -29,7 +29,7 @@ def get_usage(config):
     return usage_df
 
 
-def write_summary(config, output_path, summary_date, storage_data):
+def write_storage_summary(config, writer, summary_date, storage_data):
     storage_snapshot = storage_data.loc[summary_date]
     storage_by_cat = pd.DataFrame({
         'Size': storage_snapshot.map(humanize.naturalsize),
@@ -48,17 +48,33 @@ def write_summary(config, output_path, summary_date, storage_data):
         'Total': by_type.map(humanize.naturalsize),
     })
 
-    writer = pd.ExcelWriter(output_path)
+    storage_by_cat.sort_index(inplace=True)
     storage_by_cat[['Size', 'Buffer', 'Total', 'Is SSD']].to_excel(writer, 'Storage Summary', index_label='Storage Category')
+    storage_by_type.sort_index(inplace=True)
     storage_by_type.to_excel(writer, 'Storage Summary', index_label='Storage Type', startrow=len(config.storage) + 2)
-    writer.save()
 
 
-def write_raw_data(ouput_path, usage, storage):
-    writer = pd.ExcelWriter(ouput_path)
+def write_compute_summary(config, writer, summary_date, compute_data):
+    compute_snapshot = compute_data.loc[summary_date]
+    unstacked = compute_snapshot.unstack()
+    buffer = unstacked * float(config.buffer)
+    total = unstacked.add(buffer)
+
+    buffer = buffer.rename({col: '%s Buffer' % col for col in buffer.columns}, axis=1)
+    buffer = buffer.astype(int)
+    total = total.rename({col: '%s Total' % col for col in total.columns}, axis=1)
+    total = total.astype(int)
+
+    unstacked = unstacked.astype(int)
+    combined = pd.concat([unstacked, buffer, total], axis=1)
+    combined = combined.reindex(columns=sorted(list(combined.columns)))
+    combined.sort_index(inplace=True)
+    combined.to_excel(writer, 'Compute summary', index_label='Service')
+
+
+def write_raw_data(writer, usage, storage):
     usage.to_excel(writer, 'Usage', index_label='Dates')
     storage.to_excel(writer, 'Storage', index_label='Dates')
-    writer.save()
 
 
 def get_storage(config, usage_data):
@@ -89,9 +105,11 @@ if __name__ == '__main__':
     config = config_from_path(args.config)
     usage = get_usage(config)
     storage = get_storage(config, usage)
-
     compute = get_compute(config, usage)
-    # # summarize at final date
-    # summary_date = storage.iloc[-1].name
-    # write_summary(config, 'output.xlsx', summary_date, storage)
-    # write_raw_data('raw.xlsx', usage, storage)
+
+    summary_date = storage.iloc[-1].name  # summarize at final date
+    writer = pd.ExcelWriter('output.xlsx')
+    write_storage_summary(config, writer, summary_date, storage)
+    write_compute_summary(config, writer, summary_date, compute)
+    write_raw_data(writer, usage, storage)
+    writer.save()

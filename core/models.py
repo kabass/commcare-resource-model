@@ -160,5 +160,5 @@ class ComputeModel(object):
             total * self.config.process_cores,
             total * self.config.process_ram,
             total * self.config.process_cores / self.config.cores_per_vm,
-        ], keys=['Cores', 'RAM', 'VMs'], axis=1)
+        ], keys=['CPU', 'RAM', 'VMs'], axis=1)
         return frame
