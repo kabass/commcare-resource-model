@@ -52,18 +52,26 @@ if __name__ == '__main__':
 
     # summarize at final date
     storage_snapshot = storage.iloc[-1]
-    summary = pd.DataFrame({
-        'size': storage_snapshot.map(humanize.naturalsize),
-        'buffer': (storage_snapshot * float(config.buffer)).map(humanize.naturalsize),
-        'total': (storage_snapshot * (1 + float(config.buffer))).map(humanize.naturalsize),
-        'is_ssd': pd.Series({
+    storage_by_cat = pd.DataFrame({
+        'Size': storage_snapshot.map(humanize.naturalsize),
+        'Buffer': (storage_snapshot * float(config.buffer)).map(humanize.naturalsize),
+        'Total': (storage_snapshot * (1 + float(config.buffer))).map(humanize.naturalsize),
+        'total_raw': (storage_snapshot * (1 + float(config.buffer))),
+        'Is SSD': pd.Series({
             storage_key: storage_conf.ssd
             for storage_key, storage_conf in config.storage.items()
         })
     })
 
+    by_type = storage_by_cat.groupby('Is SSD')['total_raw'].sum()
+    by_type.index = by_type.index.map(lambda i: 'SSD' if i else 'SAS')
+    storage_by_type = pd.DataFrame({
+        'Total': by_type.map(humanize.naturalsize),
+    })
+
     writer = pd.ExcelWriter('output.xlsx')
-    summary[['size', 'buffer', 'total', 'is_ssd']].to_excel(writer, 'Storage Summary', index_label='Storage Category')
+    storage_by_cat[['Size', 'Buffer', 'Total', 'IS SSD']].to_excel(writer, 'Storage Summary', index_label='Storage Category')
+    storage_by_type.to_excel(writer, 'Storage Summary', index_label='Storage Type', startrow=len(config.storage) + 2)
     usage.to_excel(writer, 'Usage', index_label='Dates')
     storage.to_excel(writer, 'Storage', index_label='Dates')
     writer.save()
