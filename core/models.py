@@ -10,7 +10,8 @@ DateRange = namedtuple('DateRange', 'start, end')
 def models_by_slug():
     df_models = [
         DateRangeValueModel,
-        CumulativePerUserModel,
+        PerUserModel,
+        CumulativeModel,
         LimitedLifetimeModel,
         DerivedSum,
         DerivedFactor,
@@ -57,16 +58,11 @@ class DateRangeValueModel(DFModel):
         )
 
 
-class CumulativePerUserModel(DFModel):
-    """Items that accumulate over time and are generated at a
-    fixed rate relative to the number of users at any given time.
-
-    For example form submissions."""
-    slug = 'cumulative'
+class PerUserModel(DFModel):
+    slug = 'per_user'
 
     def __init__(self, name, items_per_user):
         self.name = name
-        self.cum_name = '%s_cum' % name
         self.items_per_user = items_per_user
 
     @property
@@ -74,28 +70,9 @@ class CumulativePerUserModel(DFModel):
         return ['users']
 
     def data_frame(self, current_data_frame):
-        new_items = current_data_frame.users * self.items_per_user
-        new_items.name = self.name
-        cumulative = new_items.cumsum()
-        cumulative.name = self.cum_name
-        return pd.concat([new_items, cumulative], axis=1)
-
-
-class LimitedLifetimeModel(CumulativePerUserModel):
-    """Items that have a finite lifespan"""
-    slug = 'limited_lifespan'
-
-    def __init__(self, name, items_per_user, lifespan):
-        super(LimitedLifetimeModel, self).__init__(name, items_per_user)
-        self.lifespan = lifespan
-
-    def data_frame(self, current_data_frame):
-        df = super(LimitedLifetimeModel, self).data_frame(current_data_frame)
-        cum_data = df[self.cum_name]
-        live_items = cum_data - cum_data.shift(self.lifespan)
-        live_items = live_items.fillna(cum_data[0:self.lifespan])
-        live_items.name = self.name
-        return live_items
+        items = current_data_frame.users * self.items_per_user
+        items.name = self.name
+        return items
 
 
 class DerivedModel(DFModel):
@@ -120,6 +97,41 @@ class DerivedModel(DFModel):
         series = current_data_frame[fields].apply(self.func, axis=1)
         series.name = self.name
         return series
+
+
+class CumulativeModel(DFModel):
+    """Items that accumulate over time.
+    For example form submissions."""
+    slug = 'cumulative'
+
+    def __init__(self, name, dependant_field):
+        self.name = name
+        self.dependant_field = dependant_field
+
+    @property
+    def dependant_fields(self):
+        return [self.dependant_field]
+
+    def data_frame(self, current_data_frame):
+        cumulative = current_data_frame[self.dependant_field].cumsum()
+        cumulative.name = self.name
+        return cumulative
+
+
+class LimitedLifetimeModel(CumulativeModel):
+    """Extends the cumulative model by giving items a finite lifespan"""
+    slug = 'cumulative_limited_lifespan'
+
+    def __init__(self, name, dependant_field, lifespan):
+        super(LimitedLifetimeModel, self).__init__(name, dependant_field)
+        self.lifespan = lifespan
+
+    def data_frame(self, current_data_frame):
+        cum_data = super(LimitedLifetimeModel, self).data_frame(current_data_frame)
+        live_items = cum_data - cum_data.shift(self.lifespan)
+        live_items = live_items.fillna(cum_data[0:self.lifespan])
+        live_items.name = self.name
+        return live_items
 
 
 class DerivedSum(DerivedModel):
