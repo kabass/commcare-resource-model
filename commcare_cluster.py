@@ -1,5 +1,6 @@
 import argparse
 
+import humanize
 import pandas as pd
 
 from core.config import config_from_path
@@ -48,3 +49,19 @@ if __name__ == '__main__':
     config = config_from_path(args.config)
     usage = get_usage(config)
     storage = get_storage(config, usage)
+
+    # summarize at final date
+    storage_snapshot = storage.iloc[-1]
+    summary = pd.DataFrame({
+        'size': storage_snapshot.map(humanize.naturalsize),
+        'is_ssd': pd.Series({
+            storage_key: storage_conf.ssd
+            for storage_key, storage_conf in config.storage.items()
+        })
+    })
+
+    writer = pd.ExcelWriter('output.xlsx')
+    summary[['size', 'is_ssd']].to_excel(writer, 'Storage Summary', index_label='Storage Category')
+    usage.to_excel(writer, 'Usage', index_label='Dates')
+    storage.to_excel(writer, 'Storage', index_label='Dates')
+    writer.save()

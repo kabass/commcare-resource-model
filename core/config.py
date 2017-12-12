@@ -13,13 +13,13 @@ class UsageModelDef(jsonobject.JsonObject):
 
 
 class StorageSizeDef(jsonobject.JsonObject):
-    ssd = jsonobject.BooleanProperty(required=True)
     referenced_field = jsonobject.StringProperty(required=True)
     unit_bytes = jsonobject.IntegerProperty(required=True)
 
 
 class StorageDef(jsonobject.JsonObject):
     _allow_dynamic_properties = True
+    ssd = jsonobject.BooleanProperty(required=True)
     redundancy_factor = jsonobject.IntegerProperty(required=True)
     data_models = jsonobject.ListProperty(StorageSizeDef, required=True)
 
