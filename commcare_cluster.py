@@ -5,6 +5,8 @@ import pandas as pd
 
 from core.config import config_from_path
 from core.models import models_by_slug, ComputeModel
+from core.writers import ConsoleWriter
+from core.writers import ExcelWriter
 
 SUMMARY_SHEET = 'Summary'
 
@@ -31,7 +33,7 @@ def get_usage(config):
     return usage_df
 
 
-def write_storage_summary(config, writer, summary_date, storage_data, startrow=0):
+def write_storage_summary(config, writer, summary_date, storage_data):
     storage_snapshot = storage_data.loc[summary_date]
     storage_by_cat = pd.DataFrame({
         'Size': storage_snapshot.map(humanize.naturalsize),
@@ -46,25 +48,20 @@ def write_storage_summary(config, writer, summary_date, storage_data, startrow=0
 
     by_type = storage_by_cat.groupby('Is SSD')['total_raw'].sum()
     by_type.index = by_type.index.map(lambda i: 'SSD' if i else 'SAS')
+    by_type.index.name = None
     storage_by_type = pd.DataFrame({
         'Total': by_type.map(humanize.naturalsize),
     })
 
     storage_by_cat.sort_index(inplace=True)
     storage_by_cat = storage_by_cat[['Size', 'Buffer', 'Total', 'Is SSD']]  # select columns
-    storage_by_cat.to_excel(
-        writer, SUMMARY_SHEET,
-        index_label='Storage Category', startrow=startrow
-    )
+    writer.write_data_frame(storage_by_cat, SUMMARY_SHEET, 'Storage Category')
+
     storage_by_type.sort_index(inplace=True)
-    storage_by_type.to_excel(
-        writer, SUMMARY_SHEET,
-        index_label='Storage Type', startrow=startrow + len(config.storage) + 2
-    )
-    return startrow + startrow + len(config.storage) + 2 + len(storage_by_type) + 2
+    writer.write_data_frame(storage_by_type, SUMMARY_SHEET, 'Storage Type')
 
 
-def write_compute_summary(config, writer, summary_date, compute_data, startrow=0):
+def write_compute_summary(config, writer, summary_date, compute_data):
     compute_snapshot = compute_data.loc[summary_date]
     unstacked = compute_snapshot.unstack()
     buffer = unstacked * float(config.buffer)
@@ -79,13 +76,12 @@ def write_compute_summary(config, writer, summary_date, compute_data, startrow=0
     combined = pd.concat([unstacked, buffer, total], axis=1)
     combined = combined.reindex(columns=sorted(list(combined.columns)))
     combined.sort_index(inplace=True)
-    combined.to_excel(writer, SUMMARY_SHEET, index_label='Service', startrow=startrow)
-    return startrow + len(combined) + 2
+    writer.write_data_frame(combined, SUMMARY_SHEET, 'Service')
 
 
 def write_raw_data(writer, usage, storage):
-    usage.to_excel(writer, 'Usage', index_label='Dates')
-    storage.to_excel(writer, 'Storage', index_label='Dates')
+    writer.write_data_frame(usage, 'Usage', 'Dates')
+    writer.write_data_frame(storage, 'Storage', 'Dates')
 
 
 def get_storage(config, usage_data):
@@ -124,8 +120,9 @@ if __name__ == '__main__':
     compute = get_compute(config, usage)
 
     summary_date = storage.iloc[-1].name  # summarize at final date
-    writer = pd.ExcelWriter('output.xlsx')
-    offset = write_storage_summary(config, writer, summary_date, storage)
-    write_compute_summary(config, writer, summary_date, compute, offset)
-    write_raw_data(writer, usage, storage)
+    # writer = ExcelWriter('output.xlsx')
+    writer = ConsoleWriter()
+    write_storage_summary(config, writer, summary_date, storage)
+    write_compute_summary(config, writer, summary_date, compute)
+    # write_raw_data(writer, usage, storage)
     writer.save()
