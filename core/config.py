@@ -22,6 +22,7 @@ class StorageDef(jsonobject.JsonObject):
     _allow_dynamic_properties = False
     ssd = jsonobject.BooleanProperty(required=True)
     redundancy_factor = jsonobject.IntegerProperty(required=True)
+    static_baseline = jsonobject.IntegerProperty(default=0)
     data_models = jsonobject.ListProperty(StorageSizeDef, required=True)
 
 

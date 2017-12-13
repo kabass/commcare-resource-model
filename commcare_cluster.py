@@ -89,10 +89,15 @@ def write_raw_data(writer, usage, storage):
 
 
 def get_storage(config, usage_data):
+    def _service_storage(config, service_model):
+        bytes = usage_data[service_model.referenced_field] * service_model.unit_bytes
+        with_baseline = bytes + + config.static_baseline
+        return with_baseline * config.redundancy_factor
+
     storage_df = pd.DataFrame()
     for storage_key, storage_conf in config.storage.items():
         storage = pd.concat([
-            usage_data[model.referenced_field] * model.unit_bytes * storage_conf.redundancy_factor
+            _service_storage(storage_conf, model)
             for model in storage_conf.data_models
         ], axis=1)
         storage_df[storage_key] = storage.sum(axis=1)
