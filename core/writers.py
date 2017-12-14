@@ -18,7 +18,7 @@ class ExcelWriter(BaseWriter):
     spacing = 2
 
     def __init__(self, ouput_path):
-        self.writer = pd.ExcelWriter(ouput_path)
+        self.writer = pd.ExcelWriter(ouput_path, engine='xlsxwriter')
         self.sheet_positions = defaultdict(int)
 
     def write_data_frame(self, data_frame, sheet_name, index_label):

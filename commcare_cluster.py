@@ -111,6 +111,7 @@ def get_compute(config, usage_data):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('CommCare Cluster Model')
     parser.add_argument('config', help='Path to config file')
+    parser.add_argument('-o', '--output', help='Write output to Excel file at this path.')
 
     args = parser.parse_args()
 
@@ -120,8 +121,11 @@ if __name__ == '__main__':
     compute = get_compute(config, usage)
 
     summary_date = storage.iloc[-1].name  # summarize at final date
-    # writer = ExcelWriter('output.xlsx')
-    writer = ConsoleWriter()
+
+    if args.output:
+        writer = ExcelWriter(args.output)
+    else:
+        writer = ConsoleWriter()
     write_storage_summary(config, writer, summary_date, storage)
     write_compute_summary(config, writer, summary_date, compute)
     # write_raw_data(writer, usage, storage)
