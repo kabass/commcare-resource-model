@@ -1,7 +1,30 @@
+from collections import namedtuple
+
 import humanize
 import pandas as pd
 
-SUMMARY_SHEET = 'Summary'
+from core.utils import format_date
+
+StorageSummary = namedtuple('StorageSummary', 'by_category by_group')
+SummaryComparison = namedtuple('SummaryComparison', 'storage_by_category storage_by_group compute')
+
+
+def compare_summaries(summaries_by_date):
+    storage_by_cat_series = []
+    storage_by_group_series = []
+    compute_series = []
+    dates = sorted(list(summaries_by_date))
+    for date in dates:
+        summary_data = summaries_by_date[date]
+        storage_by_cat_series.append(summary_data.storage.by_category['Total'])
+        storage_by_group_series.append(summary_data.storage.by_group['Total'])
+        compute_series.append(summary_data.compute[['CPU Total', 'RAM Total', 'VMs Total']])
+
+    keys = [format_date(date) for date in dates]
+    storage_by_cat = pd.concat(storage_by_cat_series, axis=1, keys=keys)
+    storage_by_group = pd.concat(storage_by_group_series, axis=1, keys=keys)
+    compute = pd.concat(compute_series, axis=1, keys=keys)
+    return SummaryComparison(storage_by_cat, storage_by_group, compute)
 
 
 def summarize_storage_data(config, summary_date, storage_data):
@@ -19,13 +42,13 @@ def summarize_storage_data(config, summary_date, storage_data):
 
     by_type = storage_by_cat.groupby('Group')['total_raw'].sum()
     by_type.index.name = None
-    storage_by_type = pd.DataFrame({
+    storage_by_group = pd.DataFrame({
         'Total': by_type.map(humanize.naturalsize),
     })
 
     storage_by_cat.sort_index(inplace=True)
-    storage_by_type.sort_index(inplace=True)
-    return storage_by_cat, storage_by_type
+    storage_by_group.sort_index(inplace=True)
+    return StorageSummary(storage_by_cat, storage_by_group)
 
 
 def summarize_compute_data(config, summary_date, compute_data):
