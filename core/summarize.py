@@ -11,14 +11,13 @@ def summarize_storage_data(config, summary_date, storage_data):
         'Buffer': (storage_snapshot * float(config.buffer)).map(humanize.naturalsize),
         'Total': (storage_snapshot * (1 + float(config.buffer))).map(humanize.naturalsize),
         'total_raw': (storage_snapshot * (1 + float(config.buffer))),
-        'Is SSD': pd.Series({
-            storage_key: storage_conf.ssd
+        'Group': pd.Series({
+            storage_key: storage_conf.group
             for storage_key, storage_conf in config.storage.items()
         })
     })
 
-    by_type = storage_by_cat.groupby('Is SSD')['total_raw'].sum()
-    by_type.index = by_type.index.map(lambda i: 'SSD' if i else 'SAS')
+    by_type = storage_by_cat.groupby('Group')['total_raw'].sum()
     by_type.index.name = None
     storage_by_type = pd.DataFrame({
         'Total': by_type.map(humanize.naturalsize),
