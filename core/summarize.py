@@ -1,9 +1,8 @@
 from collections import namedtuple
 
-import humanize
 import pandas as pd
 
-from core.utils import format_date
+from core.utils import format_date, bytes_to_gb
 
 StorageSummary = namedtuple('StorageSummary', 'by_category by_group')
 SummaryComparison = namedtuple('SummaryComparison', 'storage_by_category storage_by_group compute')
@@ -16,8 +15,8 @@ def compare_summaries(summaries_by_date):
     dates = sorted(list(summaries_by_date))
     for date in dates:
         summary_data = summaries_by_date[date]
-        storage_by_cat_series.append(summary_data.storage.by_category['Total'])
-        storage_by_group_series.append(summary_data.storage.by_group['Total'])
+        storage_by_cat_series.append(summary_data.storage.by_category['Total (GB)'])
+        storage_by_group_series.append(summary_data.storage.by_group['Total (GB)'])
         compute_series.append(summary_data.compute[['CPU Total', 'RAM Total', 'VMs Total']])
 
     keys = [format_date(date) for date in dates]
@@ -30,9 +29,9 @@ def compare_summaries(summaries_by_date):
 def summarize_storage_data(config, summary_date, storage_data):
     storage_snapshot = storage_data.loc[summary_date]
     storage_by_cat = pd.DataFrame({
-        'Size': storage_snapshot.map(humanize.naturalsize),
-        'Buffer': (storage_snapshot * float(config.buffer)).map(humanize.naturalsize),
-        'Total': (storage_snapshot * (1 + float(config.buffer))).map(humanize.naturalsize),
+        'Size': storage_snapshot.map(bytes_to_gb),
+        'Buffer': (storage_snapshot * float(config.buffer)).map(bytes_to_gb),
+        'Total (GB)': (storage_snapshot * (1 + float(config.buffer))).map(bytes_to_gb),
         'total_raw': (storage_snapshot * (1 + float(config.buffer))),
         'Group': pd.Series({
             storage_key: storage_conf.group
@@ -43,7 +42,7 @@ def summarize_storage_data(config, summary_date, storage_data):
     by_type = storage_by_cat.groupby('Group')['total_raw'].sum()
     by_type.index.name = None
     storage_by_group = pd.DataFrame({
-        'Total': by_type.map(humanize.naturalsize),
+        'Total (GB)': by_type.map(bytes_to_gb),
     })
 
     storage_by_cat.sort_index(inplace=True)

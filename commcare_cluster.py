@@ -9,7 +9,7 @@ from core.output import write_storage_summary, write_compute_summary, write_raw_
 from core.summarize import summarize_storage_data, summarize_compute_data, compare_summaries
 from core.writers import ConsoleWriter
 from core.writers import ExcelWriter
-
+import pandas as pd
 
 def valid_date(s):
     try:
@@ -31,6 +31,8 @@ if __name__ == '__main__':
                              'Date format: YYYY-MM')
 
     args = parser.parse_args()
+
+    pd.options.display.float_format = '{:.1f}'.format
 
     config = config_from_path(args.config)
     usage = generate_usage_data(config)
