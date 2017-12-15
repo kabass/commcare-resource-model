@@ -40,9 +40,11 @@ class ConsoleWriter(BaseWriter):
 
     def write_data_frame(self, data_frame, sheet_name, index_label):
         if sheet_name not in self.sheets:
-            print('\n========== %s ==========' % sheet_name)
+            header1 = '=' * 20
+            print('\n%s %s %s' % (header1, sheet_name, header1))
             self.sheets.add(sheet_name)
         if index_label:
-            print('\n----- %s -----' % index_label)
+            header2 = '-' * 10
+            print('\n%s %s %s' % (header2, index_label, header2))
         print()
         print(data_frame)
