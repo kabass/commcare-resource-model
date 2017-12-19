@@ -99,9 +99,10 @@ class DerivedModel(DFModel):
     def func(self):
         raise NotImplemented
 
-    def __init__(self, name, dependant_fields):
+    def __init__(self, name, dependant_fields, start_with=None):
         self.name = name
         self._dependant_fields = dependant_fields
+        self.start_with = start_with
 
     @property
     def dependant_fields(self):
@@ -113,6 +114,8 @@ class DerivedModel(DFModel):
             fields = fields[0]
         series = current_data_frame[fields].apply(self.func, axis=1)
         series.name = self.name
+        if self.start_with:
+            series[0] += self.start_with
         return pd.DataFrame([series]).T
 
 
@@ -126,8 +129,8 @@ class DerivedFactor(DerivedModel):
     """Multiply a single other field by a static factor"""
     slug = 'derived_factor'
 
-    def __init__(self, name, dependant_field, factor):
-        super(DerivedFactor, self).__init__(name, [dependant_field])
+    def __init__(self, name, dependant_field, factor, start_with=0):
+        super(DerivedFactor, self).__init__(name, [dependant_field], start_with)
         self.factor = factor
 
     @property
