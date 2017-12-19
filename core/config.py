@@ -18,10 +18,24 @@ class StorageSizeDef(jsonobject.JsonObject):
     unit_bytes = jsonobject.IntegerProperty(required=True)
 
 
+class DynamicRedundancy(jsonobject.JsonObject):
+    referenced_field = jsonobject.StringProperty()
+    factor = jsonobject.FloatProperty()
+
+
 class StorageDef(jsonobject.JsonObject):
+    """
+    group:                      Storage group used for summary views
+    static_redundancy_factor:   Fix value for redundancy
+    dynamic_redundancy_factor:  Redundancy varies against another field. This is used
+                                to model scaling out databases.
+    static_baseline:            Fixed amount to add to the storage
+    data_models:                List of data models that get used to calculate the storage
+    """
     _allow_dynamic_properties = False
     group = jsonobject.StringProperty(required=True)
-    redundancy_factor = jsonobject.IntegerProperty(required=True)
+    static_redundancy_factor = jsonobject.IntegerProperty()
+    dynamic_redundancy_factor = jsonobject.ObjectProperty(DynamicRedundancy)
     static_baseline = jsonobject.IntegerProperty(default=0)
     data_models = jsonobject.ListProperty(StorageSizeDef, required=True)
 

@@ -29,7 +29,12 @@ def generate_storage_data(config, usage_data):
     def _service_storage(storage_conf, service_model):
         bytes = usage_data[service_model.referenced_field] * service_model.unit_bytes
         with_baseline = bytes + + storage_conf.static_baseline
-        return with_baseline * storage_conf.redundancy_factor
+        if storage_conf.static_redundancy_factor:
+            return with_baseline * storage_conf.static_redundancy_factor
+        elif storage_conf.dynamic_redundancy_factor.referenced_field:
+            reference = usage_data[storage_conf.dynamic_redundancy_factor.referenced_field]
+            redundancy_factor = reference * storage_conf.dynamic_redundancy_factor.factor
+            return with_baseline * redundancy_factor
 
     storage_df = pd.DataFrame()
     for storage_key, storage_conf in config.storage.items():
