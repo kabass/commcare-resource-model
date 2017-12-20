@@ -47,31 +47,31 @@ if __name__ == '__main__':
     else:
         writer = ConsoleWriter()
 
-    summaries = {}
-    for date in summary_dates:
-        storage_summary = summarize_storage_data(config, date, storage)
-        compute_summary = summarize_compute_data(config, date, compute)
-        summaries[date] = SummaryData(storage_summary, compute_summary)
+    with writer:
+        summaries = {}
+        for date in summary_dates:
+            storage_summary = summarize_storage_data(config, date, storage)
+            compute_summary = summarize_compute_data(config, date, compute)
+            summaries[date] = SummaryData(storage_summary, compute_summary)
 
-    if len(summary_dates) == 1:
-        date = summary_dates[0]
-        summary_data = summaries[date]
-        write_summary_data(config, writer, date, summary_data)
-    else:
-        summary_comparisons = compare_summaries(summaries)
-        incrementals = incremental_summaries(summary_comparisons, summary_dates)
-        write_summary_comparisons(config, writer, incrementals, prefix='Incremental ')
-        write_summary_comparisons(config, writer, summary_comparisons)
+        if len(summary_dates) == 1:
+            date = summary_dates[0]
+            summary_data = summaries[date]
+            write_summary_data(config, writer, date, summary_data)
+        else:
+            summary_comparisons = compare_summaries(summaries)
+            incrementals = incremental_summaries(summary_comparisons, summary_dates)
+            write_summary_comparisons(config, writer, incrementals, prefix='Incremental ')
+            write_summary_comparisons(config, writer, summary_comparisons)
+
+            if is_excel:
+                for date in sorted(summaries):
+                    write_summary_data(config, writer, date, summaries[date])
 
         if is_excel:
-            for date in sorted(summaries):
-                write_summary_data(config, writer, date, summaries[date])
+            # only write raw data if writing to Excel
+            write_raw_data(writer, usage, storage, compute)
 
-    if is_excel:
-        # only write raw data if writing to Excel
-        write_raw_data(writer, usage, storage, compute)
-
-        with open(args.config, 'r') as f:
-            config_string = f.read()
-            writer.write_config_string(config_string)
-    writer.save()
+            with open(args.config, 'r') as f:
+                config_string = f.read()
+                writer.write_config_string(config_string)
