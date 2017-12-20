@@ -146,16 +146,16 @@ class ComputeModel(object):
         self.key = key
         self.config = config
 
-    def _get_process_series(self, process_config, users):
+    def _get_process_series(self, process_config, current_data_frame):
+        usage = current_data_frame[process_config.usage_field]
         if process_config.static_number:
-            return pd.Series([process_config.static_number] * len(users), index=users.index)
+            return pd.Series([process_config.static_number] * len(usage), index=usage.index)
         else:
-            return users / process_config.user_capacity
+            return usage / process_config.capacity
 
     def data_frame(self, current_data_frame):
-        users = current_data_frame['users']
         processes = pd.concat([
-            self._get_process_series(process, users)
+            self._get_process_series(process, current_data_frame)
             for process in self.config.processes
         ], keys=[(p.name or self.key) for p in self.config.processes], axis=1)
 
