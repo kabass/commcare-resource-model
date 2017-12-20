@@ -71,5 +71,5 @@ if __name__ == '__main__':
 
     if args.output:
         # only write raw data if writing to Excel
-        write_raw_data(writer, usage, storage)
+        write_raw_data(writer, usage, storage, compute)
     writer.save()

@@ -41,8 +41,22 @@ class StorageDef(jsonobject.JsonObject):
 
 
 class ProcessDef(jsonobject.JsonObject):
+    """
+    name: Name of the process
+    static_number: Assume a fixed number of processes
+    user_capacity: Number of users each process can support.
+
+    Only one of static_number and user_capaicty should be supplied.
+    """
     name = jsonobject.StringProperty()
-    user_capacity = jsonobject.IntegerProperty(required=True)
+    static_number = jsonobject.IntegerProperty()
+    user_capacity = jsonobject.IntegerProperty()
+
+    def validate(self, required=True):
+        if self.static_number:
+            assert not self.user_capacity, 'only one of static_number and user_capacity should be provided'
+        else:
+            assert self.user_capacity, 'one of static_number or user_capacity required'
 
 
 class ComputeDef(jsonobject.JsonObject):

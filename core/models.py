@@ -141,20 +141,21 @@ class DerivedFactor(DerivedModel):
         return _mul
 
 
-# class  PersonCaseModel
-# month 1 = 1200 cases created
-# month >1 = 1
-
-
 class ComputeModel(object):
     def __init__(self, key, config):
         self.key = key
         self.config = config
 
+    def _get_process_series(self, process_config, users):
+        if process_config.static_number:
+            return pd.Series([process_config.static_number] * len(users), index=users.index)
+        else:
+            return users / process_config.user_capacity
+
     def data_frame(self, current_data_frame):
         users = current_data_frame['users']
         processes = pd.concat([
-            users / process.user_capacity
+            self._get_process_series(process, users)
             for process in self.config.processes
         ], keys=[(p.name or self.key) for p in self.config.processes], axis=1)
 

@@ -30,7 +30,8 @@ def write_compute_summary(writer, summary_date, compute_summary):
     writer.write_data_frame(compute_summary, SUMMARY_SHEET % format_date(summary_date), SERVICE_INDEX)
 
 
-def write_raw_data(writer, usage, storage):
+def write_raw_data(writer, usage, storage, compute):
     writer.write_data_frame(usage, 'Usage', 'Dates')
     writer.write_data_frame(storage, 'Storage', 'Dates')
+    writer.write_data_frame(compute, 'Compute', 'Dates')
 
