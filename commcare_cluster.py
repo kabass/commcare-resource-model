@@ -26,9 +26,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser('CommCare Cluster Model')
     parser.add_argument('config', help='Path to config file')
     parser.add_argument('-o', '--output', help='Write output to Excel file at this path.')
-    parser.add_argument('-s', '--summarize-at', nargs='+', type=valid_date,
-                        help='Specify dates to create summaries. Defaults to final date in usage data.'
-                             'Date format: YYYY-MM')
 
     args = parser.parse_args()
 
@@ -39,8 +36,8 @@ if __name__ == '__main__':
     storage = generate_storage_data(config, usage)
     compute = generate_compute_data(config, usage)
 
-    if args.summarize_at:
-        summary_dates = args.summarize_at
+    if config.summary_dates:
+        summary_dates = config.summary_date_vals
     else:
         summary_dates = [usage.iloc[-1].name]  # summarize at final date
 

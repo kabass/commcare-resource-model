@@ -129,8 +129,8 @@ class ConsoleWriter(BaseWriter):
             header1 = '=' * 20
             print('\n%s %s %s' % (header1, sheet_name, header1))
             self.sheets.add(sheet_name)
-        if index_label:
+        if index_label or header:
             header2 = '-' * 10
-            print('\n%s %s %s' % (header2, index_label, header2))
+            print('\n%s %s %s' % (header2, header or index_label, header2))
         print()
         print(data_frame)

@@ -1,5 +1,6 @@
 import jsonobject
 import yaml
+from datetime import datetime
 from jsonobject.base import get_dynamic_properties
 
 
@@ -87,9 +88,21 @@ class ClusterConfig(jsonobject.JsonObject):
     esitmation_buffer = jsonobject.DecimalProperty(required=True)
     storage_buffer = jsonobject.DecimalProperty(required=True)
     storage_display_unit = jsonobject.StringProperty(default='GB')
+    summary_dates = jsonobject.ListProperty()
     usage = jsonobject.DictProperty(UsageModelDef, required=True)
     storage = jsonobject.DictProperty(StorageDef, required=True)
     compute = jsonobject.DictProperty(ComputeDef, required=True)
+
+    def validate(self, required=True):
+        super(ClusterConfig, self).validate(required=required)
+        self.summary_date_vals
+
+    @property
+    def summary_date_vals(self):
+        return [
+            datetime.strptime(date, "%Y-%m")
+            for date in self.summary_dates
+        ]
 
 
 def config_from_path(config_path):
