@@ -85,6 +85,7 @@ class ComputeDef(jsonobject.JsonObject):
 
 class ClusterConfig(jsonobject.JsonObject):
     esitmation_buffer = jsonobject.DecimalProperty(required=True)
+    storage_buffer = jsonobject.DecimalProperty(required=True)
     usage = jsonobject.DictProperty(UsageModelDef, required=True)
     storage = jsonobject.DictProperty(StorageDef, required=True)
     compute = jsonobject.DictProperty(ComputeDef, required=True)

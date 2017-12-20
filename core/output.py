@@ -21,7 +21,9 @@ def write_summary_data(writer, summary_date, summary_data):
 
 
 def write_storage_summary(writer, summary_date, storage_summary):
-    storage_by_cat = storage_summary.by_category[['Size', 'Buffer', 'Total (GB)', 'Group']]  # select columns
+    storage_by_cat = storage_summary.by_category[
+        ['Size', 'Storage Buffer', 'Estimation Buffer', 'Total (GB)', 'Rounded Total (GB)', 'Group']  # select columns
+    ]
     writer.write_data_frame(storage_by_cat, SUMMARY_SHEET % format_date(summary_date), STORAGE_CAT_INDEX)
     writer.write_data_frame(storage_summary.by_group, SUMMARY_SHEET % format_date(summary_date), STORAGE_GROUP_INDEX)
 

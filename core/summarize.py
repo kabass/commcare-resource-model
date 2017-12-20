@@ -2,7 +2,7 @@ from collections import namedtuple
 
 import pandas as pd
 
-from core.utils import format_date, bytes_to_gb
+from core.utils import format_date, bytes_to_gb, tenth_round
 
 StorageSummary = namedtuple('StorageSummary', 'by_category by_group')
 SummaryComparison = namedtuple('SummaryComparison', 'storage_by_category storage_by_group compute')
@@ -15,8 +15,8 @@ def compare_summaries(summaries_by_date):
     dates = sorted(list(summaries_by_date))
     for date in dates:
         summary_data = summaries_by_date[date]
-        storage_by_cat_series.append(summary_data.storage.by_category['Total (GB)'])
-        storage_by_group_series.append(summary_data.storage.by_group['Total (GB)'])
+        storage_by_cat_series.append(summary_data.storage.by_category['Rounded Total (GB)'])
+        storage_by_group_series.append(summary_data.storage.by_group['Rounded Total (GB)'])
         compute_series.append(summary_data.compute[['CPU Total', 'RAM Total', 'VMs Total']])
 
     first_date = list(summaries_by_date)[0]
@@ -41,11 +41,16 @@ def _combine_summary_data(series, keys, add_total=True):
 
 def summarize_storage_data(config, summary_date, storage_data):
     storage_snapshot = storage_data.loc[summary_date]
+    esitmation_buffer = storage_snapshot * float(config.esitmation_buffer)
+    storage_buffer = storage_snapshot * float(config.storage_buffer)
+    total_raw = storage_snapshot + storage_buffer + esitmation_buffer
     storage_by_cat = pd.DataFrame({
         'Size': storage_snapshot.map(bytes_to_gb),
-        'Buffer': (storage_snapshot * float(config.esitmation_buffer)).map(bytes_to_gb),
-        'Total (GB)': (storage_snapshot * (1 + float(config.esitmation_buffer))).map(bytes_to_gb),
-        'total_raw': (storage_snapshot * (1 + float(config.esitmation_buffer))),
+        'Estimation Buffer': esitmation_buffer.map(bytes_to_gb),
+        'Storage Buffer': storage_buffer.map(bytes_to_gb),
+        'Total (GB)': total_raw.map(bytes_to_gb),
+        'Rounded Total (GB)': total_raw.map(bytes_to_gb).map(tenth_round),
+        'total_raw': total_raw,
         'Group': pd.Series({
             storage_key: storage_conf.group
             for storage_key, storage_conf in config.storage.items()
@@ -56,6 +61,7 @@ def summarize_storage_data(config, summary_date, storage_data):
     by_type.index.name = None
     storage_by_group = pd.DataFrame({
         'Total (GB)': by_type.map(bytes_to_gb),
+        'Rounded Total (GB)': by_type.map(bytes_to_gb).map(tenth_round),
     })
 
     storage_by_cat.sort_index(inplace=True)
