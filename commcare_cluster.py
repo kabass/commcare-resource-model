@@ -67,7 +67,11 @@ if __name__ == '__main__':
             for date, summary_data in summaries.items():
                 write_summary_data(config, writer, date, summary_data)
 
-    if args.output:
+    if is_excel:
         # only write raw data if writing to Excel
         write_raw_data(writer, usage, storage, compute)
+
+        with open(args.config, 'r') as f:
+            config_string = f.read()
+            writer.write_config_string(config_string)
     writer.save()

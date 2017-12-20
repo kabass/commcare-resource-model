@@ -15,6 +15,9 @@ class BaseWriter(ABC):
     def write_data_frame(self, data_frame, sheet_name, index_label, header=None, has_total_row=False):
         raise NotImplemented
 
+    def write_config_string(self, config_string):
+        pass
+
     def save(self):
         pass
 
@@ -45,7 +48,7 @@ class ExcelWriter(BaseWriter):
         self.sheet_positions = defaultdict(int)
         self.sheet_col_widths = defaultdict(list)
 
-    def _workbook(self, sheet_name):
+    def get_sheet(self, sheet_name):
         sheet = self.workbook.get_worksheet_by_name(sheet_name)
         if sheet is None:
             sheet = self.workbook.add_worksheet(sheet_name)
@@ -54,7 +57,7 @@ class ExcelWriter(BaseWriter):
 
     def write_data_frame(self, data_frame, sheet_name, index_label, header=None, has_total_row=False):
         sheet_position = self.sheet_positions[sheet_name]
-        sheet = self._workbook(sheet_name)
+        sheet = self.get_sheet(sheet_name)
         if header:
             cols = len(data_frame.columns)
             sheet.merge_range(sheet_position, 0, sheet_position, cols, header, self.heading_format)
@@ -108,13 +111,22 @@ class ExcelWriter(BaseWriter):
             new_widths = [max(cw) for cw in zip_longest(current_col_widths, col_widths, fillvalue=0)]
             self.sheet_col_widths[sheet_name] = new_widths
 
+    def write_config_string(self, config_string):
+        sheet = self.get_sheet('Config')
+        width = 0
+        lines = config_string.split('\n')
+        for i, line in enumerate(lines):
+            sheet.write_string(i, 0, line)
+            width = max(width, len(line))
+        sheet.set_column(0, 0, width)
+
     def save(self):
         self.write_col_widths()
         self.writer.save()
 
     def write_col_widths(self):
         for sheet_name, widths in self.sheet_col_widths.items():
-            sheet = self._workbook(sheet_name)
+            sheet = self.get_sheet(sheet_name)
             for i, width in enumerate(widths):
                 sheet.set_column(i, i, width)
 
