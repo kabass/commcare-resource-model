@@ -1,5 +1,6 @@
 from collections import namedtuple
 
+import numpy as np
 import pandas as pd
 
 from core.utils import format_date, to_storage_display_unit, tenth_round
@@ -102,6 +103,7 @@ def summarize_compute_data(config, summary_date, compute_data):
     compute_snapshot = compute_data.loc[summary_date]
     unstacked = compute_snapshot.unstack()
     esitmation_buffer = unstacked * float(config.esitmation_buffer)
+    esitmation_buffer = esitmation_buffer.apply(np.ceil)
     total = unstacked.add(esitmation_buffer)
 
     esitmation_buffer = esitmation_buffer.rename({col: '%s Buffer' % col for col in esitmation_buffer.columns}, axis=1)

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod, abstractproperty
 from collections import namedtuple
 
 import pandas as pd
-
+import numpy as np
 
 DateRange = namedtuple('DateRange', 'start, end')
 
@@ -151,7 +151,7 @@ class ComputeModel(object):
         if process_config.static_number:
             return pd.Series([process_config.static_number] * len(usage), index=usage.index)
         else:
-            return usage / process_config.capacity
+            return (usage / process_config.capacity).map(np.ceil)
 
     def data_frame(self, current_data_frame):
         processes = pd.concat([
