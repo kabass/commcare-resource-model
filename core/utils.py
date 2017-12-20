@@ -1,14 +1,22 @@
 import math
 
-BYTES_PER_GB = 1000.0 ** 3
+byte_map = {
+    'GB': 1000.0 ** 3,
+    'TB': 1000.0 ** 4
+}
 
 
 def format_date(date):
     return date.strftime('%Y-%m-%d')
 
 
-def bytes_to_gb(bytes):
-    return bytes / BYTES_PER_GB
+def to_storage_display_unit(unit):
+    bytes_per_unit = byte_map[unit]
+
+    def _inner(bytes_, bytes_per_unit=bytes_per_unit):
+        return bytes_ / bytes_per_unit
+
+    return _inner
 
 
 def tenth_round(value):

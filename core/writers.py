@@ -78,7 +78,7 @@ class ExcelWriter(BaseWriter):
             total_row = data_frame.tail(1).values[0]
             total_row_pos = sheet_position + len(data_frame) - 1
             for col, val in enumerate(total_row):
-                val = str(val) if val is not nan else ''
+                val = pd.options.display.float_format(val) if val is not nan else ''
                 sheet.write_string(total_row_pos, col + 1, val, self.total_row_format)
 
         self.update_col_widths(data_frame, sheet_name)

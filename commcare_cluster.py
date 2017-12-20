@@ -59,15 +59,14 @@ if __name__ == '__main__':
     if len(summary_dates) == 1:
         date = summary_dates[0]
         summary_data = summaries[date]
-        write_storage_summary(writer, date, summary_data.storage)
-        write_compute_summary(writer, date, summary_data.compute)
+        write_summary_data(config, writer, date, summary_data)
     else:
         summary_comparisons = compare_summaries(summaries)
-        write_summary_comparisons(writer, summary_comparisons)
+        write_summary_comparisons(config, writer, summary_comparisons)
 
         if is_excel:
             for date, summary_data in summaries.items():
-                write_summary_data(writer, date, summary_data)
+                write_summary_data(config, writer, date, summary_data)
 
     if args.output:
         # only write raw data if writing to Excel
