@@ -19,11 +19,24 @@ def compare_summaries(summaries_by_date):
         storage_by_group_series.append(summary_data.storage.by_group['Total (GB)'])
         compute_series.append(summary_data.compute[['CPU Total', 'RAM Total', 'VMs Total']])
 
-    keys = [format_date(date) for date in dates]
-    storage_by_cat = pd.concat(storage_by_cat_series, axis=1, keys=keys)
-    storage_by_group = pd.concat(storage_by_group_series, axis=1, keys=keys)
-    compute = pd.concat(compute_series, axis=1, keys=keys)
+    first_date = list(summaries_by_date)[0]
+    group_series = summaries_by_date[first_date].storage.by_category['Group']
+    storage_by_cat_series.append(group_series)
+
+    keys = [format_date(date) for date in dates] + ['Group']
+    storage_by_cat = _combine_summary_data(storage_by_cat_series, keys)
+    storage_by_group = _combine_summary_data(storage_by_group_series, keys, False)
+    compute = _combine_summary_data(compute_series, keys)
     return SummaryComparison(storage_by_cat, storage_by_group, compute)
+
+
+def _combine_summary_data(series, keys, add_total=True):
+    df = pd.concat(series, axis=1, keys=keys)
+    if add_total:
+        total = df.sum(numeric_only=True)
+        total.name = 'Total'
+        df = df.append(total, ignore_index=False)
+    return df
 
 
 def summarize_storage_data(config, summary_date, storage_data):

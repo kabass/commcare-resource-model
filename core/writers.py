@@ -4,6 +4,7 @@ from datetime import datetime
 from itertools import zip_longest
 
 import pandas as pd
+from numpy import nan
 from pandas.io.formats.terminal import get_terminal_size
 
 from core.utils import format_date
@@ -11,7 +12,7 @@ from core.utils import format_date
 
 class BaseWriter(ABC):
     @abstractmethod
-    def write_data_frame(self, data_frame, sheet_name, index_label, header=None):
+    def write_data_frame(self, data_frame, sheet_name, index_label, header=None, has_total_row=False):
         raise NotImplemented
 
     def save(self):
@@ -36,6 +37,11 @@ class ExcelWriter(BaseWriter):
             'border': 1,
             'align': 'left',
         })
+        self.total_row_format = self.workbook.add_format({
+            'bold': 1,
+            'border': 1,
+            'align': 'right',
+        })
         self.sheet_positions = defaultdict(int)
         self.sheet_col_widths = defaultdict(list)
 
@@ -46,7 +52,7 @@ class ExcelWriter(BaseWriter):
             self.writer.sheets[sheet_name] = sheet
         return sheet
 
-    def write_data_frame(self, data_frame, sheet_name, index_label, header=None):
+    def write_data_frame(self, data_frame, sheet_name, index_label, header=None, has_total_row=False):
         sheet_position = self.sheet_positions[sheet_name]
         sheet = self._workbook(sheet_name)
         if header:
@@ -67,6 +73,13 @@ class ExcelWriter(BaseWriter):
             if isinstance(index_label, datetime):
                 index_label = format_date(index_label)
             sheet.write_string(sheet_position + i, 0, index_label, self.index_format)
+
+        if has_total_row:
+            total_row = data_frame.tail(1).values[0]
+            total_row_pos = sheet_position + len(data_frame) - 1
+            for col, val in enumerate(total_row):
+                val = pd.options.display.float_format(val) if val is not nan else ''
+                sheet.write_string(total_row_pos, col + 1, val, self.total_row_format)
 
         self.update_col_widths(data_frame, sheet_name)
         self.sheet_positions[sheet_name] = sheet_position + len(data_frame) + self.spacing
@@ -111,7 +124,7 @@ class ConsoleWriter(BaseWriter):
         self.sheets = set()
         pd.set_option('display.width', get_terminal_size().columns)
 
-    def write_data_frame(self, data_frame, sheet_name, index_label, header=None):
+    def write_data_frame(self, data_frame, sheet_name, index_label, header=None, has_total_row=False):
         if sheet_name not in self.sheets:
             header1 = '=' * 20
             print('\n%s %s %s' % (header1, sheet_name, header1))
