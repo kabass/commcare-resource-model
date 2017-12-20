@@ -46,6 +46,10 @@ def summarize_storage_data(config, summary_date, storage_data):
     total_raw = storage_snapshot + storage_buffer + esitmation_buffer
     storage_units = config.storage_display_unit
     to_display = to_storage_display_unit(storage_units)
+
+    storage_groups = {storage_key: storage_conf.group for storage_key, storage_conf in config.storage.items()}
+    storage_groups['VM OS'] = config.vm_os_storage_group
+
     storage_by_cat = pd.DataFrame({
         'Size': storage_snapshot.map(to_display),
         'Estimation Buffer': esitmation_buffer.map(to_display),
@@ -53,10 +57,7 @@ def summarize_storage_data(config, summary_date, storage_data):
         'Total': total_raw.map(to_display),
         'Rounded Total': total_raw.map(to_display).map(tenth_round),
         'total_raw': total_raw,
-        'Group': pd.Series({
-            storage_key: storage_conf.group
-            for storage_key, storage_conf in config.storage.items()
-        })
+        'Group': pd.Series(storage_groups)
     })
 
     by_type = storage_by_cat.groupby('Group')['Rounded Total'].sum()

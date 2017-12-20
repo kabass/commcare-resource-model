@@ -33,8 +33,8 @@ if __name__ == '__main__':
 
     config = config_from_path(args.config)
     usage = generate_usage_data(config)
-    storage = generate_storage_data(config, usage)
     compute = generate_compute_data(config, usage)
+    storage = generate_storage_data(config, usage, compute)
 
     if config.summary_dates:
         summary_dates = config.summary_date_vals

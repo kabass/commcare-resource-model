@@ -25,7 +25,7 @@ def generate_usage_data(config):
     return usage_df
 
 
-def generate_storage_data(config, usage_data):
+def generate_storage_data(config, usage_data, compute_data):
     def _service_storage(storage_conf, service_model):
         bytes = usage_data[service_model.referenced_field] * service_model.unit_bytes
         with_baseline = bytes + + storage_conf.static_baseline
@@ -43,6 +43,13 @@ def generate_storage_data(config, usage_data):
             for model in storage_conf.data_models
         ], axis=1)
         storage_df[storage_key] = storage.sum(axis=1)
+
+    vm_counts = []
+    for cat in compute_data.columns.levels[0]:
+        vm_counts.append(compute_data[cat]['VMs'])
+    vm_total = sum(vm_counts)
+    print(vm_total, config.vm_os_storage_gb)
+    storage_df['VM OS'] = vm_total * config.vm_os_storage_gb * (1000.0 ** 3)
     return storage_df
 
 

@@ -89,6 +89,9 @@ class ClusterConfig(jsonobject.JsonObject):
     storage_buffer = jsonobject.DecimalProperty(required=True)
     storage_display_unit = jsonobject.StringProperty(default='GB')
     summary_dates = jsonobject.ListProperty()
+    vm_os_storage_gb = jsonobject.IntegerProperty(required=True)
+    vm_os_storage_group = jsonobject.StringProperty(required=True)
+
     usage = jsonobject.DictProperty(UsageModelDef, required=True)
     storage = jsonobject.DictProperty(StorageDef, required=True)
     compute = jsonobject.DictProperty(ComputeDef, required=True)
