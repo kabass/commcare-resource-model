@@ -64,8 +64,8 @@ if __name__ == '__main__':
         write_summary_comparisons(config, writer, summary_comparisons)
 
         if is_excel:
-            for date, summary_data in summaries.items():
-                write_summary_data(config, writer, date, summary_data)
+            for date in sorted(summaries):
+                write_summary_data(config, writer, date, summaries[date])
 
     if is_excel:
         # only write raw data if writing to Excel
