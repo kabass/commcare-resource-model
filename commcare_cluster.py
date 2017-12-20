@@ -11,13 +11,6 @@ from core.writers import ConsoleWriter
 from core.writers import ExcelWriter
 import pandas as pd
 
-def valid_date(s):
-    try:
-        return datetime.strptime(s, "%Y-%m")
-    except ValueError:
-        msg = "Not a valid date: '{0}'.".format(s)
-        raise argparse.ArgumentTypeError(msg)
-
 
 SummaryData = namedtuple('SummaryData', 'storage compute')
 
