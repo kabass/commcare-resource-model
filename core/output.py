@@ -8,15 +8,17 @@ STORAGE_CAT_INDEX = 'Storage Category'
 SERVICE_INDEX = 'Service'
 
 
-def write_summary_comparisons(config, writer, comparisons):
+def write_summary_comparisons(config, writer, comparisons, prefix=''):
     storage_by_cat, storage_by_group, compute = comparisons
+    sheet = '%s%s' % (prefix, COMPARISONS_SHEET)
 
-    storage_cat_header = 'Storage by Category (%s)' % config.storage_display_unit
-    writer.write_data_frame(storage_by_cat, COMPARISONS_SHEET, STORAGE_CAT_INDEX, storage_cat_header, has_total_row=True)
+    storage_cat_header = '%sStorage by Category (%s)' % (prefix, config.storage_display_unit)
+    writer.write_data_frame(storage_by_cat, sheet, STORAGE_CAT_INDEX, storage_cat_header, has_total_row=True)
 
-    storage_group_header = 'Storage by Group (%s)'  % config.storage_display_unit
-    writer.write_data_frame(storage_by_group, COMPARISONS_SHEET, STORAGE_GROUP_INDEX, storage_group_header)
-    writer.write_data_frame(compute, COMPARISONS_SHEET, SERVICE_INDEX, 'Compute Comparison', has_total_row=True)
+    storage_group_header = '%sStorage by Group (%s)' % (prefix, config.storage_display_unit)
+    writer.write_data_frame(storage_by_group, sheet, STORAGE_GROUP_INDEX, storage_group_header)
+    comparison_header = '%sCompute' % prefix
+    writer.write_data_frame(compute, sheet, SERVICE_INDEX, comparison_header, has_total_row=True)
 
 
 def write_summary_data(config, writer, summary_date, summary_data):

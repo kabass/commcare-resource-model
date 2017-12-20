@@ -6,7 +6,7 @@ from core.config import config_from_path
 from core.generate import generate_usage_data, generate_storage_data, generate_compute_data
 from core.output import write_storage_summary, write_compute_summary, write_raw_data, write_summary_data, \
     write_summary_comparisons
-from core.summarize import summarize_storage_data, summarize_compute_data, compare_summaries
+from core.summarize import summarize_storage_data, summarize_compute_data, compare_summaries, incremental_summaries
 from core.writers import ConsoleWriter
 from core.writers import ExcelWriter
 import pandas as pd
@@ -59,6 +59,8 @@ if __name__ == '__main__':
         write_summary_data(config, writer, date, summary_data)
     else:
         summary_comparisons = compare_summaries(summaries)
+        incrementals = incremental_summaries(summary_comparisons, summary_dates)
+        write_summary_comparisons(config, writer, incrementals, prefix='Incremental ')
         write_summary_comparisons(config, writer, summary_comparisons)
 
         if is_excel:

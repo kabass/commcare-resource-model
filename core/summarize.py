@@ -23,11 +23,38 @@ def compare_summaries(summaries_by_date):
     group_series = summaries_by_date[first_date].storage.by_category['Group']
     storage_by_cat_series.append(group_series)
 
-    keys = [format_date(date) for date in dates] + ['Group']
-    storage_by_cat = _combine_summary_data(storage_by_cat_series, keys)
+    keys = [format_date(date) for date in dates]
+    storage_by_cat = _combine_summary_data(storage_by_cat_series, keys + ['Group'])
     storage_by_group = _combine_summary_data(storage_by_group_series, keys, False)
     compute = _combine_summary_data(compute_series, keys)
     return SummaryComparison(storage_by_cat, storage_by_group, compute)
+
+
+def incremental_summaries(summary_comparisons, summary_dates):
+    storage_by_cat_series = []
+    storage_by_group_series = []
+    compute_series = []
+    keys = [format_date(date) for date in summary_dates]
+
+    def _get_incremental(loop_count, keys, data):
+        key = keys[loop_count]
+        if loop_count == 0:
+            return data[key]
+        else:
+            previous_key = keys[loop_count - 1]
+            return data[key] - data[previous_key]
+
+    for i, key in enumerate(keys):
+        storage_by_cat_series.append(_get_incremental(i, keys, summary_comparisons.storage_by_category))
+        storage_by_group_series.append(_get_incremental(i, keys, summary_comparisons.storage_by_group))
+        compute_series.append(_get_incremental(i, keys, summary_comparisons.compute))
+
+    storage_by_cat_series.append(summary_comparisons.storage_by_category['Group'])
+    return SummaryComparison(
+        _combine_summary_data(storage_by_cat_series, keys + ['Group'], False),
+        _combine_summary_data(storage_by_group_series, keys, False),
+        _combine_summary_data(compute_series, keys, False),
+    )
 
 
 def _combine_summary_data(series, keys, add_total=True):

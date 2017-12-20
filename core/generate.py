@@ -48,7 +48,6 @@ def generate_storage_data(config, usage_data, compute_data):
     for cat in compute_data.columns.levels[0]:
         vm_counts.append(compute_data[cat]['VMs'])
     vm_total = sum(vm_counts)
-    print(vm_total, config.vm_os_storage_gb)
     storage_df['VM OS'] = vm_total * config.vm_os_storage_gb * (1000.0 ** 3)
     return storage_df
 
