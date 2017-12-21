@@ -2,9 +2,10 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from datetime import datetime
 from itertools import zip_longest
+from math import nan
+from numbers import Number
 
 import pandas as pd
-from numpy import nan
 from pandas.io.formats.terminal import get_terminal_size
 
 from core.utils import format_date
@@ -87,7 +88,7 @@ class ExcelWriter(BaseWriter):
             total_row = data_frame.tail(1).values[0]
             total_row_pos = sheet_position + len(data_frame) - 1
             for col, val in enumerate(total_row):
-                val = pd.options.display.float_format(val) if val is not nan else ''
+                val = pd.options.display.float_format(val) if pd.notna(val) and isinstance(val, Number) else ''
                 sheet.write_string(total_row_pos, col + 1, val, self.total_row_format)
 
         self.update_col_widths(data_frame, sheet_name)
@@ -105,7 +106,7 @@ class ExcelWriter(BaseWriter):
                 ]
             return (
                     [idx_max] +
-                    [max([len(str(s)) for s in dataframe[col].values] +
+                    [max([len(str(s)) for dc in dataframe.columns for s in dataframe[dc].values] +
                          [len(col)]) for col in columns]
             )
 

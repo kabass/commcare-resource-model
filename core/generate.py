@@ -25,36 +25,34 @@ def generate_usage_data(config):
     return usage_df
 
 
-def generate_storage_data(config, usage_data, compute_data):
-    def _service_storage(storage_conf, service_model):
-        bytes = usage_data[service_model.referenced_field] * service_model.unit_bytes
-        with_baseline = bytes + + storage_conf.static_baseline
-        if storage_conf.static_redundancy_factor:
-            return with_baseline * storage_conf.static_redundancy_factor
-        elif storage_conf.dynamic_redundancy_factor.referenced_field:
-            reference = usage_data[storage_conf.dynamic_redundancy_factor.referenced_field]
-            redundancy_factor = reference * storage_conf.dynamic_redundancy_factor.factor
-            return with_baseline * redundancy_factor
+def generate_service_data(config, usage_data):
+    dfs = []
+    for service_name, service_def in config.services.items():
+        service_compute = ComputeModel(service_name, service_def).data_frame(usage_data)
+        service_storage = _service_storage_data(config, service_def, usage_data, service_compute)
+        data = pd.concat([service_compute, service_storage], keys=['Compute', 'Storage'], axis=1)
+        dfs.append(data)
+    return pd.concat(dfs, keys=list(config.services), axis=1)
 
-    storage_df = pd.DataFrame()
-    for storage_key, storage_conf in config.storage.items():
+
+def _service_storage_data(config, service_def, usage_data, compute_data):
+    def _service_storage(storage_def, storage_size_def):
+        bytes = usage_data[storage_size_def.referenced_field] * storage_size_def.unit_bytes
+        with_baseline = bytes + storage_def.static_baseline
+        return with_baseline * storage_def.redundancy_factor
+
+    if service_def.storage.data_models:
         storage = pd.concat([
-            _service_storage(storage_conf, model)
-            for model in storage_conf.data_models
+            _service_storage(service_def.storage, model)
+            for model in service_def.storage.data_models
         ], axis=1)
-        storage_df[storage_key] = storage.sum(axis=1)
+        data_storage = storage.sum(axis=1)
+    else:
+        data_storage = pd.Series([0] * len(usage_data), index=usage_data.index)
 
-    vm_counts = []
-    for cat in compute_data.columns.levels[0]:
-        vm_counts.append(compute_data[cat]['VMs'])
-    vm_total = sum(vm_counts)
-    storage_df['VM OS'] = vm_total * config.vm_os_storage_gb * (1000.0 ** 3)
-    return storage_df
-
-
-def generate_compute_data(config, usage_data):
-    keys = list(config.compute.keys())
-    return pd.concat([
-        ComputeModel(key, config.compute[key]).data_frame(usage_data)
-        for key in keys
-    ], keys=keys, axis=1)
+    vm_count = compute_data['Nodes']
+    vm_storage = vm_count * config.vm_os_storage_gb * (1000.0 ** 3)
+    return pd.DataFrame({
+        'Data Storage': data_storage,
+        'OS Storage': vm_storage
+    })

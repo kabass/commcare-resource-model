@@ -1,4 +1,4 @@
-esitmation_buffer: 0.2
+estimation_buffer: 0.2
 storage_buffer: 0.25
 storage_display_unit: TB
 
@@ -107,194 +107,202 @@ usage:
     model: 'derived_sum'
     dependant_fields: ['forms', 'cases', 'case_transactions', 'task_ledger_updates']  # sms
 
-storage:
-  sql_primary:
-    group: 'SSD'
-    static_redundancy_factor: 2
-    data_models:  
-      - referenced_field: 'forms_total'
-        unit_bytes: 1200
-      - referenced_field: 'cases_total'
-        unit_bytes: 1800
-      - referenced_field: 'case_indices'
-        unit_bytes: 380
-      - referenced_field: 'case_transactions_total'
-        unit_bytes: 515
-      - referenced_field: 'task_ledgers'
-        unit_bytes: 450
-      - referenced_field: 'task_ledger_updates'
-        unit_bytes: 420
-      - referenced_field: 'images_total'
-        unit_bytes: 370
-  sql_device_logs:
-    group: 'SSD'
-    static_redundancy_factor: 1
-    data_models:
-      - referenced_field: 'device_logs_total'
-        unit_bytes: 1200
-  sql_meta:
-    group: 'SSD'
-    static_redundancy_factor: 2
-    static_baseline: 20000000000  # 20GB to account for other static tables
-    data_models:
-      - referenced_field: 'phone_numbers'
-        unit_bytes: 660
-#      - referenced_field: 'sms'
-#        unit_bytes: ?
-  couchdb_synclogs:
-    group: 'SSD'
-    # 2 per 100K users
-    dynamic_redundancy_factor:
-      referenced_field: 'users'
-      factor: 0.000015
-    data_models:
-      - referenced_field: 'synclogs'
-        unit_bytes: 210000  # tries to take into account DB bloat
-  couchdb_meta:
-    group: 'SSD'
-    static_redundancy_factor: 3
-    static_baseline: 20000000000  # 20GB to account for other databases
-    data_models:
-      - referenced_field: 'users'
-        unit_bytes: 600000   # disk size / doc count of icds @ 2017-12-13
-  elastic:
-    group: 'SAS'
-    static_redundancy_factor: 2
-    data_models:
-      - referenced_field: 'forms_total'
-        unit_bytes: 5500
-      - referenced_field: 'cases_total'
-        unit_bytes: 1800
-      - referenced_field: 'case_transactions_total'
-        unit_bytes: 250
-      - referenced_field: 'task_ledgers'
-        unit_bytes: 500
-  kafka:
-    group: 'SAS'
-    static_redundancy_factor: 1
-    data_models:
-      - referenced_field: 'kafak_changes'
-        unit_bytes: 500
-  riak:
-    group: 'SAS'
-    static_redundancy_factor: 3
-    static_baseline: 100000000000  # 100GB to account for exports etc
-    data_models:
-      - referenced_field: 'forms_total'
-        unit_bytes: 11000
-      - referenced_field: 'images_total'
-        unit_bytes: 50000
-  ucr:
-    # This is a rough estimate.
-    # The person case UCR is 35% of total UCR usage.
-    group: 'SSD'
-    # This attempts to model the fact that we need to
-    # scale out the DBs in ratio to the number of users
-    # 2 per 100K users
-    dynamic_redundancy_factor:
-      referenced_field: 'users'
-      factor: 0.00002
-    data_models:
-      - referenced_field: 'person_cases'
-        unit_bytes: 5000  # inflated to account for others UCRs
-#  warehouse:  # TODO
 
-compute:
-  pillowtop:
-    cores_per_vm: 4
-    ram_per_vm: 6
-    cores_per_process: 0.5
-    ram_per_process: 0.7
-    processes:
-      - name: 'static-cases'
-        capacity: 2000
-      - name: 'case-to-es'
-        capacity: 5000
-      - name: 'ucr-static-forms'
-        capacity: 7500
-      - name: 'forms-to-es'
-        capacity: 15000
-      - name: 'other'  # covers the other 18 processes
-        capacity: 3000
-      - name: 'form-submission-meta'
-        capacity: 15000
-  celery:
-    cores_per_vm: 8
-    ram_per_vm: 16
-    cores_per_process: 1
-    ram_per_process: 0.5
-    processes:
-      - name: 'other'
-        static_number: 30
-      - name: 'pillow_retry_queue'
-        capacity: 20000
-      - name: 'submission_reprocessing_queue'
-        capacity: 50000
-      - name: 'reminder_case_update_queue'
-        capacity: 50000
-      - name: 'reminder_queue'
-        capacity: 100000
-      - name: 'reminder_rule_queue'
-        capacity: 100000
-      - name: 'sms_queue'
-        capacity: 50000
-      - name: 'async_restore_queue'
-        capacity: 10000
-      - name: 'ucr_indicator_queue'
-        capacity: 3000
-  django:
-    cores_per_vm: 8
-    ram_per_vm: 16
-    processes:
-      - capacity: 20000
-  pg_shards:
-    cores_per_vm: 16
-    ram_per_vm: 48
-    processes:
-      - capacity: 50000
-  pg_ucr:
-    cores_per_vm: 16
-    ram_per_vm: 48
-    processes:
-      - capacity: 50000
-  pg_auth_meta:
-    cores_per_vm: 16
-    ram_per_vm: 48
-    processes:
-      - capacity: 100000
+services:
+  sql_primary:
+    usage_capacity_per_node: 50000
+    storage:
+      group: 'SSD'
+      data_models:
+        - referenced_field: 'forms_total'
+          unit_bytes: 1200
+        - referenced_field: 'cases_total'
+          unit_bytes: 1800
+        - referenced_field: 'case_indices'
+          unit_bytes: 380
+        - referenced_field: 'case_transactions_total'
+          unit_bytes: 515
+        - referenced_field: 'task_ledgers'
+          unit_bytes: 450
+        - referenced_field: 'task_ledger_updates'
+          unit_bytes: 420
+        - referenced_field: 'images_total'
+          unit_bytes: 370
+    process:
+      cores_per_node: 16
+      ram_per_node: 48
+  sql_device_logs:
+    usage_capacity_per_node: 100000  #? how are we going to scale device log DB?
+    storage:
+      group: 'SSD'
+      data_models:
+        - referenced_field: 'device_logs_total'
+          unit_bytes: 1200
+    process:
+      cores_per_node: 16
+      ram_per_node: 48
+  sql_meta:
+    usage_capacity_per_node: 100000
+    storage_scales_with_nodes: True
+    min_nodes: 2
+    storage:
+      group: 'SSD'
+      static_baseline: 20000000000  # 20GB to account for other static tables
+      data_models:
+        - referenced_field: 'phone_numbers'
+          unit_bytes: 660
+  #      - referenced_field: 'sms'
+  #        unit_bytes: ?
+    process:
+      cores_per_node: 16
+      ram_per_node: 48
+  couchdb_synclogs:
+    usage_capacity_per_node: 100000
+    min_nodes: 3
+    storage:
+      group: 'SSD'
+      redundancy_factor: 2
+      data_models:
+        - referenced_field: 'synclogs'
+          unit_bytes: 210000  # tries to take into account DB bloat
+    process:
+      cores_per_node: 4
+      ram_per_node: 16
+  couchdb_meta:
+    usage_capacity_per_node: 50000
+    min_nodes: 3
+    storage:
+      group: 'SSD'
+      redundancy_factor: 3
+      static_baseline: 20000000000  # 20GB to account for other databases
+      data_models:
+        - referenced_field: 'users'
+          unit_bytes: 600000   # disk size / doc count of icds @ 2017-12-13
+    process:
+      cores_per_node: 4
+      ram_per_node: 16
   elastic:
-    cores_per_vm: 8
-    ram_per_vm: 64
-    processes:
-      - capacity: 20000
-  redis:
-    cores_per_vm: 4
-    ram_per_vm: 8
-    processes:
-      - capacity: 100000
-  nginx:
-    cores_per_vm: 4
-    ram_per_vm: 8
-    processes:
-      - capacity: 100000
-  couch:
-    cores_per_vm: 4
-    ram_per_vm: 16
-    processes:
-      - capacity: 50000
-  rabbitmq:
-    cores_per_vm: 4
-    ram_per_vm: 8
-    processes:
-      - capacity: 100000
+    usage_capacity_per_node: 20000
+    min_nodes: 3
+    storage:
+      group: 'SAS'
+      redundancy_factor: 2
+      data_models:
+        - referenced_field: 'forms_total'
+          unit_bytes: 5500
+        - referenced_field: 'cases_total'
+          unit_bytes: 1800
+        - referenced_field: 'case_transactions_total'
+          unit_bytes: 250
+        - referenced_field: 'task_ledgers'
+          unit_bytes: 500
+    process:
+      cores_per_node: 8
+      ram_per_node: 64
   kafka:
-    cores_per_vm: 4
-    ram_per_vm: 8
-    processes:
-      - capacity: 100000
+    usage_capacity_per_node: 100000
+    storage:
+      group: 'SAS'
+      data_models:
+        - referenced_field: 'kafak_changes'
+          unit_bytes: 500
+    process:
+      cores_per_node: 4
+      ram_per_node: 8
+  blobdb:
+    # no process modelling here since we're assuming a managed service
+    storage:
+      group: 'SAS'
+      redundancy_factor: 3  # TODO: do we nee to put this in if we're using a service?
+      static_baseline: 100000000000  # 100GB to account for exports etc
+      data_models:
+        - referenced_field: 'forms_total'
+          unit_bytes: 11000
+        - referenced_field: 'images_total'
+          unit_bytes: 50000
+  ucr:
+    usage_capacity_per_node: 50000
+    storage_scales_with_nodes: True
+    min_nodes: 2
+    storage:
+      # This is a rough estimate.
+      # The person case UCR is 35% of total UCR usage.
+      group: 'SSD'
+      data_models:
+        - referenced_field: 'person_cases'
+          unit_bytes: 5000  # inflated to account for others UCRs
+    process:
+      cores_per_node: 16
+      ram_per_node: 48
+  #  warehouse:  # TODO
+  pillowtop:
+    process:
+      cores_per_node: 4
+      ram_per_node: 6
+      cores_per_sub_process: 0.5
+      ram_per_sub_process: 0.7
+      sub_processes:
+        - name: 'static-cases'
+          capacity: 2000
+        - name: 'case-to-es'
+          capacity: 5000
+        - name: 'ucr-static-forms'
+          capacity: 7500
+        - name: 'forms-to-es'
+          capacity: 15000
+        - name: 'other'  # covers the other 18 processes
+          capacity: 3000
+        - name: 'form-submission-meta'
+          capacity: 15000
+  celery:
+    process:
+      cores_per_node: 8
+      ram_per_node: 16
+      cores_per_sub_process: 1
+      ram_per_sub_process: 0.5
+      sub_processes:
+        - name: 'other'
+          static_number: 30
+        - name: 'pillow_retry_queue'
+          capacity: 20000
+        - name: 'submission_reprocessing_queue'
+          capacity: 50000
+        - name: 'reminder_case_update_queue'
+          capacity: 50000
+        - name: 'reminder_queue'
+          capacity: 100000
+        - name: 'reminder_rule_queue'
+          capacity: 100000
+        - name: 'sms_queue'
+          capacity: 50000
+        - name: 'async_restore_queue'
+          capacity: 10000
+        - name: 'ucr_indicator_queue'
+          capacity: 3000
+  django:
+    usage_capacity_per_node: 20000
+    process:
+      cores_per_node: 8
+      ram_per_node: 16
+  redis:
+    usage_capacity_per_node: 100000
+    process:
+      cores_per_node: 4
+      ram_per_node: 8
+  nginx:
+    usage_capacity_per_node: 100000
+    process:
+      cores_per_node: 4
+      ram_per_node: 8
+  rabbitmq:
+    usage_capacity_per_node: 100000
+    process:
+      cores_per_node: 4
+      ram_per_node: 8
   formplayer:
-    cores_per_vm: 4
-    ram_per_vm: 8
-    processes:
-      - capacity: 1000
-        usage_field: 'formplayer_users'
+    usage_capacity_per_node: 1000
+    usage_field: 'formplayer_users'
+    process:
+      cores_per_node: 4
+      ram_per_node: 8
+

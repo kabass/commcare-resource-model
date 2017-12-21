@@ -1,16 +1,15 @@
 import argparse
 from collections import namedtuple
-from datetime import datetime
 
-from core.config import config_from_path
-from core.generate import generate_usage_data, generate_storage_data, generate_compute_data
-from core.output import write_storage_summary, write_compute_summary, write_raw_data, write_summary_data, \
-    write_summary_comparisons
-from core.summarize import summarize_storage_data, summarize_compute_data, compare_summaries, incremental_summaries
-from core.writers import ConsoleWriter
-from core.writers import ExcelWriter
 import pandas as pd
 
+from core.config import config_from_path
+from core.generate import generate_usage_data, generate_service_data
+from core.output import write_usage_data, write_summary_comparisons, write_summary_data_new
+from core.summarize import incremental_summaries, \
+    summarize_service_data, compare_summaries_new
+from core.writers import ConsoleWriter
+from core.writers import ExcelWriter
 
 SummaryData = namedtuple('SummaryData', 'storage compute')
 
@@ -26,8 +25,7 @@ if __name__ == '__main__':
 
     config = config_from_path(args.config)
     usage = generate_usage_data(config)
-    compute = generate_compute_data(config, usage)
-    storage = generate_storage_data(config, usage, compute)
+    service_data = generate_service_data(config, usage)
 
     if config.summary_dates:
         summary_dates = config.summary_date_vals
@@ -43,27 +41,25 @@ if __name__ == '__main__':
     with writer:
         summaries = {}
         for date in summary_dates:
-            storage_summary = summarize_storage_data(config, date, storage)
-            compute_summary = summarize_compute_data(config, date, compute)
-            summaries[date] = SummaryData(storage_summary, compute_summary)
+            summaries[date] = summarize_service_data(config, service_data, date)
 
         if len(summary_dates) == 1:
             date = summary_dates[0]
             summary_data = summaries[date]
-            write_summary_data(config, writer, date, summary_data)
+            write_summary_data_new(config, writer, date, summary_data)
         else:
-            summary_comparisons = compare_summaries(summaries)
+            summary_comparisons = compare_summaries_new(config, summaries)
             incrementals = incremental_summaries(summary_comparisons, summary_dates)
             write_summary_comparisons(config, writer, incrementals, prefix='Incremental ')
             write_summary_comparisons(config, writer, summary_comparisons)
 
             if is_excel:
                 for date in sorted(summaries):
-                    write_summary_data(config, writer, date, summaries[date])
+                    write_summary_data_new(config, writer, date, summaries[date])
 
         if is_excel:
             # only write raw data if writing to Excel
-            write_raw_data(writer, usage, storage, compute)
+            write_usage_data(writer, usage)
 
             with open(args.config, 'r') as f:
                 config_string = f.read()

@@ -19,29 +19,7 @@ class StorageSizeDef(jsonobject.JsonObject):
     unit_bytes = jsonobject.IntegerProperty(required=True)
 
 
-class DynamicRedundancy(jsonobject.JsonObject):
-    referenced_field = jsonobject.StringProperty()
-    factor = jsonobject.FloatProperty()
-
-
-class StorageDef(jsonobject.JsonObject):
-    """
-    group:                      Storage group used for summary views
-    static_redundancy_factor:   Fix value for redundancy
-    dynamic_redundancy_factor:  Redundancy varies against another field. This is used
-                                to model scaling out databases.
-    static_baseline:            Fixed amount to add to the storage
-    data_models:                List of data models that get used to calculate the storage
-    """
-    _allow_dynamic_properties = False
-    group = jsonobject.StringProperty(required=True)
-    static_redundancy_factor = jsonobject.IntegerProperty()
-    dynamic_redundancy_factor = jsonobject.ObjectProperty(DynamicRedundancy)
-    static_baseline = jsonobject.IntegerProperty(default=0)
-    data_models = jsonobject.ListProperty(StorageSizeDef, required=True)
-
-
-class ProcessDef(jsonobject.JsonObject):
+class SubProcessDef(jsonobject.JsonObject):
     """
     name: Name of the process
     static_number: Assume a fixed number of processes
@@ -52,7 +30,6 @@ class ProcessDef(jsonobject.JsonObject):
     """
     name = jsonobject.StringProperty()
     static_number = jsonobject.IntegerProperty()
-    usage_field = jsonobject.StringProperty(default='users')
     capacity = jsonobject.IntegerProperty()
 
     def validate(self, required=True):
@@ -62,39 +39,52 @@ class ProcessDef(jsonobject.JsonObject):
             assert self.capacity, 'one of static_number or capacity required'
 
 
-class ComputeDef(jsonobject.JsonObject):
+class StorageDef(jsonobject.JsonObject):
     _allow_dynamic_properties = False
-    cores_per_vm = jsonobject.IntegerProperty(required=True)
-    ram_per_vm = jsonobject.IntegerProperty(required=True)
-    cores_per_process = jsonobject.DecimalProperty()
-    ram_per_process = jsonobject.DecimalProperty()
-    processes = jsonobject.ListProperty(ProcessDef, required=True)
+    group = jsonobject.StringProperty()
+    redundancy_factor = jsonobject.IntegerProperty(default=1)
+    static_baseline = jsonobject.IntegerProperty(default=0)
+    data_models = jsonobject.ListProperty(StorageSizeDef)
+
+
+class ProcessDef(jsonobject.JsonObject):
+    _allow_dynamic_properties = False
+    cores_per_node = jsonobject.IntegerProperty()
+    ram_per_node = jsonobject.IntegerProperty()
+    cores_per_sub_process = jsonobject.DecimalProperty()
+    ram_per_sub_process = jsonobject.DecimalProperty()
+    sub_processes = jsonobject.ListProperty(SubProcessDef)
 
     def validate(self, required=True):
-        if len(self.processes) > 1:
-            assert self.cores_per_process, 'cores_per_process required if more than one process listed'
-            assert self.ram_per_process, 'ram_per_process required if more than one process listed'
+        if self.processes:
+            assert self.cores_per_sub_process, 'cores_per_sub_process required if more than one process listed'
+            assert self.ram_per_sub_process, 'ram_per_sub_process required if more than one process listed'
 
-    @property
-    def process_cores(self):
-        return float(self.cores_per_process or self.cores_per_vm)
 
-    @property
-    def process_ram(self):
-        return float(self.ram_per_process or self.ram_per_vm)
+class ServiceDef(jsonobject.JsonObject):
+    usage_capacity_per_node = jsonobject.IntegerProperty()
+    usage_field = jsonobject.StringProperty(default='users')
+    storage_scales_with_nodes = jsonobject.BooleanProperty(default=False)
+    min_nodes = jsonobject.IntegerProperty(default=1)
+    storage = jsonobject.ObjectProperty(StorageDef)
+    process = jsonobject.ObjectProperty(ProcessDef)
+
+    def validate(self, required=True):
+        super(ServiceDef, self).validate(required=required)
+        if not self.usage_capacity_per_node:
+            assert self.process.sub_processes, 'Service is missing capacity configuration'
 
 
 class ClusterConfig(jsonobject.JsonObject):
-    esitmation_buffer = jsonobject.DecimalProperty(required=True)
+    estimation_buffer = jsonobject.DecimalProperty(required=True)
     storage_buffer = jsonobject.DecimalProperty(required=True)
     storage_display_unit = jsonobject.StringProperty(default='GB')
     summary_dates = jsonobject.ListProperty()
     vm_os_storage_gb = jsonobject.IntegerProperty(required=True)
     vm_os_storage_group = jsonobject.StringProperty(required=True)
 
-    usage = jsonobject.DictProperty(UsageModelDef, required=True)
-    storage = jsonobject.DictProperty(StorageDef, required=True)
-    compute = jsonobject.DictProperty(ComputeDef, required=True)
+    usage = jsonobject.DictProperty(UsageModelDef)
+    services = jsonobject.DictProperty(ServiceDef)
 
     def validate(self, required=True):
         super(ClusterConfig, self).validate(required=required)

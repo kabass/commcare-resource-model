@@ -142,27 +142,43 @@ class DerivedFactor(DerivedModel):
 
 
 class ComputeModel(object):
-    def __init__(self, key, config):
-        self.key = key
-        self.config = config
+    def __init__(self, service_name, service_def):
+        self.service_name = service_name
+        self.service_def = service_def
 
-    def _get_process_series(self, process_config, current_data_frame):
-        usage = current_data_frame[process_config.usage_field]
-        if process_config.static_number:
-            return pd.Series([process_config.static_number] * len(usage), index=usage.index)
+    def _get_process_series(self, process_def, usage_data):
+        if process_def.static_number:
+            return pd.Series([process_def.static_number] * len(usage_data), index=usage_data.index)
         else:
-            return (usage / process_config.capacity).map(np.ceil)
+            return (usage_data / process_def.capacity).map(np.ceil)
 
     def data_frame(self, current_data_frame):
-        processes = pd.concat([
-            self._get_process_series(process, current_data_frame)
-            for process in self.config.processes
-        ], keys=[(p.name or self.key) for p in self.config.processes], axis=1)
+        usage = current_data_frame[self.service_def.usage_field]
+        if self.service_def.process.sub_processes:
+            processes = pd.concat([
+                self._get_process_series(sub_process, usage)
+                for sub_process in self.service_def.process.sub_processes
+            ], keys=[p.name for p in self.service_def.process.sub_processes], axis=1)
 
-        total = processes.apply(sum, axis=1)
-        frame = pd.concat([
-            total * self.config.process_cores,
-            total * self.config.process_ram,
-            total * self.config.process_cores / self.config.cores_per_vm,
-        ], keys=['CPU', 'RAM', 'VMs'], axis=1)
-        return frame
+            total = processes.apply(sum, axis=1)
+            cores = total * float(self.service_def.process.cores_per_sub_process)
+            ram = total * float(self.service_def.process.ram_per_sub_process)
+            vms_by_cores = cores / self.service_def.process.cores_per_node
+            vms_by_ram = ram / self.service_def.process.ram_per_node
+            vms = vms_by_cores if vms_by_cores[-1] > vms_by_ram[-1] else vms_by_ram
+            return pd.concat([cores, ram, vms], keys=['CPU', 'RAM', 'Nodes'], axis=1)
+        elif self.service_def.usage_capacity_per_node:
+            nodes = (usage / self.service_def.usage_capacity_per_node).map(np.ceil)
+            with_min = pd.concat([
+                nodes,
+                pd.Series([self.service_def.min_nodes] * len(nodes), index=nodes.index)
+            ], axis=1)
+            nodes = with_min.max(1)
+            return pd.concat([
+                nodes * self.service_def.process.cores_per_node,
+                nodes * self.service_def.process.ram_per_node,
+                nodes
+            ], keys=['CPU', 'RAM', 'Nodes'], axis=1)
+        else:
+            nodes = pd.Series([0] * len(usage), index=usage.index)
+            return pd.concat([nodes, nodes, nodes], keys=['CPU', 'RAM', 'Nodes'], axis=1)
