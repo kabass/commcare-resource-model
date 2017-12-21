@@ -212,7 +212,7 @@ services:
   blobdb:
     # no process modelling here since we're assuming a managed service
     storage:
-      group: 'SAS'
+      group: 'BLOB'
       redundancy_factor: 3  # TODO: do we nee to put this in if we're using a service?
       static_baseline: 100000000000  # 100GB to account for exports etc
       data_models:
