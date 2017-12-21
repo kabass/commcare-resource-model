@@ -50,7 +50,7 @@ def _service_storage_data(config, service_def, usage_data, compute_data):
     else:
         data_storage = pd.Series([0] * len(usage_data), index=usage_data.index)
 
-    vm_count = compute_data['Nodes']
+    vm_count = compute_data['VMs']
     vm_storage = vm_count * config.vm_os_storage_gb * (1000.0 ** 3)
     return pd.DataFrame({
         'Data Storage': data_storage,

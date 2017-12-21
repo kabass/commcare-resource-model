@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from datetime import datetime
 from itertools import zip_longest
-from math import nan
 from numbers import Number
 
 import pandas as pd
