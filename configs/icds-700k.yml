@@ -74,6 +74,7 @@ usage:
     dependant_field: 'task_cases'
     factor: 25
   synclogs:
+    # we don't keep synclogs for longer than 30 days so no need to calculate cumulative total
     model: 'derived_factor'
     dependant_field: 'users'
     factor: 35
@@ -102,6 +103,7 @@ usage:
 #    dependant_field: 'users'
 #    factor: ?
   kafak_changes:
+    # we only keep kafak changes for 28 days so no need to calculate the cumulative amount
     model: 'derived_sum'
     dependant_fields: ['forms', 'cases', 'case_transactions', 'task_ledger_updates']  # sms
 
@@ -123,7 +125,7 @@ storage:
       - referenced_field: 'task_ledger_updates'
         unit_bytes: 420
       - referenced_field: 'images_total'
-        unti_bytes: 370
+        unit_bytes: 370
   sql_device_logs:
     group: 'SSD'
     static_redundancy_factor: 1
@@ -144,10 +146,10 @@ storage:
     # 2 per 100K users
     dynamic_redundancy_factor:
       referenced_field: 'users'
-      factor: 0.00002
+      factor: 0.000015
     data_models:
       - referenced_field: 'synclogs'
-        unit_bytes: 500000  # tries to take into account DB bloat
+        unit_bytes: 210000  # tries to take into account DB bloat
   couchdb_meta:
     group: 'SSD'
     static_redundancy_factor: 3
@@ -194,7 +196,7 @@ storage:
       factor: 0.00002
     data_models:
       - referenced_field: 'person_cases'
-        unit_bytes: 3500  # inflated to account for others UCRs
+        unit_bytes: 5000  # inflated to account for others UCRs
 #  warehouse:  # TODO
 
 compute:
@@ -225,9 +227,9 @@ compute:
       - name: 'other'
         static_number: 30
       - name: 'pillow_retry_queue'
-        capacity: 100000
+        capacity: 20000
       - name: 'submission_reprocessing_queue'
-        capacity: 100000
+        capacity: 50000
       - name: 'reminder_case_update_queue'
         capacity: 50000
       - name: 'reminder_queue'
@@ -279,7 +281,7 @@ compute:
     cores_per_vm: 4
     ram_per_vm: 16
     processes:
-      - capacity: 30000
+      - capacity: 50000
   rabbitmq:
     cores_per_vm: 4
     ram_per_vm: 8
