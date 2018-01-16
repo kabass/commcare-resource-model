@@ -304,3 +304,9 @@ services:
     process:
       cores_per_node: 4
       ram_per_node: 8
+    storage:
+      group: 'SSD'
+      data_models:
+        - referenced_field: 'formplayer_users'
+          unit_bytes: 50000000  # 50MB
+
