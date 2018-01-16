@@ -78,7 +78,7 @@ usage:
   device_logs:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 1600
+    factor: 3000
   device_logs_total:
     model: 'cumulative_limited_lifespan'
     dependant_field: 'device_logs'
@@ -134,7 +134,7 @@ services:
       group: 'SSD'
       data_models:
         - referenced_field: 'device_logs_total'
-          unit_bytes: 1200
+          unit_bytes: 2000
     process:
       cores_per_node: 16
       ram_per_node: 48
