@@ -210,7 +210,6 @@ services:
       ram_per_node: 8
   blobdb:
     # no process modelling here since we're assuming a managed service
-    min_nodes: 5
     storage:
       group: 'BLOB'
       redundancy_factor: 3  # TODO: do we nee to put this in if we're using a service?
