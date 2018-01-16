@@ -148,6 +148,8 @@ services:
       data_models:
         - referenced_field: 'phone_numbers'
           unit_bytes: 660
+        - referenced_field: 'users'
+          unit_bytes: 1600
   #      - referenced_field: 'sms'
   #        unit_bytes: ?
     process:
