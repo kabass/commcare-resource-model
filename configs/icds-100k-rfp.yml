@@ -144,7 +144,7 @@ services:
     min_nodes: 2
     storage:
       group: 'SSD'
-      static_baseline: 20000000000  # 20GB to account for other static tables
+      static_baseline: 50000000000  # 50GB to account for other static tables
       data_models:
         - referenced_field: 'phone_numbers'
           unit_bytes: 660
