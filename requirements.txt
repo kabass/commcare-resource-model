@@ -1,3 +1,4 @@
 pandas
 pyaml
-xlswriter
+XlsxWriter
+jsonobject==0.7.1

@@ -4,6 +4,7 @@ storage_display_unit: TB
 
 summary_dates:
   - '2018-12'
+  - '2019-12'
 
 vm_os_storage_gb: 70
 vm_os_storage_group: 'SAS'
@@ -13,10 +14,12 @@ usage:
     model: 'date_range_value'
     ranges:
       - ['20180101', '20181201', 100000]
+      - ['20190101', '20191201', 100000]
   formplayer_users:
     model: 'date_range_value'
     ranges:
       - ['20180101', '20181201', 1000]
+      - ['20190101', '20191201', 1000]
   forms:
     model: 'derived_factor'
     start_with: 91000000
@@ -204,7 +207,7 @@ services:
       cores_per_node: 4
       ram_per_node: 8
   blobdb:
-    usage_capacity_per_node: 20000
+    # no process modelling here since we're assuming a managed service
     min_nodes: 5
     storage:
       group: 'BLOB'
@@ -215,9 +218,6 @@ services:
           unit_bytes: 11000
         - referenced_field: 'images_total'
           unit_bytes: 50000
-    process:
-      cores_per_node: 4
-      ram_per_node: 32
   ucr:
     usage_capacity_per_node: 50000
     storage_scales_with_nodes: True
