@@ -170,3 +170,59 @@ the capacity is defined for each sub-process.
           static_number: 30  # regardless of the usage there will always be 30
         - name: 'queue2'
           capacity: 20000  # 1 per 20000 users
+
+# Determining parameters for the config
+Writing the config files is relatively easy but the hard part is getting the numbers correct
+so that you can get realistic results.
+
+This sections outlines a few techniques for doing that.
+
+## Usage
+The usage data will vary significantly from system to system (or project to project)
+based on the design.
+
+For CommCare HQ there are some internal tools
+that help to determine system usage:
+
+    python manage.py project_stats_report <domain>
+
+
+## Storage
+
+**static_baseline**
+This should be the disc usage that the system is currently using as indicated by tools
+like `du`.
+
+**unit_bytes**
+Depending on how the data is stored this can be determined in a number of ways:
+
+_SQL_
+For SQL you want to total storage size per row including indexes etc.
+This query (and others like it) are useful for determining that:
+https://dba.stackexchange.com/questions/23879/measure-the-size-of-a-postgresql-table-row
+
+_Elasticsearch_
+For Elasticsearch you inspect the index metadata to get doc counts and
+disc usage from which you can drive average size per doc. This assumes
+you need an average for all docs.
+
+If you need a size for specific doc types you should take a representative
+sample of those docs and average their size.
+
+_RiakCS_
+There's no good way to get this info directly from Riak but if you
+have the metadata stored elsewhere you can query that e.g. SQL attachments table.
+
+_CouchDB_
+Use a similar approach to Elasticsearch.
+
+## Process
+To determine RAM and CPU requirements for processes you can inspect process
+metrics to determine their RAM and CPU usage.
+
+The best way to do this is to use a tool like Datadog to track usage
+over time and then inspect the data to find reasonable values.
+
+CPU usage is a little harder than RAM but the approach is similar, you
+should observe the CPU usage over time for a known load or use load testing
+to determine CPU usage requirements.
