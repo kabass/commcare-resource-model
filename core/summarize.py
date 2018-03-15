@@ -81,7 +81,10 @@ def summarize_service_data(config, service_data, summary_date):
     summary_by_service.sort_index(inplace=True)
 
     by_type = summary_by_service.groupby('Storage Group')['Data Storage Total Rounded (%s)' % storage_units].sum()
+    if config.vm_os_storage_group not in by_type:
+        by_type[config.vm_os_storage_group] = 0
     by_type[config.vm_os_storage_group] += math.ceil(to_display(summary_by_service['OS Storage Total (Bytes)'].sum()))
+
     by_type.index.name = None
     storage_by_group = pd.DataFrame({
         'Rounded Total (%s)' % storage_units: by_type,
