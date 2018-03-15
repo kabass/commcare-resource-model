@@ -166,7 +166,7 @@ class ComputeModel(object):
             vms_by_cores = cores / self.service_def.process.cores_per_node
             vms_by_ram = ram / self.service_def.process.ram_per_node
             vms = vms_by_cores if vms_by_cores[-1] > vms_by_ram[-1] else vms_by_ram
-            return pd.concat([cores, ram, vms], keys=['CPU', 'RAM', 'VMs'], axis=1)
+            return pd.concat([cores, ram, vms.map(np.ceil)], keys=['CPU', 'RAM', 'VMs'], axis=1)
         elif self.service_def.usage_capacity_per_node:
             nodes = (usage / self.service_def.usage_capacity_per_node).map(np.ceil)
             with_min = pd.concat([
