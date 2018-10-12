@@ -109,19 +109,19 @@ services:
       group: 'SSD'
       data_models:
         - referenced_field: 'forms_total'
-          unit_bytes: 1200
+          unit_size: 1200
         - referenced_field: 'cases_total'
-          unit_bytes: 1800
+          unit_size: 1800
         - referenced_field: 'case_indices'
-          unit_bytes: 380
+          unit_size: 380
         - referenced_field: 'case_transactions_total'
-          unit_bytes: 515
+          unit_size: 515
         - referenced_field: 'task_ledgers'
-          unit_bytes: 450
+          unit_size: 450
         - referenced_field: 'task_ledger_updates'
-          unit_bytes: 420
+          unit_size: 420
         - referenced_field: 'images_total'
-          unit_bytes: 370
+          unit_size: 370
     process:
       cores_per_node: 16
       ram_per_node: 48
@@ -131,7 +131,7 @@ services:
       group: 'SSD'
       data_models:
         - referenced_field: 'device_logs_total'
-          unit_bytes: 1200
+          unit_size: 1200
     process:
       cores_per_node: 16
       ram_per_node: 48
@@ -144,9 +144,9 @@ services:
       static_baseline: 20000000000  # 20GB to account for other static tables
       data_models:
         - referenced_field: 'phone_numbers'
-          unit_bytes: 660
+          unit_size: 660
   #      - referenced_field: 'sms'
-  #        unit_bytes: ?
+  #        unit_size: ?
     process:
       cores_per_node: 16
       ram_per_node: 48
@@ -158,7 +158,7 @@ services:
       redundancy_factor: 2
       data_models:
         - referenced_field: 'synclogs'
-          unit_bytes: 210000  # tries to take into account DB bloat
+          unit_size: 210000  # tries to take into account DB bloat
     process:
       cores_per_node: 4
       ram_per_node: 16
@@ -171,7 +171,7 @@ services:
       static_baseline: 20000000000  # 20GB to account for other databases
       data_models:
         - referenced_field: 'users'
-          unit_bytes: 600000   # disk size / doc count of icds @ 2017-12-13
+          unit_size: 600000   # disk size / doc count of icds @ 2017-12-13
     process:
       cores_per_node: 4
       ram_per_node: 16
@@ -183,13 +183,13 @@ services:
       redundancy_factor: 2
       data_models:
         - referenced_field: 'forms_total'
-          unit_bytes: 5500
+          unit_size: 5500
         - referenced_field: 'cases_total'
-          unit_bytes: 1800
+          unit_size: 1800
         - referenced_field: 'case_transactions_total'
-          unit_bytes: 250
+          unit_size: 250
         - referenced_field: 'task_ledgers'
-          unit_bytes: 500
+          unit_size: 500
     process:
       cores_per_node: 8
       ram_per_node: 64
@@ -199,7 +199,7 @@ services:
       group: 'SAS'
       data_models:
         - referenced_field: 'kafak_changes'
-          unit_bytes: 500
+          unit_size: 500
     process:
       cores_per_node: 4
       ram_per_node: 8
@@ -212,9 +212,9 @@ services:
       static_baseline: 100000000000  # 100GB to account for exports etc
       data_models:
         - referenced_field: 'forms_total'
-          unit_bytes: 11000
+          unit_size: 11000
         - referenced_field: 'images_total'
-          unit_bytes: 50000
+          unit_size: 50000
     process:
       cores_per_node: 4
       ram_per_node: 32
@@ -228,7 +228,7 @@ services:
       group: 'SSD'
       data_models:
         - referenced_field: 'person_cases'
-          unit_bytes: 5000  # inflated to account for others UCRs
+          unit_size: 5000  # inflated to account for others UCRs
     process:
       cores_per_node: 16
       ram_per_node: 48

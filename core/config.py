@@ -3,6 +3,8 @@ import yaml
 from datetime import datetime
 from jsonobject.base import get_dynamic_properties
 
+from core.utils import storage_display_to_bytes
+
 
 class UsageModelDef(jsonobject.JsonObject):
     _allow_dynamic_properties = True
@@ -16,7 +18,11 @@ class UsageModelDef(jsonobject.JsonObject):
 class StorageSizeDef(jsonobject.JsonObject):
     _allow_dynamic_properties = False
     referenced_field = jsonobject.StringProperty(required=True)
-    unit_bytes = jsonobject.IntegerProperty(required=True)
+    unit_size = jsonobject.DefaultProperty(required=True)
+
+    @property
+    def unit_bytes(self):
+        return storage_display_to_bytes(str(self.unit_size))
 
 
 class SubProcessDef(jsonobject.JsonObject):
