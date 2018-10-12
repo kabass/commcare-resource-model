@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from core.models import models_by_slug, ComputeModel
@@ -28,14 +29,15 @@ def generate_usage_data(config):
 def generate_service_data(config, usage_data):
     dfs = []
     for service_name, service_def in config.services.items():
-        service_compute = ComputeModel(service_name, service_def).data_frame(usage_data)
-        service_storage = _service_storage_data(config, service_def, usage_data, service_compute)
-        data = pd.concat([service_compute, service_storage], keys=['Compute', 'Storage'], axis=1)
+        data_storage = _service_storage_data(service_def, usage_data)
+        compute = ComputeModel(service_name, service_def).data_frame(usage_data, data_storage)
+        os_storage = _service_os_storage(config, compute)
+        data = pd.concat([compute, data_storage, os_storage], keys=['Compute', 'Data Storage', 'OS Storage'], axis=1)
         dfs.append(data)
     return pd.concat(dfs, keys=list(config.services), axis=1)
 
 
-def _service_storage_data(config, service_def, usage_data, compute_data):
+def _service_storage_data(service_def, usage_data):
     def _service_storage(storage_def, storage_size_def):
         bytes = usage_data[storage_size_def.referenced_field] * storage_size_def.unit_bytes
         with_baseline = bytes + storage_def.static_baseline_bytes
@@ -50,9 +52,14 @@ def _service_storage_data(config, service_def, usage_data, compute_data):
     else:
         data_storage = pd.Series([0] * len(usage_data), index=usage_data.index)
 
+    return pd.DataFrame({
+        'storage': data_storage
+    })
+
+
+def _service_os_storage(config, compute_data):
     vm_count = compute_data['VMs']
     vm_storage = vm_count * config.vm_os_storage_gb * (1000.0 ** 3)
     return pd.DataFrame({
-        'Data Storage': data_storage,
-        'OS Storage': vm_storage
+        'storage': vm_storage
     })

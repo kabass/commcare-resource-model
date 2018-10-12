@@ -152,7 +152,7 @@ class ComputeModel(object):
         else:
             return (usage_data / process_def.capacity).map(np.ceil)
 
-    def data_frame(self, current_data_frame):
+    def data_frame(self, current_data_frame, data_storage):
         usage = current_data_frame[self.service_def.usage_field]
         if self.service_def.process.sub_processes:
             processes = pd.concat([
@@ -166,7 +166,7 @@ class ComputeModel(object):
             vms_by_cores = cores / self.service_def.process.cores_per_node
             vms_by_ram = ram / self.service_def.process.ram_per_node
             vms = vms_by_cores if vms_by_cores[-1] > vms_by_ram[-1] else vms_by_ram
-            return pd.concat([cores, ram, vms.map(np.ceil)], keys=['CPU', 'RAM', 'VMs'], axis=1)
+            compute = pd.concat([cores, ram, vms.map(np.ceil)], keys=['CPU', 'RAM', 'VMs'], axis=1)
         elif self.service_def.usage_capacity_per_node:
             nodes = (usage / self.service_def.usage_capacity_per_node).map(np.ceil)
             with_min = pd.concat([
@@ -174,11 +174,21 @@ class ComputeModel(object):
                 pd.Series([self.service_def.min_nodes] * len(nodes), index=nodes.index)
             ], axis=1)
             nodes = with_min.max(1)
-            return pd.concat([
+            compute = pd.concat([
                 nodes * self.service_def.process.cores_per_node,
                 nodes * self.service_def.process.ram_per_node,
                 nodes
             ], keys=['CPU', 'RAM', 'VMs'], axis=1)
         else:
             nodes = pd.Series([0] * len(usage), index=usage.index)
-            return pd.concat([nodes, nodes, nodes], keys=['CPU', 'RAM', 'VMs'], axis=1)
+            compute = pd.concat([nodes, nodes, nodes], keys=['CPU', 'RAM', 'VMs'], axis=1)
+
+        if self.service_def.max_storage_per_node_bytes:
+            # Add extra VMs to keep storage per VM within range
+            max_supported = compute['VMs'] * self.service_def.max_storage_per_node_bytes
+            extra = data_storage['storage'] - max_supported
+            extra[extra < 0] = 0
+            extra_vms = np.ceil(extra / self.service_def.max_storage_per_node_bytes)
+            compute['VMs'] = compute['VMs'] + extra_vms
+
+        return compute
