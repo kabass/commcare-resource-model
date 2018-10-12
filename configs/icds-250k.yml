@@ -3,9 +3,9 @@ storage_buffer: 0.25
 storage_display_unit: TB
 
 summary_dates:
+  - '2018-12'
   - '2019-12'
   - '2020-12'
-  - '2021-12'
 
 vm_os_storage_gb: 70
 vm_os_storage_group: 'VM'
@@ -14,9 +14,9 @@ usage:
   users:
     model: 'date_range_value'
     ranges:
-      - ['20190101', '20191201', 130000]
-      - ['20200101', '20201201', 250000]
-      - ['20210101', '20211201', 500000]
+      - ['20180101', '20181201', 130000]
+      - ['20190101', '20191201', 250000]
+      - ['20200101', '20201201', 500000]
   ls_users:
     model: 'derived_factor'
     dependant_field: 'users'
@@ -24,9 +24,9 @@ usage:
   formplayer_users:
     model: 'date_range_value'
     ranges:
+      - ['20180101', '20181201', 1000]
       - ['20190101', '20191201', 1000]
       - ['20200101', '20201201', 1000]
-      - ['20210101', '20211201', 1000]
   forms:
     model: 'derived_factor'
     start_with: 329680028
@@ -144,7 +144,7 @@ services:
   sql_primary:
     usage_capacity_per_node: 50000
     storage:
-      group: 'Primary'
+      group: 'SSD'
       data_models:
         - referenced_field: 'forms_total'
           unit_size: 1200
@@ -170,7 +170,7 @@ services:
     storage_scales_with_nodes: True
     min_nodes: 2
     storage:
-      group: 'Primary'
+      group: 'SSD'
       static_baseline: 50GB  # to account for other static tables
       data_models:
         - referenced_field: 'phone_numbers'
@@ -187,7 +187,7 @@ services:
   sql_synclogs:
     usage_capacity_per_node: 500000
     storage:
-      group: 'Primary'
+      group: 'SSD'
       data_models:
         - referenced_field: 'synclogs'
           unit_size: 210000
@@ -198,7 +198,7 @@ services:
     usage_capacity_per_node: 25000
     min_nodes: 3
     storage:
-      group: 'Primary'
+      group: 'SSD'
       redundancy_factor: 3
       static_baseline: 20GB  # to account for other databases
       data_models:
@@ -211,7 +211,7 @@ services:
     usage_capacity_per_node: 25000
     min_nodes: 3
     storage:
-      group: 'Analytics'
+      group: 'SAS'
       redundancy_factor: 2
       data_models:
         - referenced_field: 'forms_total'
@@ -262,7 +262,7 @@ services:
     storage:
       # This is a rough estimate.
       # The person case UCR is 35% of total UCR usage.
-      group: 'Primary'
+      group: 'SSD'
       data_models:
         - referenced_field: 'person_cases'
           unit_size: 9000  # inflated to account for others UCRs
@@ -275,7 +275,7 @@ services:
     usage_capacity_per_node: 250000
     storage_scales_with_nodes: True
     storage:
-      group: 'Primary'
+      group: 'SSD'
       data_models:
         - referenced_field: 'forms_total'
           unit_size: 4000  # to account for monthly data etc.
@@ -351,7 +351,7 @@ services:
       cores_per_node: 4
       ram_per_node: 8
     storage:
-      group: 'Primary'
+      group: 'SAS'
       data_models:
         - referenced_field: 'formplayer_users'
           unit_size: 100MB  # 100MB
