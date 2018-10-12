@@ -49,8 +49,12 @@ class StorageDef(jsonobject.JsonObject):
     _allow_dynamic_properties = False
     group = jsonobject.StringProperty()
     redundancy_factor = jsonobject.IntegerProperty(default=1)
-    static_baseline = jsonobject.IntegerProperty(default=0)
+    static_baseline = jsonobject.DefaultProperty(default=0)
     data_models = jsonobject.ListProperty(StorageSizeDef)
+
+    @property
+    def static_baseline_bytes(self):
+        return storage_display_to_bytes(str(self.static_baseline))
 
 
 class ProcessDef(jsonobject.JsonObject):

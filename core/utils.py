@@ -36,7 +36,7 @@ def storage_display_to_bytes(display_value):
     match = pattern.match(display_value)
     if not match:
         return int(display_value)
-    value = match.group('value')
+    value = int(match.group('value'))
     units = match.group('units')
     return from_storage_display_unit(units)(value)
 

@@ -226,3 +226,7 @@ over time and then inspect the data to find reasonable values.
 CPU usage is a little harder than RAM but the approach is similar, you
 should observe the CPU usage over time for a known load or use load testing
 to determine CPU usage requirements.
+
+_RiakCS_
+RAM: this depends on the backend that's in use. For Bitcask you need enough
+memory to store all the keys in RAM. Note: ICDS uses Bitcask

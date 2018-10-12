@@ -38,7 +38,7 @@ def generate_service_data(config, usage_data):
 def _service_storage_data(config, service_def, usage_data, compute_data):
     def _service_storage(storage_def, storage_size_def):
         bytes = usage_data[storage_size_def.referenced_field] * storage_size_def.unit_bytes
-        with_baseline = bytes + storage_def.static_baseline
+        with_baseline = bytes + storage_def.static_baseline_bytes
         return with_baseline * storage_def.redundancy_factor
 
     if service_def.storage.data_models:
