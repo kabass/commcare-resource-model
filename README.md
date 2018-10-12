@@ -230,3 +230,15 @@ to determine CPU usage requirements.
 _RiakCS_
 RAM: this depends on the backend that's in use. For Bitcask you need enough
 memory to store all the keys in RAM. Note: ICDS uses Bitcask
+
+http://docs.basho.com/riak/kv/2.2.3/setup/planning/bitcask-capacity-calc/
+
+| Variable | Description |
+|----------|-------------|
+| Static Bitcask per-key overhead | 44.5 bytes per key |
+| Estimated average bucket-plus-key length | The combined number of characters your bucket + keynames will require (on average). We’ll assume 1 byte per character. |
+| Estimated total objects | The total number of key/value pairs your cluster will have when started |
+| Replication Value (n_val) | The number of times each key will be replicated when written to Riak (the default is 3) |
+
+
+Approximate RAM Needed for Bitcask = (static bitcask per key overhead + estimated average bucket+key length in bytes) * estimate total number of keys * n_val
