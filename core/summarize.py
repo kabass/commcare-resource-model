@@ -50,26 +50,22 @@ def summarize_service_data(config, service_data, summary_date):
         cpu_buffer = compute['CPU'] * float(config.estimation_buffer)
         node_buffer = math.ceil(compute['VMs'] * float(config.estimation_buffer))
         data_storage_buffer = (storage['Data Storage'] * float(config.estimation_buffer + config.storage_buffer))
+        data_storage_total = math.ceil(storage['Data Storage'] + data_storage_buffer)
+        vms_total = math.ceil(compute['VMs'] + node_buffer)
         os_storage_buffer = node_buffer * config.vm_os_storage_gb * (1000.0 ** 3)
         data = OrderedDict([
             ('Cores Per VM', service_def.process.cores_per_node),
-            ('Cores Needed', compute['CPU']),
-            ('Cores Buffer', cpu_buffer),
             ('Cores Total', math.ceil(compute['CPU'] + cpu_buffer)),
+            ('Cores Buffer', cpu_buffer),
             ('RAM Per VM', service_def.process.ram_per_node),
-            ('RAM Needed', compute['RAM']),
-            ('RAM Buffer', ram_buffer),
             ('RAM Total (GB)', math.ceil(compute['RAM'] + ram_buffer)),
-            ('Data Storage Per VM (GB)', math.ceil(to_gb((storage['Data Storage'] / compute['VMs']) if compute['VMs'] else 0))),
-            ('Data Storage Needed (%s)' % storage_units, to_display(storage['Data Storage'])),
-            ('Data Storage Buffer (GB)', to_gb(data_storage_buffer)),
-            ('Data Storage Total (%s)' % storage_units, to_display(math.ceil(storage['Data Storage'] + data_storage_buffer))),
+            ('RAM Buffer', ram_buffer),
+            ('Data Storage Per VM (GB)', math.ceil(to_gb((data_storage_total / vms_total) if compute['VMs'] else 0))),
+            ('Data Storage Total (%s)' % storage_units, to_display(data_storage_total)),
             ('Data Storage Total Rounded (%s)' % storage_units, tenth_round(to_display(math.ceil(storage['Data Storage'] + data_storage_buffer)))),
-            ('VMs Needed', compute['VMs']),
+            ('Data Storage Buffer (GB)', to_gb(data_storage_buffer)),
+            ('VMs Total', vms_total),
             ('VM Buffer', node_buffer),
-            ('VMs Total', math.ceil(compute['VMs'] + node_buffer)),
-            ('OS Storage Needed (GB)', math.ceil(to_gb(storage['OS Storage']))),
-            ('OS Storage Buffer (GB)', math.ceil(to_gb(os_storage_buffer))),
             ('OS Storage Total (Bytes)', storage['OS Storage'] + os_storage_buffer),
             ('OS Storage Total (GB)', math.ceil(to_gb(storage['OS Storage'] + os_storage_buffer))),
             ('Storage Group', service_def.storage.group)
