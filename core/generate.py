@@ -40,15 +40,14 @@ def generate_service_data(config, usage_data):
 def _service_storage_data(service_def, usage_data):
     def _service_storage(storage_def, storage_size_def):
         bytes = usage_data[storage_size_def.referenced_field] * storage_size_def.unit_bytes
-        with_baseline = bytes + storage_def.static_baseline_bytes
-        return with_baseline * storage_def.redundancy_factor
+        return bytes * storage_def.redundancy_factor
 
     if service_def.storage.data_models:
         storage = pd.concat([
             _service_storage(service_def.storage, model)
             for model in service_def.storage.data_models
         ], axis=1)
-        data_storage = storage.sum(axis=1)
+        data_storage = storage.sum(axis=1) + service_def.storage.static_baseline_bytes
     else:
         data_storage = pd.Series([0] * len(usage_data), index=usage_data.index)
 
