@@ -10,6 +10,7 @@ DateRange = namedtuple('DateRange', 'start, end')
 def models_by_slug():
     df_models = [
         DateRangeValueModel,
+        DateValueModel,
         CumulativeModel,
         LimitedLifetimeModel,
         DerivedSum,
@@ -55,6 +56,18 @@ class DateRangeValueModel(DFModel):
             [pd.DataFrame({self.name: range_[2]}, index=pd.date_range(range_[0], range_[1], freq='MS'))
             for range_ in self.ranges]
         )
+
+
+class DateValueModel(DFModel):
+    slug = 'date_value'
+
+    def __init__(self, name, values):
+        self.name = name
+        self.values = values
+
+    def data_frame(self, current_data_frame):
+        index = pd.DatetimeIndex([d for d, v in self.values], freq='MS')
+        return pd.DataFrame({self.name: [v for d, v in self.values]}, index=index)
 
 
 class CumulativeModel(DFModel):

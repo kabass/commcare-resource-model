@@ -3,20 +3,33 @@ storage_buffer: 0.25
 storage_display_unit: TB
 
 summary_dates:
-  - '2018-12'
+  - '2018-11'
+  - '2019-04'
   - '2019-12'
-  - '2020-12'
 
 vm_os_storage_gb: 70
 vm_os_storage_group: 'VM'
 
 usage:
   users:
-    model: 'date_range_value'
-    ranges:
-      - ['20180101', '20181201', 130000]
-      - ['20190101', '20191201', 250000]
-      - ['20200101', '20201201', 500000]
+    model: 'date_value'
+    values:
+      - ['20180901', 130000]
+      - ['20181001', 140000]
+      - ['20181101', 250000]
+      - ['20181201', 250000]
+      - ['20190101', 250000]
+      - ['20190201', 250000]
+      - ['20190301', 250000]
+      - ['20190401', 500000]
+      - ['20190501', 500000]
+      - ['20190601', 500000]
+      - ['20190701', 500000]
+      - ['20190801', 500000]
+      - ['20190901', 500000]
+      - ['20191001', 500000]
+      - ['20191101', 500000]
+      - ['20191201', 500000]
   ls_users:
     model: 'derived_factor'
     dependant_field: 'users'
@@ -24,9 +37,7 @@ usage:
   formplayer_users:
     model: 'date_range_value'
     ranges:
-      - ['20180101', '20181201', 1000]
-      - ['20190101', '20191201', 1000]
-      - ['20200101', '20201201', 1000]
+      - ['20180901', '20191201', 1000]
   forms:
     model: 'derived_factor'
     start_with: 329680028
@@ -239,8 +250,7 @@ services:
       ram_per_node: 8
   blobdb:
     usage_capacity_per_node: 50000
-    max_storage_per_node: 3TB
-    min_nodes: 10
+    max_storage_per_node: 6TB
     storage:
       group: 'SAS'
       redundancy_factor: 3

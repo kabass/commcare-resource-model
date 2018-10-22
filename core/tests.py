@@ -5,7 +5,7 @@ import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
 from core.models import DateRangeValueModel, CumulativeModel, LimitedLifetimeModel, DerivedSum, \
-    DerivedFactor
+    DerivedFactor, DateValueModel
 
 
 class UsageModelTests(TestCase):
@@ -18,6 +18,20 @@ class UsageModelTests(TestCase):
             2017-04-01,200
         """
         assert_frame_equal(result, self._from_csv(expected))
+
+    def test_date_value(self):
+        m = DateValueModel('test', [
+            ['20180101', 10],
+            ['20180201', 20],
+            ['20180301', 30],
+        ])
+        frame = m.data_frame(None)
+        expected = """,test
+            2018-01-01,10
+            2018-02-01,20
+            2018-03-01,30
+        """
+        assert_frame_equal(frame, self._from_csv(expected))
 
     def _from_csv(self, expected):
         return pd.read_csv(StringIO(expected), index_col=0, parse_dates=True)
