@@ -265,7 +265,7 @@ services:
       cores_per_node: 8
       # need to be able to fit all keys in RAM since we're using bitcask backend
       # Current usage is at 30% (2018-10-11)
-      ram_per_node: 32
+      ram_per_node: 64
       ram_model:
       - referenced_field: 'forms_total'
         unit_size: 86

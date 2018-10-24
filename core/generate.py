@@ -108,6 +108,7 @@ class ComputeModel(object):
             nodes = pd.Series([0] * len(usage), index=usage.index)
             compute = pd.concat([nodes, nodes, nodes], keys=['CPU', 'RAM', 'VMs'], axis=1)
 
+        compute['VMs Usage'] = compute['VMs']
         if self.service_def.max_storage_per_node_bytes:
             # Add extra VMs to keep storage per VM within range
             max_supported = compute['VMs'] * self.service_def.max_storage_per_node_bytes
