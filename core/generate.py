@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 
-from core.models import models_by_slug, ComputeModel
+from core.models import models_by_slug
+from core.utils import byte_map
 
 
 def generate_usage_data(config):
@@ -62,3 +63,56 @@ def _service_os_storage(config, compute_data):
     return pd.DataFrame({
         'storage': vm_storage
     })
+
+
+class ComputeModel(object):
+    def __init__(self, service_name, service_def):
+        self.service_name = service_name
+        self.service_def = service_def
+
+    def _get_process_series(self, process_def, usage_data):
+        if process_def.static_number:
+            return pd.Series([process_def.static_number] * len(usage_data), index=usage_data.index)
+        else:
+            return (usage_data / process_def.capacity).map(np.ceil)
+
+    def data_frame(self, current_data_frame, data_storage):
+        usage = current_data_frame[self.service_def.usage_field]
+        if self.service_def.process.sub_processes:
+            processes = pd.concat([
+                self._get_process_series(sub_process, usage)
+                for sub_process in self.service_def.process.sub_processes
+            ], keys=[p.name for p in self.service_def.process.sub_processes], axis=1)
+
+            total = processes.apply(sum, axis=1)
+            cores = total * float(self.service_def.process.cores_per_sub_process)
+            ram = total * float(self.service_def.process.ram_per_sub_process)
+            vms_by_cores = cores / self.service_def.process.cores_per_node
+            vms_by_ram = ram / self.service_def.process.ram_per_node
+            vms = vms_by_cores if vms_by_cores[-1] > vms_by_ram[-1] else vms_by_ram
+            compute = pd.concat([cores, ram, vms.map(np.ceil)], keys=['CPU', 'RAM', 'VMs'], axis=1)
+        elif self.service_def.usage_capacity_per_node:
+            nodes = (usage / self.service_def.usage_capacity_per_node).map(np.ceil)
+            with_min = pd.concat([
+                nodes,
+                pd.Series([self.service_def.min_nodes] * len(nodes), index=nodes.index)
+            ], axis=1)
+            nodes = with_min.max(1)
+            compute = pd.concat([
+                nodes * self.service_def.process.cores_per_node,
+                nodes * self.service_def.process.ram_per_node,
+                nodes
+            ], keys=['CPU', 'RAM', 'VMs'], axis=1)
+        else:
+            nodes = pd.Series([0] * len(usage), index=usage.index)
+            compute = pd.concat([nodes, nodes, nodes], keys=['CPU', 'RAM', 'VMs'], axis=1)
+
+        if self.service_def.max_storage_per_node_bytes:
+            # Add extra VMs to keep storage per VM within range
+            max_supported = compute['VMs'] * self.service_def.max_storage_per_node_bytes
+            extra = data_storage['storage'] - max_supported
+            extra[extra < 0] = 0
+            extra_vms = np.ceil(extra / self.service_def.max_storage_per_node_bytes)
+            compute['VMs'] = compute['VMs'] + extra_vms
+
+        return compute
