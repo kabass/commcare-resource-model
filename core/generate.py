@@ -30,7 +30,7 @@ def generate_usage_data(config):
 def generate_service_data(config, usage_data):
     dfs = []
     for service_name, service_def in config.services.items():
-        data_storage = _service_storage_data(service_def, usage_data)
+        data_storage = _service_storage_data(config, service_def, usage_data)
         compute = ComputeModel(service_name, service_def).data_frame(usage_data, data_storage)
         os_storage = _service_os_storage(config, compute)
         data = pd.concat([compute, data_storage, os_storage], keys=['Compute', 'Data Storage', 'OS Storage'], axis=1)
@@ -38,7 +38,7 @@ def generate_service_data(config, usage_data):
     return pd.concat(dfs, keys=list(config.services), axis=1)
 
 
-def _service_storage_data(service_def, usage_data):
+def _service_storage_data(config, service_def, usage_data):
     if service_def.storage.data_models:
         data_storage = _service_data_size(
             service_def.storage.data_models,
@@ -46,6 +46,7 @@ def _service_storage_data(service_def, usage_data):
             usage_data,
             service_def.storage.redundancy_factor
         )
+        data_storage = data_storage * float(1 + config.storage_buffer)
     else:
         data_storage = pd.Series([0] * len(usage_data), index=usage_data.index)
 
