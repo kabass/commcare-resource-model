@@ -68,6 +68,16 @@ in 2018 and 2019.
           - ['20180101', '20181201', 100000]
           - ['20190101', '20191201', 200000]
 
+## Date value
+This model is similar to the date range model but allows you
+to specify all the values individually.
+
+    users:
+        model: 'date_value_list'
+        values:
+            - ['20180901', 130000]
+            - ['20181001', 140000]
+
 ### Derived Factor
 Multiply another field by a fixed factor.
 
@@ -122,6 +132,7 @@ The services are related to the usage values to calculate required resources.
 | usage_field               | (optional) Field to reference for usage. Default to 'users' |
 | min_nodes                 | (optional) Minimum number of nodes (VMs). Defaults to '1' |
 | storage_scales_with_nodes | (optional) True if each new node contains a complete copy of the data e.g. SQL replica |
+| max_storage_per_node      | (optional) Set the maximum amount of storage each node should have.  Node count will be adjusted accordingly. |
 | storage                   | (optional) Define service storage. Exclude this section for processing only services. |
 | process                   | (optional) Define the processing requirements. Exclude this section for storage only services e.g S3 |
 
@@ -134,11 +145,11 @@ For storage services the storage section should be included.
       static_baseline: 0  # Bytes to include as a static value to account for overhead etc.
       data_models:  # List of data models
         - referenced_field: 'forms_total'
-          unit_bytes: 1200
+          unit_size: 1200
         - referenced_field: 'cases_total'
-          unit_bytes: 1800
+          unit_size: 2K
         - referenced_field: 'case_transactions_total'
-          unit_bytes: 515
+          unit_size: 515
 
 ### Process
 For services that require compute resources (CPU / RAM) the 'process' section should be defined.
@@ -169,6 +180,25 @@ the capacity is defined for each sub-process.
           static_number: 30  # regardless of the usage there will always be 30
         - name: 'queue2'
           capacity: 20000  # 1 per 20000 users
+          
+#### RAM scales with usage
+e.g. Riak keys or Redis
+
+For processes that store data in memeory you can define
+the model for how much RAM is required. This will have the effect
+of adding VMs to the total count if extra are required to make up
+the total RAM requirement.
+
+    process:
+        cores_per_node: 8
+        ram_per_node: 32
+        ram_model:
+            - referenced_field: 'forms_total'
+              unit_size: 86
+            - referenced_field: 'images_total'
+              unit_size: 86
+        ram_redundancy_factor: 3
+        ram_static_baseline: 1  # GB
 
 # Determining parameters for the config
 Writing the config files is relatively easy but the hard part is getting the numbers correct

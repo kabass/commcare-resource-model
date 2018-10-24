@@ -12,7 +12,7 @@ vm_os_storage_group: 'VM'
 
 usage:
   users:
-    model: 'date_value'
+    model: 'date_value_list'
     values:
       - ['20180901', 130000]
       - ['20181001', 140000]

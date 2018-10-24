@@ -59,7 +59,7 @@ class DateRangeValueModel(DFModel):
 
 
 class DateValueModel(DFModel):
-    slug = 'date_value'
+    slug = 'date_value_list'
 
     def __init__(self, name, values):
         self.name = name
