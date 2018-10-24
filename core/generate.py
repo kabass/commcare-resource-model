@@ -120,6 +120,7 @@ class ComputeModel(object):
             extra[extra < 0] = 0
             extra_vms = np.ceil(extra / self.service_def.max_storage_per_node_bytes)
             compute['VMs'] = compute['VMs'] + extra_vms
+            compute['Additional VMs (storage)'] = extra_vms
 
         if self.service_def.process.ram_model:
             # Add extra VMs if we need more RAM
@@ -137,5 +138,6 @@ class ComputeModel(object):
             difference[difference < 0] = 0
             extra_vms = np.ceil(difference / ram_per_node_excl_baseline)
             compute['VMs'] = compute['VMs'] + extra_vms
+            compute['Additional VMs (RAM)'] = extra_vms
 
         return compute

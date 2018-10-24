@@ -57,6 +57,6 @@ def write_summary_data(config, writer, summary_date, summary_data):
     )
 
 
-def write_usage_data(writer, usage):
-    writer.write_data_frame(usage, 'Usage', 'Dates')
+def write_raw_data(writer, usage, title):
+    writer.write_data_frame(usage, title, 'Dates')
 

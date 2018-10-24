@@ -5,7 +5,7 @@ import pandas as pd
 
 from core.config import config_from_path
 from core.generate import generate_usage_data, generate_service_data
-from core.output import write_usage_data, write_summary_comparisons, write_summary_data
+from core.output import write_raw_data, write_summary_comparisons, write_summary_data
 from core.summarize import incremental_summaries, \
     summarize_service_data, compare_summaries
 from core.writers import ConsoleWriter
@@ -18,6 +18,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser('CommCare Cluster Model')
     parser.add_argument('config', help='Path to config file')
     parser.add_argument('-o', '--output', help='Write output to Excel file at this path.')
+    parser.add_argument('-s', '--service', help='Only output data for specific service.')
 
     args = parser.parse_args()
 
@@ -25,6 +26,11 @@ if __name__ == '__main__':
 
     config = config_from_path(args.config)
     usage = generate_usage_data(config)
+    if args.service:
+        config.services = {
+            args.service: config.services[args.service]
+        }
+
     service_data = generate_service_data(config, usage)
 
     if config.summary_dates:
@@ -58,7 +64,8 @@ if __name__ == '__main__':
 
         if is_excel:
             # only write raw data if writing to Excel
-            write_usage_data(writer, usage)
+            write_raw_data(writer, usage, 'Usage')
+            write_raw_data(writer, service_data, 'Raw Data')
 
             with open(args.config, 'r') as f:
                 config_string = f.read()
