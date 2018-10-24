@@ -39,6 +39,7 @@ The config file is split into 4 sections:
 | Key                  | Description |
 | -------------------- | ----------- |
 | etimation_buffer     | Factor to inflate values by to account for estimation difference |
+| storage_buffer       | Factor to inflate storage values by |
 | storage_display_unit | GB or TB |
 | vm_os_storage_gb     | GB storage per VM for OS etc |
 | vm_os_storage_group  | Group name for OS storage |

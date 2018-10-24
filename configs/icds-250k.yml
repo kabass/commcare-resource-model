@@ -1,4 +1,5 @@
 estimation_buffer: 0.2
+storage_buffer: 0.25
 storage_display_unit: TB
 
 summary_dates:
@@ -40,9 +41,9 @@ usage:
       - ['20180901', '20191201', 1000]
   forms:
     model: 'derived_factor'
-    start_with: 387000000
+    start_with: 329680028
     dependant_field: 'users'
-    factor: 250
+    factor: 220
   forms_total:
     model: 'cumulative'
     dependant_field: 'forms'
