@@ -41,7 +41,7 @@ def write_summary_data(config, writer, summary_date, summary_data):
 
     columns = (
         'Cores Per VM', 'RAM Per VM', 'Data Storage Per VM (GB)',
-        'VMs Total', 'Data Storage Total Rounded (TB)',
+        'VMs Total', 'Data Storage Total (TB)',
         'Storage Group', 'OS Storage Total (GB)'
     )
     vm_summary = summary_data.service_summary.loc[:, columns]

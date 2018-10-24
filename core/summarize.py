@@ -63,9 +63,9 @@ def summarize_service_data(config, service_data, summary_date):
             ('RAM Per VM', service_def.process.ram_per_node),
             ('RAM Total (GB)', math.ceil(compute['RAM'] + ram_buffer)),
             ('RAM Buffer', ram_buffer),
-            ('Data Storage Per VM (GB)', math.ceil(to_gb((data_storage_per_vm) if compute['VMs'] else 0))),
-            ('Data Storage Total (%s)' % storage_units, to_display(data_storage_total)),
-            ('Data Storage Total Rounded (%s)' % storage_units, tenth_round(to_display(math.ceil(data_storage_total)))),
+            ('Data Storage Per VM (GB)', tenth_round(to_gb((data_storage_per_vm) if compute['VMs'] else 0))),
+            ('Data Storage Total (%s)' % storage_units, tenth_round(to_display(math.ceil(data_storage_total)))),
+            ('Data Storage RAW (%s)' % storage_units, to_display(data_storage)),
             # ('Data Storage Buffer (GB)', to_gb(data_storage_buffer)),
             ('VMs Total', vms_total),
             ('VM Buffer', node_buffer),
@@ -79,7 +79,7 @@ def summarize_service_data(config, service_data, summary_date):
     summary_by_service = summary_df.T
     summary_by_service.sort_index(inplace=True)
 
-    by_type = summary_by_service.groupby('Storage Group')['Data Storage Total Rounded (%s)' % storage_units].sum()
+    by_type = summary_by_service.groupby('Storage Group')['Data Storage Total (%s)' % storage_units].sum()
     if config.vm_os_storage_group not in by_type:
         by_type[config.vm_os_storage_group] = 0
     by_type[config.vm_os_storage_group] += math.ceil(to_display(summary_by_service['OS Storage Total (Bytes)'].sum()))
@@ -106,7 +106,7 @@ def compare_summaries(config, summaries_by_date):
     storage_units = config.storage_display_unit
     for date in dates:
         summary_data = summaries_by_date[date]
-        data_storage_series.append(summary_data.service_summary['Data Storage Total Rounded (%s)' % storage_units])
+        data_storage_series.append(summary_data.service_summary['Data Storage Total (%s)' % storage_units])
         storage_by_group_series.append(summary_data.storage_by_group['Rounded Total (%s)' % storage_units])
         compute = summary_data.service_summary[['Cores Total', 'RAM Total (GB)', 'VMs Total']]
         compute = compute.rename({'Cores Total': 'Cores', 'RAM Total (GB)': 'RAM (GB)', 'VMs Total': 'VMs'}, axis=1)
