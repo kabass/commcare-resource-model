@@ -99,11 +99,6 @@ class ComputeModel(object):
             compute = pd.concat([cores, ram, vms.map(np.ceil)], keys=['CPU', 'RAM', 'VMs'], axis=1)
         elif self.service_def.usage_capacity_per_node:
             nodes = (usage / self.service_def.usage_capacity_per_node).map(np.ceil)
-            with_min = pd.concat([
-                nodes,
-                pd.Series([self.service_def.min_nodes] * len(nodes), index=nodes.index)
-            ], axis=1)
-            nodes = with_min.max(1)
             compute = pd.concat([
                 nodes * self.service_def.process.cores_per_node,
                 nodes * self.service_def.process.ram_per_node,

@@ -50,7 +50,7 @@ def summarize_service_data(config, service_data, summary_date):
         ram_buffer = compute['RAM'] * float(config.estimation_buffer)
         cpu_buffer = compute['CPU'] * float(config.estimation_buffer)
         node_buffer = math.ceil(compute['VMs'] * float(config.estimation_buffer))
-        vms_total = math.ceil(compute['VMs'] + node_buffer)
+        vms_total = max(math.ceil(compute['VMs'] + node_buffer), service_def.min_nodes)
 
         data_storage_per_vm = data_storage / compute['VMs']
         data_storage_total = data_storage_per_vm * vms_total
