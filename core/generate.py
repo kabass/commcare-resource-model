@@ -39,22 +39,28 @@ def generate_service_data(config, usage_data):
 
 
 def _service_storage_data(service_def, usage_data):
-    def _service_storage(storage_def, storage_size_def):
-        bytes = usage_data[storage_size_def.referenced_field] * storage_size_def.unit_bytes
-        return bytes * storage_def.redundancy_factor
-
     if service_def.storage.data_models:
-        storage = pd.concat([
-            _service_storage(service_def.storage, model)
-            for model in service_def.storage.data_models
-        ], axis=1)
-        data_storage = storage.sum(axis=1) + service_def.storage.static_baseline_bytes
+        data_storage = _service_data_size(
+            service_def.storage.data_models,
+            service_def.storage.static_baseline_bytes,
+            usage_data,
+            service_def.storage.redundancy_factor
+        )
     else:
         data_storage = pd.Series([0] * len(usage_data), index=usage_data.index)
 
     return pd.DataFrame({
         'storage': data_storage
     })
+
+
+def _service_data_size(data_models, static_baseline_bytes, usage_data, redundancy_factor=1):
+    def _service_storage(storage_size_def):
+        bytes = usage_data[storage_size_def.referenced_field] * storage_size_def.unit_bytes
+        return bytes * redundancy_factor
+
+    storage = pd.concat([_service_storage(model) for model in data_models], axis=1)
+    return storage.sum(axis=1) + static_baseline_bytes * redundancy_factor
 
 
 def _service_os_storage(config, compute_data):
@@ -113,6 +119,23 @@ class ComputeModel(object):
             extra = data_storage['storage'] - max_supported
             extra[extra < 0] = 0
             extra_vms = np.ceil(extra / self.service_def.max_storage_per_node_bytes)
+            compute['VMs'] = compute['VMs'] + extra_vms
+
+        if self.service_def.process.ram_model:
+            # Add extra VMs if we need more RAM
+            ram_requirement = _service_data_size(
+                self.service_def.process.ram_model,
+                0,
+                current_data_frame,
+                self.service_def.process.ram_redundancy_factor,
+            )
+            ram_requirement = ram_requirement / byte_map['GB']
+            ram_per_node_excl_baseline = self.service_def.process.ram_per_node - self.service_def.process.ram_static_baseline
+            current_allocation = compute['VMs'] * ram_per_node_excl_baseline
+            difference = ram_requirement - current_allocation
+
+            difference[difference < 0] = 0
+            extra_vms = np.ceil(difference / ram_per_node_excl_baseline)
             compute['VMs'] = compute['VMs'] + extra_vms
 
         return compute

@@ -60,7 +60,13 @@ class StorageDef(jsonobject.JsonObject):
 class ProcessDef(jsonobject.JsonObject):
     _allow_dynamic_properties = False
     cores_per_node = jsonobject.IntegerProperty()
+
+    # TODO: could refactor this into different process configs for different types of processes
     ram_per_node = jsonobject.IntegerProperty()
+    ram_static_baseline = jsonobject.DefaultProperty(default=0)
+    ram_model = jsonobject.ListProperty(StorageSizeDef)
+    ram_redundancy_factor = jsonobject.IntegerProperty(default=1)
+
     cores_per_sub_process = jsonobject.DecimalProperty()
     ram_per_sub_process = jsonobject.DecimalProperty()
     sub_processes = jsonobject.ListProperty(SubProcessDef)

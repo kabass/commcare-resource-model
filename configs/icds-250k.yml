@@ -266,6 +266,13 @@ services:
       # need to be able to fit all keys in RAM since we're using bitcask backend
       # Current usage is at 30% (2018-10-11)
       ram_per_node: 32
+      ram_model:
+      - referenced_field: 'forms_total'
+        unit_size: 86
+      - referenced_field: 'images_total'
+        unit_size: 86
+      ram_redundancy_factor: 3
+      ram_static_baseline: 1
   sql_ucr:
     usage_capacity_per_node: 50000
     storage_scales_with_nodes: True
