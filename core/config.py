@@ -99,7 +99,6 @@ class ServiceDef(jsonobject.JsonObject):
 
 class ClusterConfig(jsonobject.JsonObject):
     estimation_buffer = jsonobject.DecimalProperty(required=True)
-    storage_buffer = jsonobject.DecimalProperty(required=True)
     storage_display_unit = jsonobject.StringProperty(default='GB')
     summary_dates = jsonobject.ListProperty()
     vm_os_storage_gb = jsonobject.IntegerProperty(required=True)
