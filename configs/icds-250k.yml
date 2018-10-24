@@ -3,6 +3,7 @@ storage_buffer: 0.25
 storage_display_unit: TB
 
 summary_dates:
+  - '2018-10'
   - '2018-11'
   - '2019-04'
   - '2019-12'
