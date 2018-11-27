@@ -1,0 +1,203 @@
+attachment_sizes: |
+  SELECT
+        width_bucket(content_length, 0, 2900000, 10) AS bucket,
+        numrange(min(content_length)::numeric, max(content_length)::numeric, '[]') AS ""range"",
+        count(content_length) AS freq
+      FROM form_processor_xformattachmentsql
+      WHERE content_length IS NOT NULL AND content_type = 'image/jpeg'
+      GROUP BY bucket
+      ORDER BY bucket
+ledgers_per_case: |
+  {
+    ""query"": {
+      ""filtered"": {
+        ""query"": {
+          ""match_all"": {}
+        },
+        ""filter"": {
+          ""and"": [
+            {
+              ""term"": {
+                ""domain.exact"": ""icds-cas""
+              }
+            }
+          ]
+        }
+      }
+    },
+    ""aggs"": {
+      ""by_case"": {
+        ""terms"": {
+          ""field"": ""case_id"",
+          ""size"": 100
+        }
+      }
+    },
+    ""from"": 0,
+    ""size"": 0
+  }
+task_case_lifespan: |
+  select avg(closed_on - opened_on) from form_processor_commcarecasesql where domain ='icds-cas' and owner_id in (select owner_id from form_processor_commcarecasesql limit 100) and closed = True and type='tasks'
+task_cases_opened_per_user_per_month: |
+  {
+    "query": {
+      "filtered": {
+        "query": {
+          "match_all": {}
+        },
+        "filter": {
+          "and": [
+            {
+              "term": {
+                "domain.exact": "icds-cas"
+              }
+            },
+            {
+              "term": {
+                "type.exact": "tasks"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "aggs": {
+      "cases_per_user": {
+        "terms": {
+          "field": "owner_id",
+          "size": 100
+        },
+        "aggs": {
+          "cases_by_date": {
+            "date_histogram": {
+              "field": "opened_on",
+              "interval": "month"
+            }
+          }
+        }
+      }
+    },
+    "from": 0,
+    "size": 0
+  }
+cases_updated_per_user_month: |
+  {
+    "query": {
+      "filtered": {
+        "query": {
+          "match_all": {}
+        },
+        "filter": {
+          "and": [
+            {
+              "term": {
+                "domain.exact": "icds-cas"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "aggs": {
+      "cases_per_user": {
+        "terms": {
+          "field": "owner_id",
+          "size": 100
+        },
+        "aggs": {
+          "actions": {
+            "nested": {
+              "path": "actions"
+            },
+            "aggs": {
+              "cases_by_date": {
+                "date_histogram": {
+                  "field": "server_date",
+                  "interval": "month"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "from": 0,
+    "size": 0
+  }
+cases_created_per_user_per_month: |
+  {
+    "query": {
+      "filtered": {
+        "query": {
+          "match_all": {}
+        },
+        "filter": {
+          "and": [
+            {
+              "term": {
+                "domain.exact": "icds-cas"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "aggs": {
+      "cases_per_user": {
+        "terms": {
+          "field": "owner_id",
+          "size": 100
+        },
+        "aggs": {
+          "cases_by_date": {
+            "date_histogram": {
+              "field": "opened_on",
+              "interval": "month"
+            }
+          }
+        }
+      }
+    },
+    "from": 0,
+    "size": 0
+  }
+forms_per_user_per_month: |
+  {
+    "query": {
+      "filtered": {
+        "query": {"match_all":{}},
+        "filter": {
+          "and": [
+            {
+              "term": {
+                "domain.exact": "icds-cas"
+              }
+            },
+            {
+              "term": {
+                "doc_type": "xforminstance"
+              }
+            }
+          ]
+        }
+        }
+      },
+      "aggs": {
+        "forms_per_user": {
+          "terms": {
+            "field": "form.meta.userID",
+            "size": 100
+          },
+          "aggs": {
+            "forms_by_date": {
+              "date_histogram": {
+                "field": "received_on",
+                "interval": "month"
+              }
+            }
+          }
+        }
+      },
+      "from": 0,
+      "size": 0
+  }
