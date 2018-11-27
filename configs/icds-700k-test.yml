@@ -273,9 +273,10 @@ services:
     process:
       cores_per_node: 4
       ram_per_node: 8
-  blobdb:
+  riakcs:
     usage_capacity_per_node: 20000
     max_storage_per_node: 6TB
+    min_nodes: 10
     storage:
       group: 'SAS'
       redundancy_factor: 3
