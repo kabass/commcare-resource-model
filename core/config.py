@@ -63,7 +63,7 @@ class ProcessDef(jsonobject.JsonObject):
 
     # TODO: could refactor this into different process configs for different types of processes
     ram_per_node = jsonobject.IntegerProperty()
-    ram_static_baseline = jsonobject.DefaultProperty(default=0)
+    ram_static_baseline = jsonobject.DefaultProperty(default=0)  # per node
     ram_model = jsonobject.ListProperty(StorageSizeDef)
     ram_redundancy_factor = jsonobject.IntegerProperty(default=1)
 
