@@ -275,6 +275,10 @@ services:
       ram_per_node: 8
   riakcs:
     usage_capacity_per_node: 20000
+    # avg attachment size of 12560 bytes (11000*0.96 + 50000*0.04)
+    # RAM requirement per key = 130b
+    # num keys = 10TB / (12560b x 3<redundancy factor>)
+    # RAM needed = 130b x num keys = 35GB (64GB avail per node)
     max_storage_per_node: 10TB
     min_nodes: 10
     storage:
@@ -282,9 +286,9 @@ services:
       redundancy_factor: 3
       static_baseline: 1TB  # to account for exports etc
       data_models:
-        - referenced_field: 'forms_total'
+        - referenced_field: 'forms_total'  # 96% of objects
           unit_size: 11000
-        - referenced_field: 'images_total'
+        - referenced_field: 'images_total'  # 4% of objects
           unit_size: 50000
     process:
       # current load quite low (~15%) (2018-10-11)
