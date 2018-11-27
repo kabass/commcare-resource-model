@@ -47,10 +47,9 @@ usage:
   #Number of forms per user per month
   forms:
     model: 'derived_factor'
-    start_with: 329680028   # How this is calculate ?
+    start_with: 329680028   # from ES form index (total docs)
     dependant_field: 'users'
-    factor: 220
-  
+    factor: 220  # based on app design (also see `forms_per_user_per_month` in queries.yml)
   # Total Forms ever created
   forms_total:
     model: 'cumulative'
@@ -58,76 +57,81 @@ usage:
   
   #Number of cases per user per month
   cases:
-    start_with: 204427935   # How this is calculated
+    start_with: 204427935   # from ES case index (total docs)
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 600             # Why cases is more than form factor
-
+    factor: 600  # based on assumptions about app ((also see `cases_created_per_user_per_month` in queries.yml)
   # Total cases ever created
   cases_total:
     model: 'cumulative'
     dependant_field: 'cases'
   
-
   case_transactions:
     start_with: 1240906740
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 1000
-
+    factor: 1000  # see `cases_updated_per_user_month` in queries.yml
   # Total Case Transaction
   case_transactions_total:
     model: 'cumulative'
     dependant_field: 'case_transactions'
+  # Case indexes ever created
+  case_indices:
+    model: 'derived_factor'
+    dependant_field: 'cases_total'
+    factor: 1  # case index count (from SQL) / case count
 
-  # What tables in which table can yield these deatails. 
+  # What tables in which table can yield these details.
   async_indicators:
     model: 'derived_factor'
     dependant_field: 'case_transactions'
     factor: 0.1
+
+  # used for SMS & UCR calculations
+  person_cases:
+    model: 'derived_factor'
+    dependant_field: 'users'
+    factor: 750  # similar to task cases
+
+  phone_numbers:
+    model: 'derived_factor'
+    dependant_field: 'person_cases'
+    factor: 0.25  # phone number count (from SQL) / person cases (from ES)
+
   task_cases:
     start_with: 14860902
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 70
-  person_cases:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 750
-  phone_numbers:
-    model: 'derived_factor'
-    dependant_field: 'person_cases'
-    factor: 0.25
-  # What is a task_ledgers
-  task_ledgers:
+    factor: 70  # see `task_cases_opened_per_user_per_month` in queries.yml
+  task_ledgers:  # ledgers are only on task cases
     start_with: 54840197
     model: 'derived_factor'
     dependant_field: 'task_cases'
-    factor: 15
+    factor: 15  # ledger count (from SQL) / task case count (from ES)
   task_ledger_updates:
     model: 'derived_factor'
     dependant_field: 'task_cases'
-    factor: 25
+    factor: 25  # case transactions of type 'ledger' on task cases (from SQL)
+
   synclogs:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 60
+    factor: 60  # estimate from data analysis (SQL)
   synclogs_total:
     model: 'cumulative_limited_lifespan'
     dependant_field: 'images'
-    lifespan: 2
+    lifespan: 2  # we only keep synclogs for 2 months
+
   images:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 35
+    factor: 35  # image count / user count
   images_total:
     model: 'cumulative_limited_lifespan'
     dependant_field: 'images'
-    lifespan: 3
-  case_indices:
-    model: 'derived_factor'
-    dependant_field: 'cases_total'
-    factor: 1
+    lifespan: 3  # we only keep images for 3 months
+
+
   # See https://docs.google.com/spreadsheets/d/16evR_N95TUBFlIr3D3ojasX7yN4odDOxH5mgcF6VCkQ/edit#gid=0 for sms estimates`
   sms_adoleschent_girls:
     model: 'derived_factor'
@@ -160,6 +164,7 @@ usage:
     model: 'derived_factor'
     dependant_field: 'sms_total'
     factor: 10  # sms (1) + smsbillables (1) + messagingevent (4) + messagingsubevent (4)
+
   kafak_changes:
     # we only keep kafka changes for 28 days so no need to calculate the cumulative amount
     model: 'derived_sum'
@@ -172,7 +177,7 @@ usage:
       - 'sms_monthly_total'
 
 services:
-  sql_primary:
+  pg_shards:
     usage_capacity_per_node: 50000
     storage:
       group: 'SSD'
@@ -196,7 +201,7 @@ services:
     process:
       cores_per_node: 16
       ram_per_node: 48
-  sql_meta:
+  pg_main:
     usage_capacity_per_node: 150000
     storage_scales_with_nodes: True
     min_nodes: 2
@@ -215,7 +220,7 @@ services:
     process:
       cores_per_node: 16
       ram_per_node: 48
-  sql_synclogs:
+  pg_synclogs:
     usage_capacity_per_node: 500000
     storage:
       group: 'SSD'
@@ -293,7 +298,7 @@ services:
         unit_size: 86
       ram_redundancy_factor: 3
       ram_static_baseline: 1
-  sql_ucr:
+  pg_ucr:
     usage_capacity_per_node: 50000
     storage_scales_with_nodes: True
     min_nodes: 2
@@ -309,7 +314,7 @@ services:
     process:
       cores_per_node: 16
       ram_per_node: 48
-  sql_warehouse:
+  pg_warehouse:
     usage_capacity_per_node: 250000
     storage_scales_with_nodes: True
     storage:
@@ -320,7 +325,7 @@ services:
     process:
       cores_per_node: 16
       ram_per_node: 64
-  pillowtop:
+  pillowtop:  # will need to revamp this once combined pillows are rolled out
     process:
       cores_per_node: 8
       ram_per_node: 16
@@ -372,12 +377,12 @@ services:
     process:
       cores_per_node: 4
       ram_per_node: 8
-  nginx:
+  nginx:  # limits for nginx not clear
     usage_capacity_per_node: 150000
     process:
       cores_per_node: 4
       ram_per_node: 8
-  rabbitmq:
+  rabbitmq:  # limits for rabbitmq not clear
     usage_capacity_per_node: 150000
     process:
       cores_per_node: 4
