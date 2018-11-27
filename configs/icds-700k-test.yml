@@ -49,7 +49,7 @@ usage:
     model: 'derived_factor'
     start_with: 329680028   # from ES form index (total docs)
     dependant_field: 'users'
-    factor: 220  # based on app design (also see `forms_per_user_per_month` in queries.yml)
+    factor: 350  # datadog data for Oct 2018 (40M for 115K active users)
   # Total Forms ever created
   forms_total:
     model: 'cumulative'
