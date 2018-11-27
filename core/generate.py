@@ -56,12 +56,12 @@ def _service_storage_data(config, service_def, usage_data):
 
 
 def _service_data_size(data_models, static_baseline_bytes, usage_data, redundancy_factor=1):
-    def _service_storage(storage_size_def):
-        bytes = usage_data[storage_size_def.referenced_field] * storage_size_def.unit_bytes
+    def _service_requirement(size_def):
+        bytes = usage_data[size_def.referenced_field] * size_def.unit_bytes
         return bytes * redundancy_factor
 
-    storage = pd.concat([_service_storage(model) for model in data_models], axis=1)
-    return storage.sum(axis=1) + static_baseline_bytes * redundancy_factor
+    requires = pd.concat([_service_requirement(model) for model in data_models], axis=1)
+    return requires.sum(axis=1) + static_baseline_bytes * redundancy_factor
 
 
 def _service_os_storage(config, compute_data):
