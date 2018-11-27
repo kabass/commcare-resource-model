@@ -231,7 +231,7 @@ services:
       cores_per_node: 16
       ram_per_node: 48
   couchdb:
-    usage_capacity_per_node: 25000
+    usage_capacity_per_node: 30000
     min_nodes: 3
     storage:
       group: 'SSD'
@@ -264,7 +264,7 @@ services:
       cores_per_node: 8
       ram_per_node: 64
   kafka:
-    usage_capacity_per_node: 150000
+    usage_capacity_per_node: 50000
     storage:
       group: 'SAS'
       data_models:
@@ -274,7 +274,7 @@ services:
       cores_per_node: 4
       ram_per_node: 8
   blobdb:
-    usage_capacity_per_node: 50000
+    usage_capacity_per_node: 20000
     max_storage_per_node: 6TB
     storage:
       group: 'SAS'
@@ -315,7 +315,7 @@ services:
       cores_per_node: 16
       ram_per_node: 48
   pg_warehouse:
-    usage_capacity_per_node: 250000
+    usage_capacity_per_node: 150000
     storage_scales_with_nodes: True
     storage:
       group: 'SSD'
@@ -374,11 +374,12 @@ services:
       ram_per_node: 16
   redis:
     usage_capacity_per_node: 100000
+    min_nodes: 3
     process:
       cores_per_node: 4
       ram_per_node: 8
   nginx:  # limits for nginx not clear
-    usage_capacity_per_node: 150000
+    usage_capacity_per_node: 250000
     process:
       cores_per_node: 4
       ram_per_node: 8
