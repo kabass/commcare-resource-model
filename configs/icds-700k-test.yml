@@ -275,7 +275,7 @@ services:
       ram_per_node: 8
   riakcs:
     usage_capacity_per_node: 20000
-    max_storage_per_node: 6TB
+    max_storage_per_node: 10TB
     min_nodes: 10
     storage:
       group: 'SAS'
@@ -294,11 +294,16 @@ services:
       ram_per_node: 64
       ram_model:
       - referenced_field: 'forms_total'
-        unit_size: 86
+        # key size (45 + 6 + 79) (overhead + bucket + key)
+        # bucket = 'blobdb'
+        # new keys are smaller but stick with old key length for safety:
+        #   new: form/xxxxxxxxxxxxxxuuidxxxxxxxxxxxxxx/Xpi-XM9CZvQ
+        #   old: form/xxxxxxxxxxxxxxuuidxxxxxxxxxxxxxx/form.xml.xxxxxxxxxxxxxxuuidxxxxxxxxxxxxxx
+        unit_size: 130
       - referenced_field: 'images_total'
-        unit_size: 86
+        unit_size: 130
       ram_redundancy_factor: 3
-      ram_static_baseline: 1
+      ram_static_baseline: 1  # per node
   pg_ucr:
     usage_capacity_per_node: 50000
     storage_scales_with_nodes: True
