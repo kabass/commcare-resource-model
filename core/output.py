@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 COMPARISONS_SHEET = 'Comparisons'
-SUMMARY_SHEET = 'Summary (%s)'
+SUMMARY_SHEET = '%s - %s users'
 
 STORAGE_GROUP_INDEX = 'Storage Group'
 STORAGE_CAT_INDEX = 'Service'
@@ -37,7 +37,7 @@ def write_summary_comparisons(config, writer, user_counts, comparisons, prefix='
 
 
 def write_summary_data(config, writer, summary_date, summary_data, user_count):
-    sheet_name = SUMMARY_SHEET % format_date(summary_date)
+    sheet_name = SUMMARY_SHEET % (format_date(summary_date), short_user_count(user_count))
     writer.write_user_counts_vertical(sheet_name, [(format_date(summary_date), user_count)])
 
     storage_group_header = 'Storage by Group (%s)' % config.storage_display_unit
@@ -69,3 +69,6 @@ def write_summary_data(config, writer, summary_date, summary_data, user_count):
 def write_raw_data(writer, usage, title):
     writer.write_data_frame(usage, title, 'Dates')
 
+
+def short_user_count(count):
+    return '%sK' % int(count / 1000)
