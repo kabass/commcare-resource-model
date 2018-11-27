@@ -46,21 +46,23 @@ if __name__ == '__main__':
 
     with writer:
         summaries = {}
+        user_count = {}
         for date in summary_dates:
             summaries[date] = summarize_service_data(config, service_data, date)
+            user_count[date] = usage.loc[date]['users']
 
         if len(summary_dates) == 1:
             date = summary_dates[0]
             summary_data = summaries[date]
-            write_summary_data(config, writer, date, summary_data)
+            write_summary_data(config, writer, date, summary_data, user_count[date])
         else:
             summary_comparisons = compare_summaries(config, summaries)
             incrementals = incremental_summaries(summary_comparisons, summary_dates)
-            write_summary_comparisons(config, writer, incrementals, prefix='Incremental ')
-            write_summary_comparisons(config, writer, summary_comparisons)
+            write_summary_comparisons(config, writer, user_count, incrementals, prefix='Incremental ')
+            write_summary_comparisons(config, writer, user_count, summary_comparisons)
 
             for date in sorted(summaries):
-                write_summary_data(config, writer, date, summaries[date])
+                write_summary_data(config, writer, date, summaries[date], user_count[date])
 
         if is_excel:
             # only write raw data if writing to Excel
