@@ -36,7 +36,9 @@ def incremental_summaries(summary_comparisons, summary_dates):
     )
 
 
-def summarize_service_data(config, service_data, summary_date):
+def summarize_service_data(config, service_data, summary_date, date_number):
+    # formula for compound growth: start_val * (1 + growth factor)^N
+    estimation_buffer = config.estimation_buffer * (1 + config.estimation_growth_factor) ** date_number
     snapshot = service_data.loc[summary_date]
     storage_units = config.storage_display_unit
     to_display = to_storage_display_unit(storage_units)
@@ -46,7 +48,7 @@ def summarize_service_data(config, service_data, summary_date):
         service_snapshot = snapshot[service_name]
         compute = service_snapshot['Compute']
         data_storage = service_snapshot['Data Storage']['storage']
-        node_buffer = math.ceil(compute['VMs'] * float(config.estimation_buffer))
+        node_buffer = math.ceil(compute['VMs'] * float(estimation_buffer))
         vms_total = max(math.ceil(compute['VMs'] + node_buffer), service_def.min_nodes)
 
         data_storage_per_vm = data_storage / compute['VMs']
@@ -63,9 +65,10 @@ def summarize_service_data(config, service_data, summary_date):
             ('Data Storage RAW (%s)' % storage_units, to_display(data_storage)),
             ('VMs Total', vms_total),
             ('VM Buffer', node_buffer),
+            ('Buffer %', estimation_buffer),
             ('OS Storage Total (Bytes)', os_storage),
             ('OS Storage Total (GB)', math.ceil(to_gb(os_storage))),
-            ('Storage Group', service_def.storage.group)
+            ('Storage Group', service_def.storage.group),
         ])
         combined = pd.Series(name=service_name, data=data)
         summary_df[service_name] = combined

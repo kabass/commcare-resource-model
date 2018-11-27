@@ -47,8 +47,10 @@ if __name__ == '__main__':
     with writer:
         summaries = {}
         user_count = {}
+        date_list = list(usage.index.to_series())
         for date in summary_dates:
-            summaries[date] = summarize_service_data(config, service_data, date)
+            date_number = date_list.index(date)
+            summaries[date] = summarize_service_data(config, service_data, date, date_number)
             user_count[date] = usage.loc[date]['users']
 
         if len(summary_dates) == 1:
