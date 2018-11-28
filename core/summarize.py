@@ -49,10 +49,18 @@ def summarize_service_data(config, service_data, summary_date, date_number):
         compute = service_snapshot['Compute']
         data_storage = service_snapshot['Data Storage']['storage']
         node_buffer = math.ceil(compute['VMs'] * float(estimation_buffer))
-        vms_total = max(math.ceil(compute['VMs'] + node_buffer), service_def.min_nodes)
+        vms_suggested = math.ceil(compute['VMs'] + node_buffer)
+        vms_total = max(vms_suggested, service_def.min_nodes)
 
-        data_storage_per_vm = data_storage / compute['VMs']
-        data_storage_total = data_storage_per_vm * vms_total
+        if vms_total > vms_suggested:
+            # in this case 'service_def.min_nodes' is more than what is being suggested
+            # so we want to add storage buffer and then distribute among all the nodes
+            data_storage_buffer = data_storage * float(estimation_buffer)
+            data_storage_total = data_storage + data_storage_buffer
+            data_storage_per_vm = data_storage_total / vms_total
+        else:
+            data_storage_per_vm = data_storage / compute['VMs']
+            data_storage_total = data_storage_per_vm * vms_total
 
         os_storage = vms_total * config.vm_os_storage_gb * (1000.0 ** 3)
         data = OrderedDict([
