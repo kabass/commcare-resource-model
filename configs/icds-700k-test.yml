@@ -377,17 +377,17 @@ services:
         - name: 'reminder_queue'
           capacity: 65000
         - name: 'ucr_indicator_queue'
-          capacity: 1250
+          capacity: 5000
         - name: 'icds_dashboard_reports_queue'
-          capacity: 8125
+          capacity: 15000
         - name: 'sms_queue'
           capacity: 32500
         - name: 'case_rule_queue'
-          capacity: 130000
+          capacity: 120000
         - name: 'reminder_rule_queue'
-          capacity: 130000
+          capacity: 120000
         - name: 'submission_reprocessing_queue'
-          capacity: 50000
+          capacity: 120000
 
   django:
     usage_capacity_per_node: 15000
