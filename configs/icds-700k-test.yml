@@ -34,12 +34,12 @@ usage:
       - ['20191101', 700000]
       - ['20191201', 700000]
 
-# LS User as a percent of total User
+  # LS User as a percent of total User
   ls_users:
     model: 'derived_factor'
     dependant_field: 'users'
     factor: 0.04
-# Number of formaplayer user from X date to Y
+  # Number of formaplayer user from X date to Y
   formplayer_users:
     model: 'date_range_value'
     ranges:
@@ -55,7 +55,7 @@ usage:
   forms_total:
     model: 'cumulative'
     dependant_field: 'forms'
-  
+
   #Number of cases per user per month
   cases:
     start_with: 204427935   # from ES case index (total docs)
@@ -202,6 +202,7 @@ services:
     process:
       cores_per_node: 16
       ram_per_node: 48
+
   pg_main:
     usage_capacity_per_node: 150000
     storage_scales_with_nodes: True
@@ -221,6 +222,7 @@ services:
     process:
       cores_per_node: 16
       ram_per_node: 48
+
   pg_synclogs:
     usage_capacity_per_node: 500000
     storage:
@@ -231,6 +233,7 @@ services:
     process:
       cores_per_node: 16
       ram_per_node: 48
+
   couchdb:
     usage_capacity_per_node: 30000
     min_nodes: 3
@@ -244,6 +247,7 @@ services:
     process:
       cores_per_node: 4
       ram_per_node: 16
+
   elasticsearch:
     usage_capacity_per_node: 25000
     min_nodes: 3
@@ -264,6 +268,7 @@ services:
     process:
       cores_per_node: 8
       ram_per_node: 64
+
   kafka:
     usage_capacity_per_node: 50000
     storage:
@@ -309,6 +314,7 @@ services:
         unit_size: 130
       ram_redundancy_factor: 3
       ram_static_baseline: 1  # per node
+
   pg_ucr:
     usage_capacity_per_node: 50000
     storage_scales_with_nodes: True
@@ -325,6 +331,7 @@ services:
     process:
       cores_per_node: 16
       ram_per_node: 48
+
   pg_warehouse:
     usage_capacity_per_node: 150000
     storage_scales_with_nodes: True
@@ -336,6 +343,7 @@ services:
     process:
       cores_per_node: 16
       ram_per_node: 64
+
   pillowtop:  # will need to revamp this once combined pillows are rolled out
     process:
       cores_per_node: 8
@@ -355,6 +363,7 @@ services:
           capacity: 2000
         - name: 'CaseToElasticsearchPillow'
           capacity: 2000
+
   celery:
     process:
       cores_per_node: 8
@@ -378,27 +387,32 @@ services:
           capacity: 130000
         - name: 'submission_reprocessing_queue'
           capacity: 50000
+
   django:
     usage_capacity_per_node: 15000
     process:
       cores_per_node: 8
       ram_per_node: 16
+
   redis:
     usage_capacity_per_node: 100000
     min_nodes: 3
     process:
       cores_per_node: 4
       ram_per_node: 8
+
   nginx:  # limits for nginx not clear
     usage_capacity_per_node: 250000
     process:
       cores_per_node: 4
       ram_per_node: 8
+
   rabbitmq:  # limits for rabbitmq not clear
     usage_capacity_per_node: 150000
     process:
       cores_per_node: 4
       ram_per_node: 8
+
   formplayer:
     usage_capacity_per_node: 1000
     usage_field: 'formplayer_users'
