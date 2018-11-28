@@ -29,11 +29,11 @@ def generate_usage_data(config):
 
 def generate_service_data(config, usage_data):
     dfs = []
+    users = usage_data['users']
     for service_name, service_def in config.services.items():
         data_storage = _service_storage_data(config, service_def, usage_data)
         compute = ComputeModel(service_name, service_def).data_frame(usage_data, data_storage)
-        os_storage = _service_os_storage(config, compute)
-        data = pd.concat([compute, data_storage, os_storage], keys=['Compute', 'Data Storage', 'OS Storage'], axis=1)
+        data = pd.concat([users, compute, data_storage], keys=['Users', 'Compute', 'Data Storage'], axis=1)
         dfs.append(data)
     return pd.concat(dfs, keys=list(config.services), axis=1)
 
@@ -56,20 +56,12 @@ def _service_storage_data(config, service_def, usage_data):
 
 
 def _service_data_size(data_models, static_baseline_bytes, usage_data, redundancy_factor=1):
-    def _service_storage(storage_size_def):
-        bytes = usage_data[storage_size_def.referenced_field] * storage_size_def.unit_bytes
+    def _service_requirement(size_def):
+        bytes = usage_data[size_def.referenced_field] * size_def.unit_bytes
         return bytes * redundancy_factor
 
-    storage = pd.concat([_service_storage(model) for model in data_models], axis=1)
-    return storage.sum(axis=1) + static_baseline_bytes * redundancy_factor
-
-
-def _service_os_storage(config, compute_data):
-    vm_count = compute_data['VMs']
-    vm_storage = vm_count * config.vm_os_storage_gb * (1000.0 ** 3)
-    return pd.DataFrame({
-        'storage': vm_storage
-    })
+    requires = pd.concat([_service_requirement(model) for model in data_models], axis=1)
+    return requires.sum(axis=1) + static_baseline_bytes * redundancy_factor
 
 
 class ComputeModel(object):

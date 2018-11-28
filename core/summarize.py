@@ -36,7 +36,9 @@ def incremental_summaries(summary_comparisons, summary_dates):
     )
 
 
-def summarize_service_data(config, service_data, summary_date):
+def summarize_service_data(config, service_data, summary_date, date_number):
+    # formula for compound growth: start_val * (1 + growth factor)^N
+    estimation_buffer = config.estimation_buffer * (1 + config.estimation_growth_factor) ** date_number
     snapshot = service_data.loc[summary_date]
     storage_units = config.storage_display_unit
     to_display = to_storage_display_unit(storage_units)
@@ -46,36 +48,35 @@ def summarize_service_data(config, service_data, summary_date):
         service_snapshot = snapshot[service_name]
         compute = service_snapshot['Compute']
         data_storage = service_snapshot['Data Storage']['storage']
-        os_storage = service_snapshot['OS Storage']['storage']
-        ram_buffer = compute['RAM'] * float(config.estimation_buffer)
-        cpu_buffer = compute['CPU'] * float(config.estimation_buffer)
-        node_buffer = math.ceil(compute['VMs'] * float(config.estimation_buffer))
-        if compute['VMs'] + node_buffer > service_def.min_nodes:
-            vms_total = math.ceil(compute['VMs'] + node_buffer)
+        node_buffer = math.ceil(compute['VMs'] * float(estimation_buffer))
+        vms_suggested = math.ceil(compute['VMs'] + node_buffer)
+        vms_total = max(vms_suggested, service_def.min_nodes)
+
+        if vms_total > vms_suggested:
+            # in this case 'service_def.min_nodes' is more than what is being suggested
+            # so we want to add storage buffer and then distribute among all the nodes
+            data_storage_buffer = data_storage * float(estimation_buffer)
+            data_storage_total = data_storage + data_storage_buffer
+            data_storage_per_vm = data_storage_total / vms_total
+        else:
             data_storage_per_vm = data_storage / compute['VMs']
             data_storage_total = data_storage_per_vm * vms_total
-        else:
-            vms_total = service_def.min_nodes
-            data_storage_per_vm = data_storage / vms_total
-            data_storage_total = data_storage
 
-        os_storage_buffer = node_buffer * config.vm_os_storage_gb * (1000.0 ** 3)
+        os_storage = vms_total * config.vm_os_storage_gb * (1000.0 ** 3)
         data = OrderedDict([
             ('Cores Per VM', service_def.process.cores_per_node),
-            ('Cores Total', math.ceil(compute['CPU'] + cpu_buffer)),
-            ('Cores Buffer', cpu_buffer),
+            ('Cores Total', vms_total * service_def.process.cores_per_node),
             ('RAM Per VM', service_def.process.ram_per_node),
-            ('RAM Total (GB)', math.ceil(compute['RAM'] + ram_buffer)),
-            ('RAM Buffer', ram_buffer),
+            ('RAM Total (GB)', vms_total * service_def.process.ram_per_node),
             ('Data Storage Per VM (GB)', tenth_round(to_gb((data_storage_per_vm) if compute['VMs'] else 0))),
             ('Data Storage Total (%s)' % storage_units, tenth_round(to_display(math.ceil(data_storage_total)))),
             ('Data Storage RAW (%s)' % storage_units, to_display(data_storage)),
-            # ('Data Storage Buffer (GB)', to_gb(data_storage_buffer)),
             ('VMs Total', vms_total),
             ('VM Buffer', node_buffer),
-            ('OS Storage Total (Bytes)', os_storage + os_storage_buffer),
-            ('OS Storage Total (GB)', math.ceil(to_gb(os_storage + os_storage_buffer))),
-            ('Storage Group', service_def.storage.group)
+            ('Buffer %', estimation_buffer),
+            ('OS Storage Total (Bytes)', os_storage),
+            ('OS Storage Total (GB)', math.ceil(to_gb(os_storage))),
+            ('Storage Group', service_def.storage.group),
         ])
         combined = pd.Series(name=service_name, data=data)
         summary_df[service_name] = combined

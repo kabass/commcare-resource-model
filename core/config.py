@@ -63,7 +63,7 @@ class ProcessDef(jsonobject.JsonObject):
 
     # TODO: could refactor this into different process configs for different types of processes
     ram_per_node = jsonobject.IntegerProperty()
-    ram_static_baseline = jsonobject.DefaultProperty(default=0)
+    ram_static_baseline = jsonobject.DefaultProperty(default=0)  # per node
     ram_model = jsonobject.ListProperty(StorageSizeDef)
     ram_redundancy_factor = jsonobject.IntegerProperty(default=1)
 
@@ -99,6 +99,7 @@ class ServiceDef(jsonobject.JsonObject):
 
 class ClusterConfig(jsonobject.JsonObject):
     estimation_buffer = jsonobject.DecimalProperty(required=True)
+    estimation_growth_factor = jsonobject.DecimalProperty(default=0)
     storage_buffer = jsonobject.DecimalProperty(required=True)
     storage_display_unit = jsonobject.StringProperty(default='GB')
     summary_dates = jsonobject.ListProperty()

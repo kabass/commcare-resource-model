@@ -3,16 +3,22 @@ import pandas as pd
 import numpy as np
 
 COMPARISONS_SHEET = 'Comparisons'
-SUMMARY_SHEET = 'Summary (%s)'
+SUMMARY_SHEET = '%s - %s users'
 
 STORAGE_GROUP_INDEX = 'Storage Group'
 STORAGE_CAT_INDEX = 'Service'
 SERVICE_INDEX = 'Service'
 
 
-def write_summary_comparisons(config, writer, comparisons, prefix=''):
+def write_summary_comparisons(config, writer, user_counts, comparisons, prefix=''):
     storage_by_cat, storage_by_group, compute = comparisons
     sheet = '%s%s' % (prefix, COMPARISONS_SHEET)
+
+    user_count_table = [
+        (format_date(date), count)
+        for date, count in sorted(user_counts.items(), key=lambda k: k[0])
+    ]
+    writer.write_user_counts_horizontal(sheet, user_count_table)
 
     storage_group_header = '%sStorage by Group (%s)' % (prefix, config.storage_display_unit)
     writer.write_data_frame(storage_by_group, sheet, STORAGE_GROUP_INDEX, storage_group_header)
@@ -30,11 +36,14 @@ def write_summary_comparisons(config, writer, comparisons, prefix=''):
     writer.write_data_frame(compute, sheet, SERVICE_INDEX, '%sCompute Combined' % prefix, has_total_row=True)
 
 
-def write_summary_data(config, writer, summary_date, summary_data):
+def write_summary_data(config, writer, summary_date, summary_data, user_count):
+    sheet_name = SUMMARY_SHEET % (format_date(summary_date), short_user_count(user_count))
+    writer.write_user_counts_vertical(sheet_name, [(format_date(summary_date), user_count)])
+
     storage_group_header = 'Storage by Group (%s)' % config.storage_display_unit
     writer.write_data_frame(
         summary_data.storage_by_group,
-        SUMMARY_SHEET % format_date(summary_date),
+        sheet_name,
         STORAGE_GROUP_INDEX,
         storage_group_header
     )
@@ -47,16 +56,24 @@ def write_summary_data(config, writer, summary_date, summary_data):
     vm_summary = summary_data.service_summary.loc[:, columns]
     vm_summary.loc[:,'OS Storage Per VM (GB)'] = pd.Series([config.vm_os_storage_gb] * len(vm_summary), index=vm_summary.index)
     vm_summary = vm_summary.drop('Total', axis=0).replace(0, np.NaN)
-    writer.write_data_frame(vm_summary, SUMMARY_SHEET % format_date(summary_date), 'Service', 'VM Summary')
+    writer.write_data_frame(vm_summary, sheet_name, 'Service', 'VM Summary')
     writer.write_data_frame(
         summary_data.service_summary.replace(0, np.NaN),
-        SUMMARY_SHEET % format_date(summary_date),
+        sheet_name,
         'Service',
         'Service Detailed Summary',
         has_total_row=True
     )
 
 
-def write_raw_data(writer, usage, title):
-    writer.write_data_frame(usage, title, 'Dates')
+def write_raw_data(writer, usage, title, split=False):
+    if split:
+        sections = list(sorted({d[0] for d in usage}))
+        for section in sections:
+            writer.write_data_frame(usage[section], "{} ({})".format(title, section), 'Dates')
+    else:
+        writer.write_data_frame(usage, title, 'Dates')
 
+
+def short_user_count(count):
+    return '%sK' % int(count / 1000)

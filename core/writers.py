@@ -15,6 +15,12 @@ class BaseWriter(ABC):
     def write_data_frame(self, data_frame, sheet_name, index_label, header=None, has_total_row=False):
         raise NotImplemented
 
+    def write_user_counts_horizontal(self, sheet_name, user_count_table):
+        pass
+
+    def write_user_counts_vertical(self, sheet_name, user_count_table):
+        pass
+
     def write_config_string(self, config_string):
         pass
 
@@ -41,6 +47,7 @@ class ExcelWriter(BaseWriter):
             'valign': 'vcenter',
             'fg_color': '#CCFFFF',
         })
+        self.sub_header_format = self.workbook.add_format({'bold': 1, 'border': 1, 'align': 'center'})
         self.index_format = self.workbook.add_format({
             'bold': 1,
             'border': 1,
@@ -60,6 +67,40 @@ class ExcelWriter(BaseWriter):
             sheet = self.workbook.add_worksheet(sheet_name)
             self.writer.sheets[sheet_name] = sheet
         return sheet
+
+    def write_user_counts_vertical(self, sheet_name, user_count_table):
+        """
+        :param user_count_table: list of tuples (date, count)
+        :return:
+        """
+        sheet_position = self.sheet_positions[sheet_name]
+        sheet = self.get_sheet(sheet_name)
+        sheet.merge_range(sheet_position, 0, sheet_position, 1, 'User counts', self.heading_format)
+        sheet_position += 1
+        for date, count in user_count_table:
+            sheet.write_string(sheet_position, 0, date)
+            sheet.write_number(sheet_position, 1, count)
+            sheet_position += 1
+        self.sheet_positions[sheet_name] = sheet_position + 1
+
+    def write_user_counts_horizontal(self, sheet_name, user_count_table):
+        """
+        :param user_count_table: list of tuples (date, count)
+        :return:
+        """
+        sheet_position = self.sheet_positions[sheet_name]
+        sheet = self.get_sheet(sheet_name)
+        sheet.merge_range(sheet_position, 0, sheet_position, len(user_count_table), 'User counts', self.heading_format)
+        sheet_position += 1
+
+        sheet.write_string(sheet_position + 1, 0, 'User count', self.index_format)
+
+        col = 1
+        for date, count in user_count_table:
+            sheet.write_string(sheet_position, col, date, cell_format=self.sub_header_format)
+            sheet.write_number(sheet_position + 1, col, count)
+            col += 1
+        self.sheet_positions[sheet_name] = sheet_position + 3
 
     def write_data_frame(self, data_frame, sheet_name, index_label, header=None, has_total_row=False):
         sheet_position = self.sheet_positions[sheet_name]
