@@ -5,8 +5,8 @@ storage_display_unit: TB
 
 summary_dates:
   - '2018-10'
-  - '2018-11'
-  - '2019-04'
+  - '2019-03'
+  - '2019-07'
   - '2019-12'
 
 vm_os_storage_gb: 70
