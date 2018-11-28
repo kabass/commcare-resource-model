@@ -69,7 +69,7 @@ if __name__ == '__main__':
         if is_excel:
             # only write raw data if writing to Excel
             write_raw_data(writer, usage, 'Usage')
-            write_raw_data(writer, service_data, 'Raw Data')
+            write_raw_data(writer, service_data, 'Raw Data', split=True)
 
             with open(args.config, 'r') as f:
                 config_string = f.read()

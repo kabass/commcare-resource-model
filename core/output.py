@@ -66,8 +66,13 @@ def write_summary_data(config, writer, summary_date, summary_data, user_count):
     )
 
 
-def write_raw_data(writer, usage, title):
-    writer.write_data_frame(usage, title, 'Dates')
+def write_raw_data(writer, usage, title, split=False):
+    if split:
+        sections = list(sorted({d[0] for d in usage}))
+        for section in sections:
+            writer.write_data_frame(usage[section], "{} ({})".format(title, section), 'Dates')
+    else:
+        writer.write_data_frame(usage, title, 'Dates')
 
 
 def short_user_count(count):
