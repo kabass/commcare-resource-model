@@ -279,8 +279,9 @@ services:
     process:
       cores_per_node: 4
       ram_per_node: 8
+
   riakcs:
-    usage_capacity_per_node: 20000
+    usage_capacity_per_node: 50000
     # avg attachment size of 12560 bytes (11000*0.96 + 50000*0.04)
     # RAM requirement per key = 130b
     # num keys = 10TB / (12560b x 3<redundancy factor>)
