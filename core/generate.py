@@ -128,5 +128,6 @@ class ComputeModel(object):
             extra_vms = np.ceil(difference / ram_per_node_excl_baseline)
             compute['VMs'] = compute['VMs'] + extra_vms
             compute['Additional VMs (RAM)'] = extra_vms
+            compute['RAM requirement'] = ram_requirement
 
         return compute

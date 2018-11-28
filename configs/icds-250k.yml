@@ -251,7 +251,8 @@ services:
       ram_per_node: 8
   blobdb:
     usage_capacity_per_node: 50000
-    max_storage_per_node: 6TB
+    max_storage_per_node: 10TB
+    min_nodes: 10
     storage:
       group: 'SAS'
       redundancy_factor: 3
