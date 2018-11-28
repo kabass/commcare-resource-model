@@ -29,10 +29,11 @@ def generate_usage_data(config):
 
 def generate_service_data(config, usage_data):
     dfs = []
+    users = usage_data['users']
     for service_name, service_def in config.services.items():
         data_storage = _service_storage_data(config, service_def, usage_data)
         compute = ComputeModel(service_name, service_def).data_frame(usage_data, data_storage)
-        data = pd.concat([compute, data_storage], keys=['Compute', 'Data Storage'], axis=1)
+        data = pd.concat([users, compute, data_storage], keys=['Users', 'Compute', 'Data Storage'], axis=1)
         dfs.append(data)
     return pd.concat(dfs, keys=list(config.services), axis=1)
 
