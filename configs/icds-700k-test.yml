@@ -271,6 +271,7 @@ services:
 
   kafka:
     usage_capacity_per_node: 100000
+    min_nodes: 3
     storage:
       group: 'SAS'
       data_models:
@@ -396,23 +397,23 @@ services:
       ram_per_node: 16
 
   redis:
-    usage_capacity_per_node: 100000
+    usage_capacity_per_node: 200000
     min_nodes: 3
     process:
-      cores_per_node: 4
-      ram_per_node: 8
+      cores_per_node: 8
+      ram_per_node: 16
 
   nginx:  # limits for nginx not clear
-    usage_capacity_per_node: 500000
+    usage_capacity_per_node: 750000
     process:
-      cores_per_node: 4
-      ram_per_node: 8
+      cores_per_node: 8
+      ram_per_node: 16
 
   rabbitmq:  # limits for rabbitmq not clear
-    usage_capacity_per_node: 150000
+    usage_capacity_per_node: 300000
     process:
-      cores_per_node: 4
-      ram_per_node: 8
+      cores_per_node: 8
+      ram_per_node: 16
 
   formplayer:
     usage_capacity_per_node: 1000
