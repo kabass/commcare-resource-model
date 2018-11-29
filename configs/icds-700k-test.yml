@@ -235,7 +235,7 @@ services:
       ram_per_node: 48
 
   couchdb:
-    usage_capacity_per_node: 30000
+    usage_capacity_per_node: 50000
     min_nodes: 3
     storage:
       group: 'SSD'
