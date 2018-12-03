@@ -217,13 +217,13 @@ services:
       static_baseline: 50GB  # to account for other static tables
       data_models:
         - referenced_field: 'phone_numbers'
-          unit_size: 660
+          unit_size: 550
         - referenced_field: 'users'
           unit_size: 1600
         - referenced_field: 'async_indicators'
-          unit_size: 1025
+          unit_size: 6626
         - referenced_field: 'sms_models_total'
-          unit_size: 501  # averaged over all models
+          unit_size: 510  # averaged over all models
     process:
       cores_per_node: 16
       ram_per_node: 48
