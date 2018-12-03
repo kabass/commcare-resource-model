@@ -10,7 +10,7 @@ summary_dates:
   - '2019-12'
 
 vm_os_storage_gb: 70
-vm_os_storage_group: 'VM'
+vm_os_storage_group: 'VM_os'
 
 usage:
 # User on a particular date
