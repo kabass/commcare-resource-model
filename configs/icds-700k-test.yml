@@ -347,6 +347,7 @@ services:
       ram_per_node: 64
 
   pillowtop:  # will need to revamp this once combined pillows are rolled out
+    storage_scales_with_nodes: True
     process:
       cores_per_node: 16
       ram_per_node: 48
@@ -365,8 +366,14 @@ services:
           capacity: 2000
         - name: 'CaseToElasticsearchPillow'
           capacity: 2000
+    storage:
+      group: 'VM_other'
+      static_baseline: 25GB
+      add_buffer: False
+      override_estimation_buffer: 0
 
   celery:
+    storage_scales_with_nodes: True
     process:
       cores_per_node: 16
       ram_per_node: 48
@@ -389,12 +396,23 @@ services:
           capacity: 120000
         - name: 'submission_reprocessing_queue'
           capacity: 120000
+    storage:
+      group: 'VM_other'
+      static_baseline: 25GB
+      add_buffer: False
+      override_estimation_buffer: 0
 
   django:
     usage_capacity_per_node: 25000
+    storage_scales_with_nodes: True
     process:
       cores_per_node: 16
       ram_per_node: 48
+    storage:
+      group: 'VM_other'
+      static_baseline: 25GB
+      add_buffer: False
+      override_estimation_buffer: 0
 
   redis:
     usage_capacity_per_node: 200000
@@ -405,9 +423,15 @@ services:
 
   nginx:  # limits for nginx not clear
     usage_capacity_per_node: 750000
+    storage_scales_with_nodes: True
     process:
       cores_per_node: 8
       ram_per_node: 16
+    storage:
+      group: 'VM_other'
+      static_baseline: 100GB
+      add_buffer: False
+      override_estimation_buffer: 0
 
   rabbitmq:  # limits for rabbitmq not clear
     usage_capacity_per_node: 300000

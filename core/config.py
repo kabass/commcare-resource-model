@@ -51,6 +51,8 @@ class StorageDef(jsonobject.JsonObject):
     redundancy_factor = jsonobject.IntegerProperty(default=1)
     static_baseline = jsonobject.DefaultProperty(default=0)
     data_models = jsonobject.ListProperty(StorageSizeDef)
+    add_buffer = jsonobject.BooleanProperty(default=True)
+    override_estimation_buffer = jsonobject.DecimalProperty()
 
     @property
     def static_baseline_bytes(self):
