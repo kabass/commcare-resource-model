@@ -109,7 +109,7 @@ usage:
     factor: 15  # ledger count (from SQL) / task case count (from ES)
   ledgers_total:
     model: 'cumulative'
-    derived_field: 'task_ledgers_monthly'
+    dependant_field: 'task_ledgers_monthly'
     start_with: 54840197
   ledger_updates_monthly:
     model: 'derived_factor'
@@ -117,7 +117,7 @@ usage:
     factor: 25  # case transactions of type 'ledger' on task cases (from SQL)
   ledger_updates_total:
     model: 'cumulative'
-    derived_field: 'ledger_updates_monthly'
+    dependant_field: 'ledger_updates_monthly'
 
   synclogs:
     model: 'derived_factor'
@@ -266,7 +266,7 @@ services:
           unit_size: 1800
         - referenced_field: 'case_transactions_total'
           unit_size: 250
-        - referenced_field: 'task_ledgers'
+        - referenced_field: 'ledgers_total'
           unit_size: 500
         - referenced_field: 'sms_total'
           unit_size: 675
