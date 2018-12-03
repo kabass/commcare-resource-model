@@ -100,19 +100,24 @@ usage:
     factor: 0.25  # phone number count (from SQL) / person cases (from ES)
 
   task_cases:
-    start_with: 14860902
     model: 'derived_factor'
     dependant_field: 'users'
     factor: 70  # see `task_cases_opened_per_user_per_month` in queries.yml
-  task_ledgers:  # ledgers are only on task cases
-    start_with: 54840197
+  task_ledgers_monthly:  # ledgers are only on task cases
     model: 'derived_factor'
     dependant_field: 'task_cases'
     factor: 15  # ledger count (from SQL) / task case count (from ES)
-  task_ledger_updates:
+  ledgers_total:
+    model: 'cumulative'
+    derived_field: 'task_ledgers_monthly'
+    start_with: 54840197
+  ledger_updates_monthly:
     model: 'derived_factor'
     dependant_field: 'task_cases'
     factor: 25  # case transactions of type 'ledger' on task cases (from SQL)
+  ledger_updates_total:
+    model: 'cumulative'
+    derived_field: 'ledger_updates_monthly'
 
   synclogs:
     model: 'derived_factor'
@@ -173,7 +178,7 @@ usage:
       - 'forms'
       - 'cases'
       - 'case_transactions'
-      - 'task_ledger_updates'
+      - 'ledger_updates_monthly'
       - 'synclogs'
       - 'sms_monthly_total'
 
@@ -191,9 +196,9 @@ services:
           unit_size: 380
         - referenced_field: 'case_transactions_total'
           unit_size: 515
-        - referenced_field: 'task_ledgers'
+        - referenced_field: 'ledgers_total'
           unit_size: 450
-        - referenced_field: 'task_ledger_updates'
+        - referenced_field: 'ledger_updates_total'
           unit_size: 420
         - referenced_field: 'images_total'
           unit_size: 370
