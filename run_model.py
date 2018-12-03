@@ -1,4 +1,5 @@
 import argparse
+import subprocess
 from collections import namedtuple
 
 import pandas as pd
@@ -12,6 +13,10 @@ from core.writers import ConsoleWriter
 from core.writers import ExcelWriter
 
 SummaryData = namedtuple('SummaryData', 'storage compute')
+
+
+def get_git_revision_hash():
+    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('utf8')
 
 
 if __name__ == '__main__':
@@ -72,5 +77,8 @@ if __name__ == '__main__':
             write_raw_data(writer, service_data, 'Raw Data', split=True)
 
             with open(args.config, 'r') as f:
-                config_string = f.read()
+                config_string = 'Git commit: {}\n\n{}'.format(
+                    get_git_revision_hash(),
+                    f.read()
+                )
                 writer.write_config_string(config_string)
