@@ -337,7 +337,7 @@ services:
           unit_size: 4000  # to account for monthly data etc.
     process:
       cores_per_node: 16
-      ram_per_node: 64
+      ram_per_node: 48
 
   pg_warehouse:
     usage_capacity_per_node: 150000
