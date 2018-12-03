@@ -10,7 +10,7 @@ summary_dates:
   - '2019-12'
 
 vm_os_storage_gb: 70
-vm_os_storage_group: 'VM'
+vm_os_storage_group: 'VM_os'
 
 usage:
 # User on a particular date
@@ -48,17 +48,16 @@ usage:
   #Number of forms per user per month
   forms:
     model: 'derived_factor'
-    start_with: 329680028   # from ES form index (total docs)
     dependant_field: 'users'
     factor: 350  # datadog data for Oct 2018 (40M for 115K active users)
   # Total Forms ever created
   forms_total:
     model: 'cumulative'
     dependant_field: 'forms'
+    start_with: 329680028   # from ES form index (total docs)
 
   #Number of cases per user per month
   cases:
-    start_with: 204427935   # from ES case index (total docs)
     model: 'derived_factor'
     dependant_field: 'users'
     factor: 600  # based on assumptions about app ((also see `cases_created_per_user_per_month` in queries.yml)
@@ -66,9 +65,9 @@ usage:
   cases_total:
     model: 'cumulative'
     dependant_field: 'cases'
+    start_with: 204427935   # from ES case index (total docs)
   
   case_transactions:
-    start_with: 1240906740
     model: 'derived_factor'
     dependant_field: 'users'
     factor: 1000  # see `cases_updated_per_user_month` in queries.yml
@@ -76,6 +75,7 @@ usage:
   case_transactions_total:
     model: 'cumulative'
     dependant_field: 'case_transactions'
+    start_with: 1240906740
   # Case indexes ever created
   case_indices:
     model: 'derived_factor'
@@ -100,19 +100,24 @@ usage:
     factor: 0.25  # phone number count (from SQL) / person cases (from ES)
 
   task_cases:
-    start_with: 14860902
     model: 'derived_factor'
     dependant_field: 'users'
     factor: 70  # see `task_cases_opened_per_user_per_month` in queries.yml
-  task_ledgers:  # ledgers are only on task cases
-    start_with: 54840197
+  task_ledgers_monthly:  # ledgers are only on task cases
     model: 'derived_factor'
     dependant_field: 'task_cases'
     factor: 15  # ledger count (from SQL) / task case count (from ES)
-  task_ledger_updates:
+  ledgers_total:
+    model: 'cumulative'
+    dependant_field: 'task_ledgers_monthly'
+    start_with: 54840197
+  ledger_updates_monthly:
     model: 'derived_factor'
     dependant_field: 'task_cases'
     factor: 25  # case transactions of type 'ledger' on task cases (from SQL)
+  ledger_updates_total:
+    model: 'cumulative'
+    dependant_field: 'ledger_updates_monthly'
 
   synclogs:
     model: 'derived_factor'
@@ -173,7 +178,7 @@ usage:
       - 'forms'
       - 'cases'
       - 'case_transactions'
-      - 'task_ledger_updates'
+      - 'ledger_updates_monthly'
       - 'synclogs'
       - 'sms_monthly_total'
 
@@ -191,9 +196,9 @@ services:
           unit_size: 380
         - referenced_field: 'case_transactions_total'
           unit_size: 515
-        - referenced_field: 'task_ledgers'
+        - referenced_field: 'ledgers_total'
           unit_size: 450
-        - referenced_field: 'task_ledger_updates'
+        - referenced_field: 'ledger_updates_total'
           unit_size: 420
         - referenced_field: 'images_total'
           unit_size: 370
@@ -212,13 +217,13 @@ services:
       static_baseline: 50GB  # to account for other static tables
       data_models:
         - referenced_field: 'phone_numbers'
-          unit_size: 660
+          unit_size: 550
         - referenced_field: 'users'
           unit_size: 1600
         - referenced_field: 'async_indicators'
-          unit_size: 1025
+          unit_size: 6626
         - referenced_field: 'sms_models_total'
-          unit_size: 501  # averaged over all models
+          unit_size: 510  # averaged over all models
     process:
       cores_per_node: 16
       ram_per_node: 48
@@ -261,7 +266,7 @@ services:
           unit_size: 1800
         - referenced_field: 'case_transactions_total'
           unit_size: 250
-        - referenced_field: 'task_ledgers'
+        - referenced_field: 'ledgers_total'
           unit_size: 500
         - referenced_field: 'sms_total'
           unit_size: 675
@@ -332,7 +337,7 @@ services:
           unit_size: 4000  # to account for monthly data etc.
     process:
       cores_per_node: 16
-      ram_per_node: 64
+      ram_per_node: 48
 
   pg_warehouse:
     usage_capacity_per_node: 150000
@@ -347,6 +352,7 @@ services:
       ram_per_node: 64
 
   pillowtop:  # will need to revamp this once combined pillows are rolled out
+    storage_scales_with_nodes: True
     process:
       cores_per_node: 16
       ram_per_node: 48
@@ -365,8 +371,14 @@ services:
           capacity: 2000
         - name: 'CaseToElasticsearchPillow'
           capacity: 2000
+    storage:
+      group: 'VM_other'
+      static_baseline: 25GB
+      add_buffer: False
+      override_estimation_buffer: 0
 
   celery:
+    storage_scales_with_nodes: True
     process:
       cores_per_node: 16
       ram_per_node: 48
@@ -389,12 +401,23 @@ services:
           capacity: 120000
         - name: 'submission_reprocessing_queue'
           capacity: 120000
+    storage:
+      group: 'VM_other'
+      static_baseline: 25GB
+      add_buffer: False
+      override_estimation_buffer: 0
 
   django:
     usage_capacity_per_node: 25000
+    storage_scales_with_nodes: True
     process:
       cores_per_node: 16
       ram_per_node: 48
+    storage:
+      group: 'VM_other'
+      static_baseline: 25GB
+      add_buffer: False
+      override_estimation_buffer: 0
 
   redis:
     usage_capacity_per_node: 200000
@@ -405,9 +428,15 @@ services:
 
   nginx:  # limits for nginx not clear
     usage_capacity_per_node: 750000
+    storage_scales_with_nodes: True
     process:
       cores_per_node: 8
       ram_per_node: 16
+    storage:
+      group: 'VM_other'
+      static_baseline: 100GB
+      add_buffer: False
+      override_estimation_buffer: 0
 
   rabbitmq:  # limits for rabbitmq not clear
     usage_capacity_per_node: 300000

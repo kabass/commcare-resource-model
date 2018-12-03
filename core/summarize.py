@@ -52,10 +52,17 @@ def summarize_service_data(config, service_data, summary_date, date_number):
         vms_suggested = math.ceil(compute['VMs'] + node_buffer)
         vms_total = max(vms_suggested, service_def.min_nodes)
 
-        if vms_total > vms_suggested:
+        storage_estimation_buffer = estimation_buffer
+        if service_def.storage.override_estimation_buffer is not None:
+            storage_estimation_buffer = service_def.storage.override_estimation_buffer
+        if service_def.storage_scales_with_nodes:
+            data_storage_buffer = data_storage * float(storage_estimation_buffer)
+            data_storage_per_vm = data_storage + data_storage_buffer
+            data_storage_total = data_storage_per_vm * vms_total
+        elif vms_total > vms_suggested:
             # in this case 'service_def.min_nodes' is more than what is being suggested
             # so we want to add storage buffer and then distribute among all the nodes
-            data_storage_buffer = data_storage * float(estimation_buffer)
+            data_storage_buffer = data_storage * float(storage_estimation_buffer)
             data_storage_total = data_storage + data_storage_buffer
             data_storage_per_vm = data_storage_total / vms_total
         else:

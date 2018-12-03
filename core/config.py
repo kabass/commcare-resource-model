@@ -51,6 +51,8 @@ class StorageDef(jsonobject.JsonObject):
     redundancy_factor = jsonobject.IntegerProperty(default=1)
     static_baseline = jsonobject.DefaultProperty(default=0)
     data_models = jsonobject.ListProperty(StorageSizeDef)
+    add_buffer = jsonobject.BooleanProperty(default=True)
+    override_estimation_buffer = jsonobject.DecimalProperty()
 
     @property
     def static_baseline_bytes(self):
@@ -90,6 +92,9 @@ class ServiceDef(jsonobject.JsonObject):
         super(ServiceDef, self).validate(required=required)
         if not self.usage_capacity_per_node:
             assert self.process.sub_processes, 'Service is missing capacity configuration'
+        if self.max_storage_per_node:
+            assert not self.storage_scales_with_nodes, 'max_storage_per_node not compatible ' \
+                                                       'with "storage_scales_with_nodes"'
 
     @property
     def max_storage_per_node_bytes(self):

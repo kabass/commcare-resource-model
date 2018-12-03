@@ -75,16 +75,19 @@ class CumulativeModel(DFModel):
     For example form submissions."""
     slug = 'cumulative'
 
-    def __init__(self, name, dependant_field):
+    def __init__(self, name, dependant_field, start_with=0):
         self.name = name
         self.dependant_field = dependant_field
+        self.start_with = start_with
 
     @property
     def dependant_fields(self):
         return [self.dependant_field]
 
     def data_frame(self, current_data_frame):
-        cumulative = current_data_frame[self.dependant_field].cumsum()
+        monthly_data = current_data_frame[self.dependant_field].copy()
+        monthly_data[0] += self.start_with
+        cumulative = monthly_data.cumsum()
         cumulative.name = self.name
         return pd.DataFrame([cumulative]).T
 
@@ -93,8 +96,8 @@ class LimitedLifetimeModel(CumulativeModel):
     """Extends the cumulative model by giving items a finite lifespan"""
     slug = 'cumulative_limited_lifespan'
 
-    def __init__(self, name, dependant_field, lifespan):
-        super(LimitedLifetimeModel, self).__init__(name, dependant_field)
+    def __init__(self, name, dependant_field, lifespan, start_with=0):
+        super(LimitedLifetimeModel, self).__init__(name, dependant_field, start_with=start_with)
         self.lifespan = lifespan
 
     def data_frame(self, current_data_frame):
