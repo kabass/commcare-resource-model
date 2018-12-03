@@ -235,7 +235,7 @@ services:
       ram_per_node: 48
 
   couchdb:
-    usage_capacity_per_node: 30000
+    usage_capacity_per_node: 50000
     min_nodes: 3
     storage:
       group: 'SSD'
@@ -348,8 +348,8 @@ services:
 
   pillowtop:  # will need to revamp this once combined pillows are rolled out
     process:
-      cores_per_node: 8
-      ram_per_node: 16
+      cores_per_node: 16
+      ram_per_node: 48
       cores_per_sub_process: 0.5
       ram_per_sub_process: 0.7
       sub_processes:
@@ -368,8 +368,8 @@ services:
 
   celery:
     process:
-      cores_per_node: 8
-      ram_per_node: 16
+      cores_per_node: 16
+      ram_per_node: 48
       cores_per_sub_process: 1
       ram_per_sub_process: 0.7
       sub_processes:
