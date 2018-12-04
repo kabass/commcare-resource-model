@@ -268,7 +268,7 @@ services:
       cores_per_node: 4
       ram_per_node: 16
 
-  elasticsearch_datanode:
+  es_datanode:
     usage_capacity_per_node: 25000
     min_nodes: 3
     storage:
@@ -289,7 +289,7 @@ services:
       cores_per_node: 8
       ram_per_node: 64
 
-  elasticsearch_master:
+  es_master:
     static_number: 3
     storage_scales_with_nodes: True
     storage:
