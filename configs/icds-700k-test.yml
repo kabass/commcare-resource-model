@@ -268,7 +268,7 @@ services:
       cores_per_node: 4
       ram_per_node: 16
 
-  elasticsearch:
+  elasticsearch_datanode:
     usage_capacity_per_node: 25000
     min_nodes: 3
     storage:
@@ -288,6 +288,18 @@ services:
     process:
       cores_per_node: 8
       ram_per_node: 64
+
+  elasticsearch_master:
+    static_number: 3
+    storage_scales_with_nodes: True
+    storage:
+      group: 'VM_other'
+      static_baseline: 50GB
+      add_buffer: False
+      override_estimation_buffer: 0
+    process:
+      cores_per_node: 4
+      ram_per_node: 8
 
   kafka:
     usage_capacity_per_node: 100000
@@ -473,6 +485,7 @@ services:
 
   airflow:
     static_number: 2
+    storage_scales_with_nodes: True
     process:
       cores_per_node: 4
       ram_per_node: 8
