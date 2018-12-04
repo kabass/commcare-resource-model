@@ -48,7 +48,7 @@ def summarize_service_data(config, service_data, summary_date, date_number):
         service_snapshot = snapshot[service_name]
         compute = service_snapshot['Compute']
         data_storage = service_snapshot['Data Storage']['storage']
-        node_buffer = math.ceil(compute['VMs'] * float(estimation_buffer))
+        node_buffer = 0 if service_def.static_number else math.ceil(compute['VMs'] * float(estimation_buffer))
         vms_suggested = math.ceil(compute['VMs'] + node_buffer)
         vms_total = max(vms_suggested, service_def.min_nodes)
 

@@ -100,7 +100,7 @@ class ComputeModel(object):
                 nodes
             ], keys=['CPU', 'RAM', 'VMs'], axis=1)
         else:
-            nodes = pd.Series([0] * len(usage), index=usage.index)
+            nodes = pd.Series([self.service_def.static_number] * len(usage), index=usage.index)
             compute = pd.concat([nodes, nodes, nodes], keys=['CPU', 'RAM', 'VMs'], axis=1)
 
         compute['VMs Usage'] = compute['VMs']
