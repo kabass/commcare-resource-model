@@ -211,6 +211,18 @@ services:
       cores_per_node: 16
       ram_per_node: 48
 
+  pg_proxy:
+    usage_capacity_per_node: 250000
+    storage_scales_with_nodes: True
+    storage:
+      group: 'VM_other'
+      static_baseline: 100GB
+      add_buffer: False
+      override_estimation_buffer: 0
+    process:
+      cores_per_node: 16
+      ram_per_node: 48
+
   pg_main:
     usage_capacity_per_node: 150000
     storage_scales_with_nodes: True
@@ -352,7 +364,7 @@ services:
           unit_size: 4000  # to account for monthly data etc.
     process:
       cores_per_node: 16
-      ram_per_node: 64
+      ram_per_node: 48
 
   pillowtop:  # will need to revamp this once combined pillows are rolled out
     storage_scales_with_nodes: True
@@ -458,3 +470,25 @@ services:
       data_models:
         - referenced_field: 'formplayer_users'
           unit_size: 100MB  # 100MB
+
+  airflow:
+    static_number: 2
+    process:
+      cores_per_node: 4
+      ram_per_node: 8
+    storage:
+      group: 'VM_other'
+      static_baseline: 100GB
+      add_buffer: False
+      override_estimation_buffer: 0
+
+  control:
+    static_number: 1
+    storage:
+      group: 'VM_other'
+      static_baseline: 100GB
+      add_buffer: False
+      override_estimation_buffer: 0
+    process:
+      cores_per_node: 4
+      ram_per_node: 8

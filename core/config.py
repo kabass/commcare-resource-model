@@ -80,6 +80,7 @@ class ProcessDef(jsonobject.JsonObject):
 
 
 class ServiceDef(jsonobject.JsonObject):
+    static_number = jsonobject.IntegerProperty(default=0)
     usage_capacity_per_node = jsonobject.IntegerProperty()
     usage_field = jsonobject.StringProperty(default='users')
     storage_scales_with_nodes = jsonobject.BooleanProperty(default=False)
