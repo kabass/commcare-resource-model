@@ -388,7 +388,7 @@ services:
       ram_per_node: 48
 
   pg_warehouse:
-    usage_capacity_per_node: 150000
+    usage_capacity_per_node: 250000
     storage_scales_with_nodes: True
     storage:
       group: 'SSD'
