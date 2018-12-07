@@ -88,8 +88,8 @@ usage:
   # What tables in which table can yield these details.
   async_indicators:
     model: 'derived_factor'
-    dependant_field: 'case_transactions'
-    factor: 0.1
+    dependant_field: 'users'
+    factor: 50  # based on data in Dec 2018 (total rows / num users)
 
   # used for SMS & UCR calculations
   person_cases:
