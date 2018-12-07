@@ -161,6 +161,45 @@ cases_created_per_user_per_month: |
     "from": 0,
     "size": 0
   }
+cases_active_per_user_month: |
+  {
+    "query": {
+      "filtered": {
+        "query": {
+          "match_all": {}
+        },
+        "filter": {
+          "and": [
+            {
+              "term": {
+                "domain.exact": "icds-cas"
+              }
+            },
+            {
+              "term": {
+                "closed": false
+              }
+            },
+            {
+              "term": {
+                "type.exact": "person"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "aggs": {
+      "cases_per_user": {
+        "terms": {
+          "field": "owner_id",
+          "size": 100
+        }
+      }
+    },
+    "from": 0,
+    "size": 0
+  }
 forms_per_user_per_month: |
   {
     "query": {

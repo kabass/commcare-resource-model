@@ -88,8 +88,8 @@ usage:
   # What tables in which table can yield these details.
   async_indicators:
     model: 'derived_factor'
-    dependant_field: 'case_transactions'
-    factor: 0.1
+    dependant_field: 'users'
+    factor: 50  # based on data in Dec 2018 (total rows / num users)
 
   # used for SMS & UCR calculations
   person_cases:
@@ -142,22 +142,43 @@ usage:
 
 
   # See https://docs.google.com/spreadsheets/d/16evR_N95TUBFlIr3D3ojasX7yN4odDOxH5mgcF6VCkQ/edit#gid=0 for sms estimates`
+### PHASE 1 SMS
+#  sms_beneficiary:
+#    model: 'derived_factor'
+#    dependant_field: 'phone_numbers'
+#    factor: 0.02
+#  sms_aww:
+#    model: 'derived_factor'
+#    dependant_field: 'users'
+#    factor: 1  # 2 per month (divide by 2 assuming 50% phone capture rate)
+#  sms_ls:
+#    model: 'derived_factor'
+#    dependant_field: 'ls_users'
+#    factor: 1.6  # 3 per month per user as well as 1 more every 6 months (divide by 2 assuming 50% phone capture rate)
+#  sms_monthly_total:
+#    model: 'derived_sum'
+#    start_with: 0
+#    dependant_fields:
+#      - 'sms_beneficiary'
+#      - 'sms_aww'
+#      - 'sms_ls'
+### PHASE 2 SMS
   sms_adoleschent_girls:
     model: 'derived_factor'
-    dependant_field: 'person_cases'
+    dependant_field: 'phone_numbers'  # use phone numbers to take account of low phone number capture rate
     factor: 0.24  # estimated percentage of adolescent girls times number of messages per month (0.12 x 2)
   sms_pregnancies:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 25  # estimated number of pregnancies per awc times number of messages per month (5 x 5)
+    factor: 12.5  # estimated number of pregnancies per awc times number of messages per month (5 x 5)/5 (assuming 50% phone number capture rate)
   sms_aww:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 5.17  # 5 per month per user as well as 1 more every 6 months
+    factor: 3.6  # 5 per month per user as well as 1 more every 6 months (divide by 2 assuming 50% phone capture rate)
   sms_ls:
     model: 'derived_factor'
     dependant_field: 'ls_users'
-    factor: 3.17  # 3 per month per user as well as 1 more every 6 months
+    factor: 1.6  # 3 per month per user as well as 1 more every 6 months (divide by 2 assuming 50% phone capture rate)
   sms_monthly_total:
     model: 'derived_sum'
     start_with: 3438200
@@ -268,7 +289,7 @@ services:
       cores_per_node: 4
       ram_per_node: 16
 
-  elasticsearch:
+  es_datanode:
     usage_capacity_per_node: 25000
     min_nodes: 3
     storage:
@@ -288,6 +309,18 @@ services:
     process:
       cores_per_node: 8
       ram_per_node: 64
+
+  es_master:
+    static_number: 3
+    storage_scales_with_nodes: True
+    storage:
+      group: 'VM_other'
+      static_baseline: 50GB
+      add_buffer: False
+      override_estimation_buffer: 0
+    process:
+      cores_per_node: 4
+      ram_per_node: 8
 
   kafka:
     usage_capacity_per_node: 100000
@@ -355,7 +388,7 @@ services:
       ram_per_node: 48
 
   pg_warehouse:
-    usage_capacity_per_node: 150000
+    usage_capacity_per_node: 250000
     storage_scales_with_nodes: True
     storage:
       group: 'SSD'
@@ -473,6 +506,7 @@ services:
 
   airflow:
     static_number: 2
+    storage_scales_with_nodes: True
     process:
       cores_per_node: 4
       ram_per_node: 8
