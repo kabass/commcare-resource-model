@@ -167,7 +167,16 @@ To accomplish this we can define the storage as follows:
 ### Process
 For services that require compute resources (CPU / RAM) the 'process' section should be defined.
 
-This section has two modes:
+This section has three modes:
+
+#### Fixed number of VMs
+e.g. airflow / control
+
+    airflow:
+      static_number: 2
+      process:
+        cores_per_node: 4
+        ram_per_node: 8
 
 #### Single process
 e.g. Django worker
