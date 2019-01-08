@@ -142,6 +142,10 @@ usage:
     model: 'derived_factor'
     dependant_field: 'ledgers'
     factor: 2
+  ledger_updates_per_month:
+    model: 'derived_factor'
+    dependant_field: 'ledgers'
+    factor: 0.1  # 10% of ledgers get updated per month
 
   synclogs:
     model: 'derived_factor'
@@ -223,6 +227,7 @@ usage:
       - 'forms'
       - 'cases'
       - 'case_transactions'
+      - 'ledger_updates_per_month'
       - 'synclogs'
       - 'sms_monthly_total'
 
