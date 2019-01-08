@@ -40,7 +40,7 @@ The config file is split into 4 sections:
 | -------------------- | ----------- |
 | etimation_buffer     | Factor to inflate values by to account for estimation difference |
 | estimation_growth_factor | Rate at which the estimation buffer grows (per month) |
-| storage_buffer       | Factor to inflate storage values by |
+| storage_buffer       | Factor to inflate storage values by to ensure disks to get to 100% capacity. |
 | storage_display_unit | GB or TB |
 | vm_os_storage_gb     | GB storage per VM for OS etc |
 | vm_os_storage_group  | Group name for OS storage |
