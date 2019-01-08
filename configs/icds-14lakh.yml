@@ -112,7 +112,7 @@ usage:
   phone_numbers:
     model: 'derived_factor'
     dependant_field: 'person_case_total'
-    factor: 0.25  # phone number count (from SQL) / person cases (from ES)
+    factor: 1  # assume 100% capture rate
 
   # ledgers are on task cases
   task_cases_baseline:
@@ -195,15 +195,15 @@ usage:
   sms_pregnancies:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 12.5  # estimated number of pregnancies per awc times number of messages per month (5 x 5)/2 (assuming 50% phone number capture rate)
+    factor: 25  # estimated number of pregnancies per awc times number of messages per month (5 x 5)/2 (assuming 100% phone number capture rate)
   sms_aww:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 2.6  # 5 per month per user as well as 1 more every 6 months (divide by 2 assuming 50% phone capture rate)
+    factor: 5.2  # 5 per month per user as well as 1 more every 6 months (divide by 2 assuming 100% phone capture rate)
   sms_ls:
     model: 'derived_factor'
     dependant_field: 'ls_users'
-    factor: 1.6  # 3 per month per user as well as 1 more every 6 months (divide by 2 assuming 50% phone capture rate)
+    factor: 3.2  # 3 per month per user as well as 1 more every 6 months (divide by 2 assuming 100% phone capture rate)
   sms_monthly_total:
     model: 'derived_sum'
     start_with: 3438200
