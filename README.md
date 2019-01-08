@@ -152,6 +152,17 @@ For storage services the storage section should be included.
           unit_size: 2K
         - referenced_field: 'case_transactions_total'
           unit_size: 515
+          
+#### Fixed sized disks
+For some services we want a fixed disk size regardless of the usage e.g. Django.
+To accomplish this we can define the storage as follows:
+
+    service:
+      storage:
+        group: 'VM_other'
+        static_baseline: 50GB
+        add_buffer: False  # don't add storage buffer
+        override_estimation_buffer: 0  # don't apply estimation buffer
 
 ### Process
 For services that require compute resources (CPU / RAM) the 'process' section should be defined.
