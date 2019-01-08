@@ -9,7 +9,6 @@ DateRange = namedtuple('DateRange', 'start, end')
 
 def models_by_slug():
     df_models = [
-        DateRangeValueModel,
         DateValueModel,
         CumulativeModel,
         LimitedLifetimeModel,
@@ -44,7 +43,7 @@ class DFModel(ABC):
         return not bool(set(self.dependant_fields) - columns)
 
 
-class DateRangeValueModel(DFModel):
+class DateValueModel(DFModel):
     slug = 'date_range_value'
 
     def __init__(self, name, ranges):
@@ -52,22 +51,18 @@ class DateRangeValueModel(DFModel):
         self.ranges = ranges
 
     def data_frame(self, current_data_frame):
-        return pd.concat(
-            [pd.DataFrame({self.name: range_[2]}, index=pd.date_range(range_[0], range_[1], freq='MS'))
+
+        def get_dataframe_for_range(range_):
+            if len(range_) == 2:
+                index = pd.DatetimeIndex([range_[0]], freq='MS')
+                return pd.DataFrame({self.name: [range_[1]]}, index=index)
+            elif len(range_) == 3:
+                return pd.DataFrame({self.name: range_[2]}, index=pd.date_range(range_[0], range_[1], freq='MS'))
+
+        return pd.concat([
+            get_dataframe_for_range(range_)
             for range_ in self.ranges]
         )
-
-
-class DateValueModel(DFModel):
-    slug = 'date_value_list'
-
-    def __init__(self, name, values):
-        self.name = name
-        self.values = values
-
-    def data_frame(self, current_data_frame):
-        index = pd.DatetimeIndex([d for d, v in self.values], freq='MS')
-        return pd.DataFrame({self.name: [v for d, v in self.values]}, index=index)
 
 
 class CumulativeModel(DFModel):
