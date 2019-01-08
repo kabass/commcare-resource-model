@@ -206,7 +206,7 @@ the capacity is defined for each sub-process.
 #### RAM scales with usage
 e.g. Riak keys or Redis
 
-For processes that store data in memeory you can define
+For processes that store data in memory you can define
 the model for how much RAM is required. This will have the effect
 of adding VMs to the total count if extra are required to make up
 the total RAM requirement.
@@ -220,7 +220,7 @@ the total RAM requirement.
             - referenced_field: 'images_total'
               unit_size: 86
         ram_redundancy_factor: 3
-        ram_static_baseline: 1  # GB
+        ram_static_baseline: 1  # GB per node
 
 # Determining parameters for the config
 Writing the config files is relatively easy but the hard part is getting the numbers correct
