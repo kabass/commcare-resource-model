@@ -140,7 +140,7 @@ usage:
     factor: 60  # estimate from data analysis (SQL)
   synclogs_total:
     model: 'cumulative_limited_lifespan'
-    dependant_field: 'images'
+    dependant_field: 'synclogs'
     lifespan: 2  # we only keep synclogs for 2 months
 
   images:
