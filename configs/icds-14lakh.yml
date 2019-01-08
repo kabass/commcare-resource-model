@@ -159,7 +159,8 @@ usage:
     lifespan: 3  # we only keep images for 3 months
 
 
-  # See https://docs.google.com/spreadsheets/d/16evR_N95TUBFlIr3D3ojasX7yN4odDOxH5mgcF6VCkQ/edit#gid=0 for sms estimates`
+  # See https://docs.google.com/spreadsheets/d/1vzp5kLHBm6IXKI39LTDS2pN69uMryXuBkpl7c8sxik8/edit#gid=1536669590 for sms estimates
+  # (old https://docs.google.com/spreadsheets/d/16evR_N95TUBFlIr3D3ojasX7yN4odDOxH5mgcF6VCkQ/edit#gid=0)
 ### PHASE 1 SMS
 #  sms_beneficiary:
 #    model: 'derived_factor'
@@ -180,29 +181,34 @@ usage:
 #      - 'sms_beneficiary'
 #      - 'sms_aww'
 #      - 'sms_ls'
-### PHASE 2 SMS
-  sms_adoleschent_girls:
+### PHASE 2 SMS (assuming 100% phone number capture rate)
+  sms_adolescent_girls:
     model: 'derived_factor'
-    dependant_field: 'phone_numbers'  # use phone numbers to take account of low phone number capture rate
-    factor: 0.24  # estimated percentage of adolescent girls times number of messages per month (0.12 x 2)
+    dependant_field: 'users'
+    factor: 240  # 120 adolescent girls per aws x 2 messages per month
   sms_pregnancies:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 25  # estimated number of pregnancies per awc times number of messages per month (5 x 5)/2 (assuming 100% phone number capture rate)
+    factor: 20  # 5 pregnancies per awc X 4 messages per month
+  sms_lactating_women:
+    model: 'derived_factor'
+    dependant_field: 'users'
+    factor: 35  # 5 lactating women per awc X 5 messages per month
   sms_aww:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 5.2  # 5 per month per user as well as 1 more every 6 months (divide by 2 assuming 100% phone capture rate)
+    factor: 5.2  # 5 per month per user as well as 1 more every 6 months
   sms_ls:
     model: 'derived_factor'
     dependant_field: 'ls_users'
-    factor: 3.2  # 3 per month per user as well as 1 more every 6 months (divide by 2 assuming 100% phone capture rate)
+    factor: 3.2  # 3 per month per user as well as 1 more every 6 months
   sms_monthly_total:
     model: 'derived_sum'
     start_with: 3438200
     dependant_fields:
-      - 'sms_adoleschent_girls'
+      - 'sms_adolescent_girls'
       - 'sms_pregnancies'
+      - 'sms_lactating_women'
       - 'sms_aww'
       - 'sms_ls'
   sms_total:
