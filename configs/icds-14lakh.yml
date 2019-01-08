@@ -114,25 +114,34 @@ usage:
     dependant_field: 'person_case_total'
     factor: 0.25  # phone number count (from SQL) / person cases (from ES)
 
-  task_cases:
+  # ledgers are on task cases
+  task_cases_baseline:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 70  # see `task_cases_opened_per_user_per_month` in queries.yml
-  task_ledgers_monthly:  # ledgers are only on task cases
+    factor: 500
+  task_cases_created_monthly:
     model: 'derived_factor'
-    dependant_field: 'task_cases'
-    factor: 15  # ledger count (from SQL) / task case count (from ES)
-  ledgers_total:
+    dependant_field: 'users'
+    factor: 10
+  task_cases_cumulative:
     model: 'cumulative'
-    dependant_field: 'task_ledgers_monthly'
-    start_with: 54840197
-  ledger_updates_monthly:
+    dependant_field: 'task_cases_created_monthly'
+  task_cases_total:
+    model: 'derived_sum'
+    dependant_fields:
+      - 'task_cases_baseline'
+      - 'task_cases_cumulative'
+
+  # 4 ledgers per task case on average
+  ledgers:
     model: 'derived_factor'
-    dependant_field: 'task_cases'
-    factor: 25  # case transactions of type 'ledger' on task cases (from SQL)
-  ledger_updates_total:
-    model: 'cumulative'
-    dependant_field: 'ledger_updates_monthly'
+    dependant_field: 'task_cases_total'
+    factor: 4
+  # 2 ledger updates per ledger on average
+  ledger_updates:
+    model: 'derived_factor'
+    dependant_field: 'ledgers'
+    factor: 2
 
   synclogs:
     model: 'derived_factor'
@@ -214,7 +223,6 @@ usage:
       - 'forms'
       - 'cases'
       - 'case_transactions'
-      - 'ledger_updates_monthly'
       - 'synclogs'
       - 'sms_monthly_total'
 
@@ -232,9 +240,9 @@ services:
           unit_size: 380
         - referenced_field: 'case_transactions_total'
           unit_size: 515
-        - referenced_field: 'ledgers_total'
+        - referenced_field: 'ledgers'
           unit_size: 450
-        - referenced_field: 'ledger_updates_total'
+        - referenced_field: 'ledger_updates'
           unit_size: 420
         - referenced_field: 'images_total'
           unit_size: 370
@@ -314,7 +322,7 @@ services:
           unit_size: 1800
         - referenced_field: 'case_transactions_total'
           unit_size: 250
-        - referenced_field: 'ledgers_total'
+        - referenced_field: 'ledgers'
           unit_size: 500
         - referenced_field: 'sms_total'
           unit_size: 675
