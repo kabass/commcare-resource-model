@@ -92,14 +92,26 @@ usage:
     factor: 50  # based on data in Dec 2018 (total rows / num users)
 
   # used for SMS & UCR calculations
-  person_cases:
+  person_cases_baseline:
     model: 'derived_factor'
     dependant_field: 'users'
     factor: 750  # similar to task cases
+  person_cases_created_monthly:
+    model: 'derived_factor'
+    dependant_field: 'users'
+    factor: 10
+  person_cases_cumulative:
+    model: 'cumulative'
+    dependant_field: 'person_cases_created_monthly'
+  person_case_total:
+    model: 'derived_sum'
+    dependant_fields:
+      - 'person_cases_baseline'
+      - 'person_cases_cumulative'
 
   phone_numbers:
     model: 'derived_factor'
-    dependant_field: 'person_cases'
+    dependant_field: 'person_case_total'
     factor: 0.25  # phone number count (from SQL) / person cases (from ES)
 
   task_cases:
@@ -379,7 +391,7 @@ services:
       # The person case UCR is 35% of total UCR usage.
       group: 'SSD'
       data_models:
-        - referenced_field: 'person_cases'
+        - referenced_field: 'person_case_total'
           unit_size: 9000  # inflated to account for others UCRs
         - referenced_field: 'cases'  # cumulative
           unit_size: 4000  # to account for monthly data etc.
