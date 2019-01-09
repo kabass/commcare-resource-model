@@ -145,12 +145,13 @@ usage:
     dependant_field: 'images'
     lifespan: 3  # we only keep images for 3 months
 
-  # What tables in which table can yield these details.
+  # This is modelled because it accounts for significant storage in the main PG database
+  # This model could be improved or we find another way to account for this data
+  # Data taken from datadog in Jan 2019. Table size peaks at 1.2M rows (120K active users)
   async_indicators:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 50  # based on data in Dec 2018 (total rows / num users)
-
+    factor: 50  # inflated to be safe
 
   # See https://docs.google.com/spreadsheets/d/1vzp5kLHBm6IXKI39LTDS2pN69uMryXuBkpl7c8sxik8/edit#gid=1536669590 for sms estimates
   # (old https://docs.google.com/spreadsheets/d/16evR_N95TUBFlIr3D3ojasX7yN4odDOxH5mgcF6VCkQ/edit#gid=0)
