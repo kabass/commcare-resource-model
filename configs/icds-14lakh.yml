@@ -113,19 +113,19 @@ usage:
     monthly_growth: 10  # guess (2 cases for every new person case)
 
   # 4 ledgers per task case on average
-  ledgers:
+  ledgers_total:
     model: 'derived_factor'
     dependant_field: 'task_cases_total'
     factor: 4
   # 2 ledger updates per ledger on average
   ledger_updates:
     model: 'derived_factor'
-    dependant_field: 'ledgers'
+    dependant_field: 'ledgers_total'
     factor: 2
   ledger_updates_per_month:
     model: 'derived_factor'
-    dependant_field: 'ledgers'
-    factor: 0.1  # 10% of ledgers get updated per month
+    dependant_field: 'ledgers_total'
+    factor: 0.1  # 10% of ledgers get updated per month (guess)
 
   synclogs:
     model: 'derived_factor'
@@ -238,7 +238,7 @@ services:
           unit_size: 380
         - referenced_field: 'case_transactions_total'
           unit_size: 515
-        - referenced_field: 'ledgers'
+        - referenced_field: 'ledgers_total'
           unit_size: 450
         - referenced_field: 'ledger_updates'
           unit_size: 420
@@ -320,7 +320,7 @@ services:
           unit_size: 1800
         - referenced_field: 'case_transactions_total'
           unit_size: 250
-        - referenced_field: 'ledgers'
+        - referenced_field: 'ledgers_total'
           unit_size: 500
         - referenced_field: 'sms_total'
           unit_size: 675
