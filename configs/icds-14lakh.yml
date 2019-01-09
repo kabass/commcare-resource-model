@@ -284,7 +284,7 @@ services:
         - referenced_field: 'async_indicators'
           unit_size: 6626
         - referenced_field: 'sms_models_total'
-          unit_size: 510  # averaged over all models
+          unit_size: 510  # averaged over all models taking model ratios into account
     process:
       cores_per_node: 32
       ram_per_node: 128
