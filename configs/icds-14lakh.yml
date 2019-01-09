@@ -433,7 +433,7 @@ services:
       data_models:
         - referenced_field: 'person_case_total'
           unit_size: 9000  # inflated to account for others UCRs
-        - referenced_field: 'cases'  # cumulative
+        - referenced_field: 'cases_total'  # cumulative
           unit_size: 4000  # to account for monthly data etc.
     process:
       cores_per_node: 64
