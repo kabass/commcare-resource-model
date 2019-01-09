@@ -67,15 +67,24 @@ usage:
     start_with: 329680028   # from ES form index (total docs)
 
   #Number of cases per user per month
-  cases:
+  cases_baseline:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 600  # based on assumptions about app ((also see `cases_created_per_user_per_month` in queries.yml)
+    factor: 600  # see `cases_created_per_user_per_month` in queries.yml
+  cases_created_monthly:
+    model: 'derived_factor'
+    dependant_field: 'users'
+    factor: 54  # guess (2 cases for every new person case)
+  cases_cumulative:
+    model: 'cumulative'
+    dependant_field: 'cases_created_monthly'
+    start_with: 204427935   # from ES case index (total docs)
   # Total cases ever created
   cases_total:
-    model: 'cumulative'
-    dependant_field: 'cases'
-    start_with: 204427935   # from ES case index (total docs)
+    model: 'derived_sum'
+    dependant_fields:
+      - 'cases_baseline'
+      - 'cases_cumulative'
 
   case_transactions:
     model: 'derived_factor'
