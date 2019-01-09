@@ -60,6 +60,10 @@ usage:
     model: 'derived_factor'
     dependant_field: 'forms_ideal'
     factor: 0.33  # on average users submit less forms. Assume 33% performance.
+  forms_daily:
+    model: 'derived_factor'
+    dependant_field: 'forms_ideal'
+    factor: 0.03
   # Total Forms ever created
   forms_total:
     model: 'cumulative'
@@ -526,8 +530,17 @@ services:
     usage_capacity_per_node: 400000
     min_nodes: 3
     process:
-      cores_per_node: 16
-      ram_per_node: 32
+      cores_per_node: 4
+      ram_per_node: 64
+      ram_model:
+        - referenced_field: 'users'
+          unit_size: 50KB
+      ram_static_baseline: 33  # per node (assume only 50% ram is usable)
+    storage:
+      group: 'SAS'
+      data_models:
+        - referenced_field: 'users'
+          unit_size: 50KB
 
   # potentially deploy redis as a cache for object storage if object storage
   # performance isn't up to scratch
@@ -537,6 +550,15 @@ services:
     process:
       cores_per_node: 4  # can run multiple instances per VM if necessary
       ram_per_node: 64
+      ram_model:
+        - referenced_field: 'forms_daily'
+          unit_size: 11KB
+      ram_static_baseline: 33  # per node (assume only 50% ram is usable)
+    storage:
+      group: 'SAS'
+      data_models:
+        - referenced_field: 'forms_daily'
+          unit_size: 11KB
 
   nginx:  # limits for nginx not clear
     usage_capacity_per_node: 500000
