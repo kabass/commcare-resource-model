@@ -213,6 +213,12 @@ usage:
     dependant_field: 'sms_total'
     factor: 10  # sms (1) + smsbillables (1) + messagingevent (4) + messagingsubevent (4)
 
+  # casetimedscheduleinstance table in shard database
+  sms_schedule_instances_total:
+    model: 'derived_factor'
+    dependant_field: 'person_cases_total'
+    factor: 0.4  # rough guess
+
   kafak_changes:
     # we only keep kafka changes for 28 days so no need to calculate the cumulative amount
     model: 'derived_sum'
@@ -245,8 +251,8 @@ services:
           unit_size: 420
         - referenced_field: 'images_total'
           unit_size: 370
-        - referenced_field: 'sms_total'  # TODO should be modeled separately from SMS since it's SMS triggers
-          unit_size: 683  # casetimedscheduleinstance
+        - referenced_field: 'sms_schedule_instances_total'
+          unit_size: 683
     process:
       cores_per_node: 32
       ram_per_node: 128
