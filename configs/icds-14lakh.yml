@@ -575,9 +575,15 @@ services:
 
   rabbitmq:  # limits for rabbitmq not clear
     static_number: 2
+    storage_scales_with_nodes: True
     process:
       cores_per_node: 32
       ram_per_node: 64
+    storage:  # don't have a model for rabbitmq storage
+      group: 'SAS'
+      static_baseline: 500GB
+      add_buffer: False
+      override_estimation_buffer: 0
 
   formplayer:
     usage_capacity_per_node: 1000
