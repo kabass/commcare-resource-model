@@ -539,14 +539,14 @@ services:
       ram_per_node: 64
 
   nginx:  # limits for nginx not clear
-    usage_capacity_per_node: 750000
+    usage_capacity_per_node: 500000
     storage_scales_with_nodes: True
     process:
-      cores_per_node: 8
-      ram_per_node: 16
+      cores_per_node: 16
+      ram_per_node: 64
     storage:
       group: 'VM_other'
-      static_baseline: 100GB
+      static_baseline: 250GB  # logs etc
       add_buffer: False
       override_estimation_buffer: 0
 
