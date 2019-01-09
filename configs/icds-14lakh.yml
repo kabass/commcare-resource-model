@@ -67,24 +67,12 @@ usage:
     start_with: 329680028   # from ES form index (total docs)
 
   #Number of cases per user per month
-  cases_baseline:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 600  # see `cases_created_per_user_per_month` in queries.yml
-  cases_created_monthly:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 54  # guess (2 cases for every new person case)
-  cases_cumulative:
-    model: 'cumulative'
-    dependant_field: 'cases_created_monthly'
-    start_with: 204427935   # from ES case index (total docs)
-  # Total cases ever created
   cases_total:
-    model: 'derived_sum'
-    dependant_fields:
-      - 'cases_baseline'
-      - 'cases_cumulative'
+    model: 'baseline_with_growth'
+    dependant_field: 'users'
+    baseline: 600  # see `cases_created_per_user_per_month` in queries.yml
+    monthly_growth: 54  # guess (2 cases for every new person case)
+    start_with: 204427935   # from ES case index (total docs)
 
   case_transactions:
     model: 'derived_factor'
@@ -103,22 +91,11 @@ usage:
     factor: 1  # case index count (from SQL) / case count
 
   # used for SMS & UCR calculations
-  person_cases_baseline:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 750  # similar to task cases
-  person_cases_created_monthly:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 28  # https://confluence.dimagi.com/display/ICDS/Case+Structure+and+Workflow#CaseStructureandWorkflow-CASCaseSizingEstimates
-  person_cases_cumulative:
-    model: 'cumulative'
-    dependant_field: 'person_cases_created_monthly'
   person_case_total:
-    model: 'derived_sum'
-    dependant_fields:
-      - 'person_cases_baseline'
-      - 'person_cases_cumulative'
+    model: 'baseline_with_growth'
+    dependant_field: 'users'
+    baseline: 750  # similar to task cases
+    monthly_growth: 28  # https://confluence.dimagi.com/display/ICDS/Case+Structure+and+Workflow#CaseStructureandWorkflow-CASCaseSizingEstimates
 
   # assume 100% phone number capture rate
   phone_numbers:
@@ -129,22 +106,11 @@ usage:
       - 'ls_users'
 
   # ledgers are on task cases
-  task_cases_baseline:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 500
-  task_cases_created_monthly:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 10
-  task_cases_cumulative:
-    model: 'cumulative'
-    dependant_field: 'task_cases_created_monthly'
   task_cases_total:
-    model: 'derived_sum'
-    dependant_fields:
-      - 'task_cases_baseline'
-      - 'task_cases_cumulative'
+    model: 'baseline_with_growth'
+    dependant_field: 'users'
+    baseline: 500  # see `cases_created_per_user_per_month` in queries.yml
+    monthly_growth: 10  # guess (2 cases for every new person case)
 
   # 4 ledgers per task case on average
   ledgers:
@@ -251,7 +217,7 @@ usage:
     model: 'derived_sum'
     dependant_fields:
       - 'forms_actual'
-      - 'cases'
+      - 'cases_monthly'
       - 'case_transactions'
       - 'ledger_updates_per_month'
       - 'synclogs'

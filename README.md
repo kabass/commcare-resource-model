@@ -119,6 +119,25 @@ Logs that get deleted after 2 months
         dependant_field: 'device_logs'
         lifespan: 2
 
+## Baseline with monthly growth
+This is a combination model that simplifies modelling fields that have an initial
+amount and then grow over time at a constant rate.
+
+Example.
+Cases modeled as 600 per user initially with 50 new cases being added per month:
+
+    cases_total:
+        model: 'baseline_with_growth'
+        dependant_field: 'users'
+        baseline: 600
+        monthly_growth: 50
+        start_with: 2000000  # account for existing data
+
+This model also outputs the monthly and baseline fields for use in other calculations formatted as follows:
+
+* {name}_baseline
+* {name}_monthly
+
 ## Service config
 Each item in the service config defines a service which the system uses.
 The services are related to the usage values to calculate required resources.
