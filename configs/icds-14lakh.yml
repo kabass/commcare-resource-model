@@ -95,17 +95,12 @@ usage:
     model: 'cumulative'
     dependant_field: 'case_transactions'
     start_with: 1240906740
+
   # Case indexes ever created
   case_indices:
     model: 'derived_factor'
     dependant_field: 'cases_total'
     factor: 1  # case index count (from SQL) / case count
-
-  # What tables in which table can yield these details.
-  async_indicators:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 50  # based on data in Dec 2018 (total rows / num users)
 
   # used for SMS & UCR calculations
   person_cases_baseline:
@@ -180,6 +175,12 @@ usage:
     model: 'cumulative_limited_lifespan'
     dependant_field: 'images'
     lifespan: 3  # we only keep images for 3 months
+
+  # What tables in which table can yield these details.
+  async_indicators:
+    model: 'derived_factor'
+    dependant_field: 'users'
+    factor: 50  # based on data in Dec 2018 (total rows / num users)
 
 
   # See https://docs.google.com/spreadsheets/d/1vzp5kLHBm6IXKI39LTDS2pN69uMryXuBkpl7c8sxik8/edit#gid=1536669590 for sms estimates
