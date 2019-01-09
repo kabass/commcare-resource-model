@@ -242,7 +242,8 @@ usage:
 
 services:
   pg_shards:
-    usage_capacity_per_node: 60000
+    # need higher performing SSDs
+    usage_capacity_per_node: 50000
     storage:
       group: 'SSD'
       data_models:
@@ -260,7 +261,7 @@ services:
           unit_size: 420
         - referenced_field: 'images_total'
           unit_size: 370
-        - referenced_field: 'sms_total'
+        - referenced_field: 'sms_total'  # TODO should be modeled separately from SMS since it's SMS triggers
           unit_size: 683  # casetimedscheduleinstance
     process:
       cores_per_node: 32
@@ -279,7 +280,7 @@ services:
       ram_per_node: 64
 
   pg_main:
-    usage_capacity_per_node: 180000
+    usage_capacity_per_node: 250000
     storage_scales_with_nodes: True
     min_nodes: 2
     storage:
@@ -295,22 +296,22 @@ services:
         - referenced_field: 'sms_models_total'
           unit_size: 510  # averaged over all models
     process:
-      cores_per_node: 16
-      ram_per_node: 64
+      cores_per_node: 32
+      ram_per_node: 128
 
   pg_synclogs:
-    usage_capacity_per_node: 650000
+    usage_capacity_per_node: 500000
     storage:
       group: 'SSD'
       data_models:
         - referenced_field: 'synclogs'
           unit_size: 210000
     process:
-      cores_per_node: 16
-      ram_per_node: 64
+      cores_per_node: 32
+      ram_per_node: 128
 
   couchdb:
-    usage_capacity_per_node: 80000
+    usage_capacity_per_node: 100000
     min_nodes: 3
     storage:
       group: 'SSD'
@@ -320,8 +321,8 @@ services:
         - referenced_field: 'users'
           unit_size: 600000   # disk size / doc count of icds @ 2017-12-13
     process:
-      cores_per_node: 8
-      ram_per_node: 32
+      cores_per_node: 16
+      ram_per_node: 64
 
   es_datanode:
     usage_capacity_per_node: 25000
