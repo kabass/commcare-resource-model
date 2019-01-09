@@ -412,6 +412,22 @@ services:
       cores_per_node: 64
       ram_per_node: 128
 
+  pg_ucr_citus:
+    usage_capacity_per_node: 100000
+    redundancy_factor: 3  # bump this up since the storage model is making lots of assumptions
+    storage:
+      # This is a rough estimate.
+      # The person case UCR is 35% of total UCR usage.
+      group: 'SSD'
+      data_models:
+        - referenced_field: 'person_case_total'
+          unit_size: 9000  # inflated to account for others UCRs
+        - referenced_field: 'cases_total'  # cumulative
+          unit_size: 4000  # to account for monthly data etc.
+    process:
+      cores_per_node: 32
+      ram_per_node: 256
+
   pg_warehouse:
     usage_capacity_per_node: 300000
     storage_scales_with_nodes: True
