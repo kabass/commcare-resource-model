@@ -293,6 +293,7 @@ services:
       cores_per_node: 32
       ram_per_node: 128
 
+  # planning to shard this
   pg_synclogs:
     usage_capacity_per_node: 500000
     storage:
