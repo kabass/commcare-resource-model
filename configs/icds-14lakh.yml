@@ -120,10 +120,13 @@ usage:
       - 'person_cases_baseline'
       - 'person_cases_cumulative'
 
+  # assume 100% phone number capture rate
   phone_numbers:
-    model: 'derived_factor'
-    dependant_field: 'person_case_total'
-    factor: 1  # assume 100% capture rate
+    model: 'derived_sum'
+    dependant_fields:
+      - 'person_case_total'
+      - 'users'
+      - 'ls_users'
 
   # ledgers are on task cases
   task_cases_baseline:
