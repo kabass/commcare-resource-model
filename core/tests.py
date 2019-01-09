@@ -4,7 +4,7 @@ from unittest import TestCase
 import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
-from core.models import DateRangeValueModel, CumulativeModel, LimitedLifetimeModel, DerivedSum, \
+from core.models import CumulativeModel, LimitedLifetimeModel, DerivedSum, \
     DerivedFactor, DateValueModel
 
 
@@ -89,7 +89,7 @@ class UsageModelTests(TestCase):
 
 
 def _get_user_data():
-    model = DateRangeValueModel('users', [
+    model = DateValueModel('users', [
         ['20170101', '20170201', 100],
         ['20170301', '20170401', 200],
     ])

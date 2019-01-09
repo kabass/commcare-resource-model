@@ -58,27 +58,20 @@ Each item in this section defines which 'model' it will use to simulate the usag
 The available models are as follows:
 
 ### Date range value
-This model assigns a specific number to each date range in a list.
+This model assigns a specific number to each date range in a list. If a range is only for a single month the end date can be omitted.
 
 Example:
 The follow example defined the number of users of the system
-in 2018 and 2019.
+in fro 2017-11 to 2019-12.
 
     users:
         model: 'date_range_value'
         ranges:
+          - ['20171101', 5000]
+          - ['20171201', 10000]
           - ['20180101', '20181201', 100000]
           - ['20190101', '20191201', 200000]
 
-## Date value
-This model is similar to the date range model but allows you
-to specify all the values individually.
-
-    users:
-        model: 'date_value_list'
-        values:
-            - ['20180901', 130000]
-            - ['20181001', 140000]
 
 ### Derived Factor
 Multiply another field by a fixed factor.
