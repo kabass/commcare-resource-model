@@ -551,10 +551,10 @@ services:
       override_estimation_buffer: 0
 
   rabbitmq:  # limits for rabbitmq not clear
-    usage_capacity_per_node: 600000
+    static_number: 2
     process:
-      cores_per_node: 16
-      ram_per_node: 32
+      cores_per_node: 32
+      ram_per_node: 64
 
   formplayer:
     usage_capacity_per_node: 1000
