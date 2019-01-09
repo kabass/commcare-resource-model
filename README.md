@@ -45,6 +45,8 @@ The config file is split into 4 sections:
 | vm_os_storage_gb     | GB storage per VM for OS etc |
 | vm_os_storage_group  | Group name for OS storage |
 | summary_dates        | List of dates to generate summaries at. Date format: YYYY-MM |
+| usage                | See [Usage Config](#usage-config) section below |
+| service              | See [Service Config](#service-config) section below |
 
 
 ## Usage config
