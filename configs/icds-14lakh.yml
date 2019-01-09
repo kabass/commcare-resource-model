@@ -216,7 +216,7 @@ usage:
   # casetimedscheduleinstance table in shard database
   sms_schedule_instances_total:
     model: 'derived_factor'
-    dependant_field: 'person_cases_total'
+    dependant_field: 'person_case_total'
     factor: 0.4  # rough guess
 
   kafak_changes:
@@ -224,7 +224,7 @@ usage:
     model: 'derived_sum'
     dependant_fields:
       - 'forms_actual'
-      - 'cases_monthly'
+      - 'cases_total_monthly'
       - 'case_transactions'
       - 'ledger_updates_per_month'
       - 'synclogs'
