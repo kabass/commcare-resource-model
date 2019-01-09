@@ -438,7 +438,21 @@ services:
           unit_size: 4000  # to account for monthly data etc.
     process:
       cores_per_node: 16
-      ram_per_node: 64
+      ram_per_node: 128
+
+  pg_warehouse_citus:
+    usage_capacity_per_node: 250000
+    redundancy_factor: 2
+    storage:
+      group: 'SSD'
+      data_models:
+        - referenced_field: 'forms_total'
+          unit_size: 4000  # to account for monthly data etc.
+        - referenced_field: 'cases_total'  # add cases in case we add them later
+          unit_size: 4000
+    process:
+      cores_per_node: 32
+      ram_per_node: 256
 
   pillowtop:  # will need to revamp this once combined pillows are rolled out
     storage_scales_with_nodes: True
