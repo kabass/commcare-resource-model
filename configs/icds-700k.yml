@@ -14,13 +14,11 @@ usage:
   users:
     model: 'date_range_value'
     ranges:
-      - ['20180101', '20181201', 700000]
+      - ['20180101', '20201201', 700000]
   formplayer_users:
     model: 'date_range_value'
     ranges:
-      - ['20180101', '20181201', 1000]
-      - ['20190101', '20191201', 1000]
-      - ['20200101', '20201201', 1000]
+      - ['20180101', '20201201', 1000]
   forms:
     model: 'derived_factor'
     start_with: 91000000

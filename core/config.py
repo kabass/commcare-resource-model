@@ -85,7 +85,7 @@ class ServiceDef(jsonobject.JsonObject):
     usage_field = jsonobject.StringProperty(default='users')
     storage_scales_with_nodes = jsonobject.BooleanProperty(default=False)
     max_storage_per_node = jsonobject.DefaultProperty()
-    min_nodes = jsonobject.IntegerProperty(default=1)
+    min_nodes = jsonobject.IntegerProperty(default=0)
     storage = jsonobject.ObjectProperty(StorageDef)
     process = jsonobject.ObjectProperty(ProcessDef)
 
@@ -102,6 +102,7 @@ class ServiceDef(jsonobject.JsonObject):
         if not self.max_storage_per_node:
             return 0
         return storage_display_to_bytes(str(self.max_storage_per_node))
+
 
 class ClusterConfig(jsonobject.JsonObject):
     estimation_buffer = jsonobject.DecimalProperty(required=True)

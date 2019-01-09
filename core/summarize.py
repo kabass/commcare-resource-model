@@ -65,6 +65,10 @@ def summarize_service_data(config, service_data, summary_date, date_number):
             data_storage_buffer = data_storage * float(storage_estimation_buffer)
             data_storage_total = data_storage + data_storage_buffer
             data_storage_per_vm = data_storage_total / vms_total
+        elif not compute['VMs']:
+            storage_buffer = data_storage * float(storage_estimation_buffer)
+            storage_estimation_buffer = data_storage * float(estimation_buffer)
+            data_storage_total = data_storage + storage_buffer + storage_estimation_buffer
         else:
             data_storage_per_vm = data_storage / compute['VMs']
             data_storage_total = data_storage_per_vm * vms_total
@@ -72,9 +76,9 @@ def summarize_service_data(config, service_data, summary_date, date_number):
         os_storage = vms_total * config.vm_os_storage_gb * (1000.0 ** 3)
         data = OrderedDict([
             ('Cores Per VM', service_def.process.cores_per_node),
-            ('Cores Total', vms_total * service_def.process.cores_per_node),
+            ('Cores Total', vms_total * service_def.process.cores_per_node if vms_total else 0),
             ('RAM Per VM', service_def.process.ram_per_node),
-            ('RAM Total (GB)', vms_total * service_def.process.ram_per_node),
+            ('RAM Total (GB)', vms_total * service_def.process.ram_per_node if vms_total else 0),
             ('Data Storage Per VM (GB)', tenth_round(to_gb((data_storage_per_vm) if compute['VMs'] else 0))),
             ('Data Storage Total (%s)' % storage_units, tenth_round(to_display(math.ceil(data_storage_total)))),
             ('Data Storage RAW (%s)' % storage_units, to_display(data_storage)),
