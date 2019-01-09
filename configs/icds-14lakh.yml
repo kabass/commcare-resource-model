@@ -139,7 +139,7 @@ usage:
   images:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 35  # image count / user count
+    factor: 550  # daily feeding + THR + AG
   images_total:
     model: 'cumulative_limited_lifespan'
     dependant_field: 'images'
