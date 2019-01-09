@@ -63,7 +63,7 @@ usage:
   # Total Forms ever created
   forms_total:
     model: 'cumulative'
-    dependant_field: 'forms'
+    dependant_field: 'forms_actual'
     start_with: 329680028   # from ES form index (total docs)
 
   #Number of cases per user per month
@@ -250,7 +250,7 @@ usage:
     # we only keep kafka changes for 28 days so no need to calculate the cumulative amount
     model: 'derived_sum'
     dependant_fields:
-      - 'forms'
+      - 'forms_actual'
       - 'cases'
       - 'case_transactions'
       - 'ledger_updates_per_month'
