@@ -262,7 +262,7 @@ services:
     storage_scales_with_nodes: True
     storage:
       group: 'VM_other'
-      static_baseline: 100GB
+      static_baseline: 200GB
       add_buffer: False
       override_estimation_buffer: 0
     process:
@@ -275,7 +275,7 @@ services:
     min_nodes: 2
     storage:
       group: 'SSD'
-      static_baseline: 50GB  # to account for other static tables
+      static_baseline: 250GB  # to account for other static tables
       data_models:
         - referenced_field: 'phone_numbers'
           unit_size: 550
@@ -306,7 +306,7 @@ services:
     storage:
       group: 'SSD'
       redundancy_factor: 3
-      static_baseline: 20GB  # to account for other databases
+      static_baseline: 50GB  # to account for other databases
       data_models:
         - referenced_field: 'users'
           unit_size: 600000   # disk size / doc count of icds @ 2017-12-13
@@ -340,7 +340,7 @@ services:
     storage_scales_with_nodes: True
     storage:
       group: 'VM_other'
-      static_baseline: 50GB
+      static_baseline: 100GB
       add_buffer: False
       override_estimation_buffer: 0
     process:
@@ -370,7 +370,7 @@ services:
     storage:
       group: 'SAS'
       redundancy_factor: 3
-      static_baseline: 1TB  # to account for exports etc
+      static_baseline: 10TB  # to account for exports etc
       data_models:
         - referenced_field: 'forms_total'  # 96% of objects
           unit_size: 11000
@@ -446,7 +446,7 @@ services:
           capacity: 2000
     storage:
       group: 'VM_other'
-      static_baseline: 25GB
+      static_baseline: 100GB
       add_buffer: False
       override_estimation_buffer: 0
 
@@ -476,7 +476,7 @@ services:
           capacity: 120000
     storage:
       group: 'VM_other'
-      static_baseline: 25GB
+      static_baseline: 100GB
       add_buffer: False
       override_estimation_buffer: 0
 
@@ -488,7 +488,7 @@ services:
       ram_per_node: 32
     storage:
       group: 'VM_other'
-      static_baseline: 25GB
+      static_baseline: 100GB
       add_buffer: False
       override_estimation_buffer: 0
 
