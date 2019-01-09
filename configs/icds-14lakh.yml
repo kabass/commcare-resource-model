@@ -110,7 +110,7 @@ usage:
   person_cases_created_monthly:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 10
+    factor: 28  # https://confluence.dimagi.com/display/ICDS/Case+Structure+and+Workflow#CaseStructureandWorkflow-CASCaseSizingEstimates
   person_cases_cumulative:
     model: 'cumulative'
     dependant_field: 'person_cases_created_monthly'
