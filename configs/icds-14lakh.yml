@@ -52,10 +52,14 @@ usage:
       - ['20180901', '20201201', 1000]
 
   #Number of forms per user per month
-  forms:
+  forms_ideal:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 350  # datadog data for Oct 2018 (40M for 115K active users)
+    factor: 1500  # https://docs.google.com/spreadsheets/d/1cvgcihfE0oOrkAPW6RlmSLzGcsaD-3nDAOKVCYjyAeE/edit#gid=1011017089
+  forms_actual:
+    model: 'derived_factor'
+    dependant_field: 'forms_ideal'
+    factor: 0.33  # on average users submit less forms. Assume 33% performance.
   # Total Forms ever created
   forms_total:
     model: 'cumulative'
