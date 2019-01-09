@@ -529,6 +529,15 @@ services:
       cores_per_node: 16
       ram_per_node: 32
 
+  # potentially deploy redis as a cache for object storage if object storage
+  # performance isn't up to scratch
+  redis_object_storage_cache:
+    usage_capacity_per_node: 250000
+    min_nodes: 3
+    process:
+      cores_per_node: 4  # can run multiple instances per VM if necessary
+      ram_per_node: 64
+
   nginx:  # limits for nginx not clear
     usage_capacity_per_node: 750000
     storage_scales_with_nodes: True
