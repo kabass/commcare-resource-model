@@ -566,14 +566,14 @@ services:
       group: 'SAS'
       data_models:
         - referenced_field: 'formplayer_users'
-          unit_size: 100MB  # 100MB
+          unit_size: 100MB
 
   airflow:
     static_number: 2
     storage_scales_with_nodes: True
     process:
-      cores_per_node: 4
-      ram_per_node: 8
+      cores_per_node: 8
+      ram_per_node: 32
     storage:
       group: 'VM_other'
       static_baseline: 100GB
