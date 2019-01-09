@@ -458,7 +458,7 @@ services:
     storage_scales_with_nodes: True
     process:
       cores_per_node: 16
-      ram_per_node: 32
+      ram_per_node: 48
       cores_per_sub_process: 0.5
       ram_per_sub_process: 0.7
       sub_processes:
@@ -484,7 +484,7 @@ services:
     storage_scales_with_nodes: True
     process:
       cores_per_node: 16
-      ram_per_node: 32
+      ram_per_node: 48
       cores_per_sub_process: 1
       ram_per_sub_process: 0.7
       sub_processes:
@@ -515,7 +515,7 @@ services:
     storage_scales_with_nodes: True
     process:
       cores_per_node: 16
-      ram_per_node: 32
+      ram_per_node: 48
     storage:
       group: 'VM_other'
       static_baseline: 100GB
