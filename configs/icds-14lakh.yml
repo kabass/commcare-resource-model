@@ -111,27 +111,42 @@ usage:
       - 'users'  # 100% seeding
       - 'ls_users'  # 100% seeding
 
-  # ledgers are on task cases
-  task_cases_total:
+  pregancy_cases:
     model: 'baseline_with_growth'
     dependant_field: 'users'
-    baseline: 600  # see `cases_created_per_user_per_month` in queries.yml
-    monthly_growth: 12  # guess
-
-  # 4 ledgers per task case on average
+    baseline: 6
+    monthly_growth: 1
+  child_cases:
+    model: 'baseline_with_growth'
+    dependant_field: 'users'
+    baseline: 100
+    monthly_growth: 1
+  ledgers_preg:
+    model: 'derived_factor'
+    dependant_field: 'pregancy_cases'
+    factor: 5
+  ledgers_child:
+    model: 'derived_factor'
+    dependant_field: 'child_cases'
+    factor: 35
   ledgers_total:
+    model: 'derived_sum'
+    dependant_fields:
+      - 'ledgers_preg'
+      - 'ledgers_child'
+  ledger_updates_preg:
     model: 'derived_factor'
-    dependant_field: 'task_cases_total'
-    factor: 4.8
-  # 2 ledger updates per ledger on average
-  ledger_updates:
+    dependant_field: 'pregancy_cases_baseline'  # active pregnancy cases
+    factor: 0.6
+  ledger_updates_child:
     model: 'derived_factor'
-    dependant_field: 'ledgers_total'
-    factor: 2.4
-  ledger_updates_per_month:
-    model: 'derived_factor'
-    dependant_field: 'ledgers_total'
-    factor: 0.12  # 10% of ledgers get updated per month (guess)
+    dependant_field: 'child_cases_baseline'  # active child cases
+    factor: 0.6
+  ledger_updates_monthly:
+    model: 'derived_sum'
+    dependant_fields:
+      - 'ledger_updates_preg'
+      - 'ledger_updates_child'
 
   synclogs:
     model: 'derived_factor'
@@ -232,7 +247,7 @@ usage:
       - 'forms_monthly'
       - 'cases_total_monthly'
       - 'case_transactions'
-      - 'ledger_updates_per_month'
+      - 'ledger_updates_monthly'
       - 'synclogs'
       - 'sms_monthly_total'
 
