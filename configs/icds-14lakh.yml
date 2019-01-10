@@ -92,14 +92,14 @@ usage:
     factor: 1  # case index count (from SQL) / case count
 
   # used for SMS & UCR calculations
-  person_case_total:
+  person_cases_total:
     model: 'baseline_with_growth'
     dependant_field: 'users'
     baseline: 1000
     monthly_growth: 28  # https://confluence.dimagi.com/display/ICDS/Case+Structure+and+Workflow#CaseStructureandWorkflow-CASCaseSizingEstimates
 
   # assume 100% phone number capture rate
-  benificiary_phone_numbers:
+  beneficiary_phone_numbers:
     model: 'derived_factor'
     dependant_field: 'person_case_total'
     factor: 1  # 50% seeding
@@ -107,7 +107,7 @@ usage:
   phone_numbers:
     model: 'derived_sum'
     dependant_fields:
-      - 'benificiary_phone_numbers'
+      - 'beneficiary_phone_numbers'
       - 'users'  # 100% seeding
       - 'ls_users'  # 100% seeding
 
@@ -134,6 +134,10 @@ usage:
     dependant_fields:
       - 'ledgers_preg'
       - 'ledgers_child'
+  ledger_transactions:
+    model: 'derived_factor'
+    dependant_field: 'ledgers_total'
+    factor: 2  # 2 transactions per ledger (ever)
   ledger_updates_preg:
     model: 'derived_factor'
     dependant_field: 'pregancy_cases_baseline'  # active pregnancy cases
@@ -237,7 +241,7 @@ usage:
   # casetimedscheduleinstance table in shard database
   sms_schedule_instances_total:
     model: 'derived_factor'
-    dependant_field: 'person_case_total'
+    dependant_field: 'person_cases_total'
     factor: 0.6  # rough guess
 
   kafka_changes:
@@ -268,7 +272,7 @@ services:
           unit_size: 515
         - referenced_field: 'ledgers_total'
           unit_size: 450
-        - referenced_field: 'ledger_updates'
+        - referenced_field: 'ledger_transactions'
           unit_size: 420
         - referenced_field: 'images_total'
           unit_size: 370
