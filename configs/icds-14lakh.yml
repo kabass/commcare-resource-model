@@ -207,19 +207,19 @@ usage:
   sms_pregnancies:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 24  # 5 pregnancies per awc X 4 messages per month
+    factor: 24  # 6 pregnancies per awc X 4 messages per month
   sms_lactating_women:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 35  # 5 lactating women per awc X 5 messages per month
+    factor: 35  # 6 lactating women per awc X 5 messages per month
   sms_aww:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 6.5  # 5 per month per user as well as 1 more every 6 months
+    factor: 7  # 5 per month per user as well as 1 more every 6 months (rounded up)
   sms_ls:
     model: 'derived_factor'
     dependant_field: 'ls_users'
-    factor: 4  # 3 per month per user as well as 1 more every 6 months
+    factor: 4  # 3 per month per user as well as 1 more every 6 months (rounded up)
   sms_monthly_total:
     model: 'derived_sum'
     start_with: 3438200
@@ -241,7 +241,7 @@ usage:
   sms_schedule_instances_total:
     model: 'derived_factor'
     dependant_field: 'person_cases_total'
-    factor: 0.6  # rough guess
+    factor: 1  # rough guess
 
   kafka_changes:
     # we only keep kafka changes for 28 days so no need to calculate the cumulative amount
