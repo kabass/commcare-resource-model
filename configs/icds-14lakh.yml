@@ -10,8 +10,9 @@ summary_dates:
   - '2019-04'
   - '2019-06'
   - '2019-08'
-  - '2019-11'
-  - '2020-03'
+  - '2019-10'
+  - '2019-12'
+  - '2020-01'
   - '2020-12'
 
 vm_os_storage_gb: 70
@@ -372,7 +373,7 @@ services:
     # RAM requirement per key = 130b
     # num keys = 10TB / (12560b x 3<redundancy factor>)
     # RAM needed = 130b x num keys = 35GB (64GB avail per node)
-    max_storage_per_node: 10TB
+    max_storage_per_node: 25TB
     min_nodes: 10
     storage:
       group: 'SAS'
@@ -385,10 +386,10 @@ services:
           unit_size: 50000
     process:
       # current load quite low (~15%) (2018-10-11)
-      cores_per_node: 8
+      cores_per_node: 32
       # need to be able to fit all keys in RAM since we're using bitcask backend
       # Current usage is at 30% (2018-10-11)
-      ram_per_node: 64
+      ram_per_node: 128
       ram_model:
       - referenced_field: 'forms_total'
         # key size (45 + 6 + 79) (overhead + bucket + key)
@@ -551,8 +552,8 @@ services:
     usage_capacity_per_node: 250000
     min_nodes: 3
     process:
-      cores_per_node: 4  # can run multiple instances per VM if necessary
-      ram_per_node: 64
+      cores_per_node: 16  # can run multiple instances per VM if necessary
+      ram_per_node: 128
       ram_model:
         - referenced_field: 'forms_daily'
           unit_size: 11KB
