@@ -101,8 +101,9 @@ usage:
   # assume 100% phone number capture rate
   benificiary_phone_numbers:
     model: 'derived_factor'
-    dependant_field: 'person_cases_total'
-    factor: 0.5  # 50% seeding
+    dependant_field: 'person_case_total'
+    factor: 1  # 50% seeding
+
   phone_numbers:
     model: 'derived_sum'
     dependant_fields:
@@ -546,7 +547,7 @@ services:
 
   # potentially deploy redis as a cache for object storage if object storage
   # performance isn't up to scratch
-  redis_object_storage_cache:
+  redis_os_cache:
     usage_capacity_per_node: 250000
     min_nodes: 3
     process:
