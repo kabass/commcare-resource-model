@@ -72,7 +72,7 @@ usage:
     model: 'baseline_with_growth'
     dependant_field: 'users'
     baseline: 8000  # inflated number by MWCD. Actual probably closer to 1000
-    monthly_growth: 54  # guess (2 cases for every new person case)
+    monthly_growth: 100  # guess (4 cases for every new person case)
     start_with: 204427935   # from ES case index (total docs)
 
   # Number of cases updated per user per month
@@ -208,19 +208,19 @@ usage:
   sms_pregnancies:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 24  # 5 pregnancies per awc X 4 messages per month
+    factor: 24  # 6 pregnancies per awc X 4 messages per month
   sms_lactating_women:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 35  # 5 lactating women per awc X 5 messages per month
+    factor: 35  # 6 lactating women per awc X 5 messages per month
   sms_aww:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 6.5  # 5 per month per user as well as 1 more every 6 months
+    factor: 7  # 5 per month per user as well as 1 more every 6 months (rounded up)
   sms_ls:
     model: 'derived_factor'
     dependant_field: 'ls_users'
-    factor: 4  # 3 per month per user as well as 1 more every 6 months
+    factor: 4  # 3 per month per user as well as 1 more every 6 months (rounded up)
   sms_monthly_total:
     model: 'derived_sum'
     start_with: 3438200
@@ -242,7 +242,7 @@ usage:
   sms_schedule_instances_total:
     model: 'derived_factor'
     dependant_field: 'person_cases_total'
-    factor: 0.6  # rough guess
+    factor: 1  # rough guess
 
   kafka_changes:
     # we only keep kafka changes for 28 days so no need to calculate the cumulative amount
@@ -371,8 +371,8 @@ services:
       override_storage_buffer: 0
       override_estimation_buffer: 0
     process:
-      cores_per_node: 4
-      ram_per_node: 8
+      cores_per_node: 8
+      ram_per_node: 16
 
   kafka:
     usage_capacity_per_node: 400000
