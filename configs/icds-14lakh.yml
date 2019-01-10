@@ -102,8 +102,7 @@ usage:
   beneficiary_phone_numbers:
     model: 'derived_factor'
     dependant_field: 'person_case_total'
-    factor: 1  # 50% seeding
-
+    factor: 1  # 100% seeding
   phone_numbers:
     model: 'derived_sum'
     dependant_fields:
