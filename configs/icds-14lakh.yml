@@ -44,7 +44,7 @@ usage:
   ls_users:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 0.04
+    factor: 0.05
   # Number of formaplayer user from X date to Y
   formplayer_users:
     model: 'date_range_value'
@@ -55,7 +55,7 @@ usage:
   forms:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 350  # datadog data for Oct 2018 (40M for 115K active users)
+    factor: 4000  # datadog data for Oct 2018 (40M for 115K active users)
   # Total Forms ever created
   forms_total:
     model: 'cumulative'
@@ -66,17 +66,18 @@ usage:
   cases:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 600  # based on assumptions about app ((also see `cases_created_per_user_per_month` in queries.yml)
+    factor: 8000  # based on assumptions about app ((also see `cases_created_per_user_per_month` in queries.yml)
   # Total cases ever created
   cases_total:
     model: 'cumulative'
     dependant_field: 'cases'
     start_with: 204427935   # from ES case index (total docs)
 
+  # Number of cases updated per user per month
   case_transactions:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 1000  # see `cases_updated_per_user_month` in queries.yml
+    factor: 2000  # see `cases_updated_per_user_month` in queries.yml
   # Total Case Transaction
   case_transactions_total:
     model: 'cumulative'
@@ -95,10 +96,11 @@ usage:
     factor: 50  # based on data in Dec 2018 (total rows / num users)
 
   # used for SMS & UCR calculations
+  # Number of beneficiary cases per user (person cases) (baseline)
   person_cases_baseline:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 750  # similar to task cases
+    factor: 1000  # similar to task cases
   person_cases_created_monthly:
     model: 'derived_factor'
     dependant_field: 'users'
@@ -118,14 +120,16 @@ usage:
     factor: 1  # assume 100% capture rate
 
   # ledgers are on task cases
+  # Number of task cases per user (baseline)
   task_cases_baseline:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 500
+    factor: 600
+  # Number of task cases created per user per month in steady state
   task_cases_created_monthly:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 10
+    factor: 12
   task_cases_cumulative:
     model: 'cumulative'
     dependant_field: 'task_cases_created_monthly'
@@ -139,16 +143,16 @@ usage:
   ledgers:
     model: 'derived_factor'
     dependant_field: 'task_cases_total'
-    factor: 4
+    factor: 4.8
   # 2 ledger updates per ledger on average
   ledger_updates:
     model: 'derived_factor'
     dependant_field: 'ledgers'
-    factor: 2
+    factor: 2.4
   ledger_updates_per_month:
     model: 'derived_factor'
     dependant_field: 'ledgers'
-    factor: 0.1  # 10% of ledgers get updated per month
+    factor: 0.12  # 10% of ledgers get updated per month
 
   synclogs:
     model: 'derived_factor'
@@ -162,7 +166,7 @@ usage:
   images:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 35  # image count / user count
+    factor: 650  # image count / user count
   images_total:
     model: 'cumulative_limited_lifespan'
     dependant_field: 'images'
@@ -195,11 +199,11 @@ usage:
   sms_adolescent_girls:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 240  # 120 adolescent girls per aws x 2 messages per month
+    factor: 288  # 120 adolescent girls per aws x 2 messages per month
   sms_pregnancies:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 20  # 5 pregnancies per awc X 4 messages per month
+    factor: 24  # 5 pregnancies per awc X 4 messages per month
   sms_lactating_women:
     model: 'derived_factor'
     dependant_field: 'users'
@@ -207,11 +211,11 @@ usage:
   sms_aww:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 5.2  # 5 per month per user as well as 1 more every 6 months
+    factor: 6.5  # 5 per month per user as well as 1 more every 6 months
   sms_ls:
     model: 'derived_factor'
     dependant_field: 'ls_users'
-    factor: 3.2  # 3 per month per user as well as 1 more every 6 months
+    factor: 4  # 3 per month per user as well as 1 more every 6 months
   sms_monthly_total:
     model: 'derived_sum'
     start_with: 3438200
