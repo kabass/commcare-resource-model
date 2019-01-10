@@ -370,8 +370,8 @@ services:
       override_storage_buffer: 0
       override_estimation_buffer: 0
     process:
-      cores_per_node: 4
-      ram_per_node: 8
+      cores_per_node: 8
+      ram_per_node: 16
 
   kafka:
     usage_capacity_per_node: 400000
