@@ -346,7 +346,7 @@ services:
         - referenced_field: 'sms_total'
           unit_size: 675
     process:
-      cores_per_node: 8
+      cores_per_node: 16
       ram_per_node: 64
 
   es_master:
