@@ -175,7 +175,7 @@ To accomplish this we can define the storage as follows:
       storage:
         group: 'VM_other'
         static_baseline: 50GB
-        add_buffer: False  # don't add storage buffer
+        override_storage_buffer: 0  # don't add storage buffer
         override_estimation_buffer: 0  # don't apply estimation buffer
 
 ### Process
