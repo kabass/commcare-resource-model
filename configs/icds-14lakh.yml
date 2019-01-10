@@ -99,12 +99,16 @@ usage:
     monthly_growth: 28  # https://confluence.dimagi.com/display/ICDS/Case+Structure+and+Workflow#CaseStructureandWorkflow-CASCaseSizingEstimates
 
   # assume 100% phone number capture rate
+  benificiary_phone_numbers:
+    model: 'derived_factor'
+    dependant_field: 'person_cases_total'
+    factor: 0.5  # 50% seeding
   phone_numbers:
     model: 'derived_sum'
     dependant_fields:
-      - 'person_case_total'
-      - 'users'
-      - 'ls_users'
+      - 'benificiary_phone_numbers'
+      - 'users'  # 100% seeding
+      - 'ls_users'  # 100% seeding
 
   # ledgers are on task cases
   task_cases_total:
