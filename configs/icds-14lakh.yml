@@ -102,7 +102,7 @@ usage:
   # assume 100% phone number capture rate
   beneficiary_phone_numbers:
     model: 'derived_factor'
-    dependant_field: 'person_case_total'
+    dependant_field: 'person_cases_total'
     factor: 1  # 100% seeding
   phone_numbers:
     model: 'derived_sum'
