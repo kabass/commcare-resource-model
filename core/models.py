@@ -14,6 +14,7 @@ def models_by_slug():
         LimitedLifetimeModel,
         DerivedSum,
         DerivedFactor,
+        BaselineWithGrowth,
     ]
 
     return {
@@ -80,11 +81,16 @@ class CumulativeModel(DFModel):
         return [self.dependant_field]
 
     def data_frame(self, current_data_frame):
-        monthly_data = current_data_frame[self.dependant_field].copy()
-        monthly_data[0] += self.start_with
-        cumulative = monthly_data.cumsum()
-        cumulative.name = self.name
-        return pd.DataFrame([cumulative]).T
+        monthly_data = current_data_frame[self.dependant_field]
+        return _get_cumulative_data(self.name, monthly_data, self.start_with)
+
+
+def _get_cumulative_data(name, monthly_data, start_with=0):
+    monthly_data = monthly_data.copy()
+    monthly_data[0] += start_with
+    cumulative = monthly_data.cumsum()
+    cumulative.name = name
+    return pd.DataFrame([cumulative]).T
 
 
 class LimitedLifetimeModel(CumulativeModel):
@@ -150,3 +156,44 @@ class DerivedFactor(DerivedModel):
             return val * self.factor
 
         return _mul
+
+
+class BaselineWithGrowth(DFModel):
+    """Used to model something with a starting value that grows over time
+    e.g. cases per user: 1000 baseline + 50 cases per month
+    """
+    slug = 'baseline_with_growth'
+
+    def __init__(self, name, dependant_field, baseline, monthly_growth, start_with=0):
+        """
+        :param name:
+        :param dependant_field: Field to apply baseline and monthly growth against
+        :param baseline: Number of items at start
+        :param monthly_growth: Number of new items per month
+        :param start_with:  Int used to account for existing data
+        """
+        self.name = name
+        self.dependant_field = dependant_field
+        self.baseline = baseline
+        self.monthly_growth = monthly_growth
+        self.start_with = start_with
+
+    @property
+    def dependant_fields(self):
+        return [self.dependant_field]
+
+    def data_frame(self, current_data_frame):
+        baseline_name = '{}_baseline'.format(self.name)
+        baseline_model = DerivedFactor(baseline_name, self.dependant_field, self.baseline)
+        baseline = baseline_model.data_frame(current_data_frame)[baseline_name]
+
+        monthly_name = '{}_monthly'.format(self.name)
+        monthly_model = DerivedFactor(monthly_name, self.dependant_field, self.monthly_growth)
+        monthly = monthly_model.data_frame(current_data_frame)[monthly_name]
+
+        cumulative_monthly = _get_cumulative_data('cumulative'.format(self.name), monthly, self.start_with)
+
+        total = baseline + cumulative_monthly['cumulative']
+        total.name = self.name
+
+        return pd.DataFrame([baseline, monthly, total]).T
