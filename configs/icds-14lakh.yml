@@ -1,4 +1,4 @@
-estimation_buffer: 0.2
+estimation_buffer: 0.5
 estimation_growth_factor: 0.025  # buffer increases by 2.5% per month
 storage_buffer: 0.25
 storage_display_unit: TB
@@ -333,7 +333,7 @@ services:
       group: 'SSD'
       redundancy_factor: 3
       static_baseline: 50GB  # to account for other databases
-      override_storage_buffer: 0.5  # space for compaction
+      override_storage_buffer: 0.8  # space for compaction
       data_models:
         - referenced_field: 'users'
           unit_size: 600000   # disk size / doc count of icds @ 2017-12-13
