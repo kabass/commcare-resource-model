@@ -224,7 +224,7 @@ usage:
     dependant_field: 'person_case_total'
     factor: 0.6  # rough guess
 
-  kafak_changes:
+  kafka_changes:
     # we only keep kafka changes for 28 days so no need to calculate the cumulative amount
     model: 'derived_sum'
     dependant_fields:
@@ -359,7 +359,7 @@ services:
     storage:
       group: 'SAS'
       data_models:
-        - referenced_field: 'kafak_changes'
+        - referenced_field: 'kafka_changes'
           unit_size: 500
     process:
       cores_per_node: 16

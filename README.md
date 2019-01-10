@@ -93,7 +93,7 @@ Sum multiple other fields
 Example:
 Total kafka changes
 
-    kafak_changes:
+    kafka_changes:
         model: 'derived_sum'
         dependant_fields: ['forms', 'cases', 'case_transactions']
 
