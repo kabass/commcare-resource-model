@@ -15,7 +15,7 @@ summary_dates:
   - '2020-01'
   - '2020-12'
 
-vm_os_storage_gb: 70
+vm_os_storage_gb: 50
 vm_os_storage_group: 'VM_os'
 
 usage:
