@@ -556,8 +556,8 @@ services:
     usage_capacity_per_node: 400000
     min_nodes: 3
     process:
-      cores_per_node: 4
-      ram_per_node: 64
+      cores_per_node: 12
+      ram_per_node: 96
       ram_model:
         - referenced_field: 'users'
           unit_size: 50KB
