@@ -187,7 +187,7 @@ usage:
     dependant_field: 'sms_total'
     factor: 10  # sms (1) + smsbillables (1) + messagingevent (4) + messagingsubevent (4)
 
-  kafak_changes:
+  kafka_changes:
     # we only keep kafka changes for 28 days so no need to calculate the cumulative amount
     model: 'derived_sum'
     dependant_fields:
@@ -230,7 +230,7 @@ services:
     storage:
       group: 'VM_other'
       static_baseline: 100GB
-      add_buffer: False
+      override_storage_buffer: 0
       override_estimation_buffer: 0
     process:
       cores_per_node: 16
@@ -308,7 +308,7 @@ services:
     storage:
       group: 'VM_other'
       static_baseline: 50GB
-      add_buffer: False
+      override_storage_buffer: 0
       override_estimation_buffer: 0
     process:
       cores_per_node: 4
@@ -320,7 +320,7 @@ services:
     storage:
       group: 'SAS'
       data_models:
-        - referenced_field: 'kafak_changes'
+        - referenced_field: 'kafka_changes'
           unit_size: 500
     process:
       cores_per_node: 4
@@ -414,7 +414,7 @@ services:
     storage:
       group: 'VM_other'
       static_baseline: 25GB
-      add_buffer: False
+      override_storage_buffer: 0
       override_estimation_buffer: 0
 
   celery:
@@ -444,7 +444,7 @@ services:
     storage:
       group: 'VM_other'
       static_baseline: 25GB
-      add_buffer: False
+      override_storage_buffer: 0
       override_estimation_buffer: 0
 
   django:
@@ -456,7 +456,7 @@ services:
     storage:
       group: 'VM_other'
       static_baseline: 25GB
-      add_buffer: False
+      override_storage_buffer: 0
       override_estimation_buffer: 0
 
   redis:
@@ -475,7 +475,7 @@ services:
     storage:
       group: 'VM_other'
       static_baseline: 100GB
-      add_buffer: False
+      override_storage_buffer: 0
       override_estimation_buffer: 0
 
   rabbitmq:  # limits for rabbitmq not clear
@@ -505,7 +505,7 @@ services:
     storage:
       group: 'VM_other'
       static_baseline: 100GB
-      add_buffer: False
+      override_storage_buffer: 0
       override_estimation_buffer: 0
 
   control:
@@ -513,7 +513,7 @@ services:
     storage:
       group: 'VM_other'
       static_baseline: 100GB
-      add_buffer: False
+      override_storage_buffer: 0
       override_estimation_buffer: 0
     process:
       cores_per_node: 4
