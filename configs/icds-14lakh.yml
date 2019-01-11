@@ -245,7 +245,6 @@ usage:
     factor: 1  # rough guess
 
   kafka_changes:
-    # we only keep kafka changes for 28 days so no need to calculate the cumulative amount
     model: 'derived_sum'
     dependant_fields:
       - 'forms_monthly'
@@ -254,6 +253,10 @@ usage:
       - 'ledger_updates_monthly'
       - 'synclogs'
       - 'sms_monthly_total'
+  kafka_changes_total:
+    model: 'cumulative_limited_lifespan'
+    dependant_field: 'kafka_changes'
+    lifespan: 2  # keep kafka changes for 2 months
 
 services:
   pg_shards:
@@ -380,7 +383,7 @@ services:
     storage:
       group: 'SAS'
       data_models:
-        - referenced_field: 'kafka_changes'
+        - referenced_field: 'kafka_changes_total'
           unit_size: 500
     process:
       cores_per_node: 16
