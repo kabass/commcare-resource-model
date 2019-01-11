@@ -261,7 +261,7 @@ usage:
 services:
   pg_shards:
     # need higher performing SSDs
-    usage_capacity_per_node: 50000
+    usage_capacity_per_node: 25000
     storage:
       group: 'SSD'
       data_models:
@@ -286,7 +286,7 @@ services:
       ram_per_node: 128
 
   pg_proxy:
-    usage_capacity_per_node: 300000
+    usage_capacity_per_node: 150000
     storage_scales_with_nodes: True
     storage:
       group: 'VM_other'
@@ -298,7 +298,7 @@ services:
       ram_per_node: 64
 
   pg_main:
-    usage_capacity_per_node: 250000
+    usage_capacity_per_node: 150000
     storage_scales_with_nodes: True
     min_nodes: 2
     storage:
@@ -319,7 +319,7 @@ services:
 
   # planning to shard this
   pg_synclogs:
-    usage_capacity_per_node: 500000
+    usage_capacity_per_node: 250000
     storage:
       group: 'SSD'
       data_models:
@@ -330,7 +330,7 @@ services:
       ram_per_node: 128
 
   couchdb:
-    usage_capacity_per_node: 100000
+    usage_capacity_per_node: 50000
     min_nodes: 3
     storage:
       group: 'SSD'
@@ -345,7 +345,7 @@ services:
       ram_per_node: 64
 
   es_datanode:
-    usage_capacity_per_node: 25000
+    usage_capacity_per_node: 15000
     min_nodes: 3
     storage:
       group: 'SAS'
@@ -366,7 +366,7 @@ services:
       ram_per_node: 64
 
   es_master:
-    static_number: 3
+    static_number: 6
     storage_scales_with_nodes: True
     storage:
       group: 'VM_other'
@@ -378,7 +378,7 @@ services:
       ram_per_node: 16
 
   kafka:
-    usage_capacity_per_node: 400000
+    usage_capacity_per_node: 200000
     min_nodes: 3
     storage:
       group: 'SAS'
@@ -443,7 +443,7 @@ services:
       ram_per_node: 128
 
   pg_ucr_citus:
-    usage_capacity_per_node: 100000
+    usage_capacity_per_node: 50000
     redundancy_factor: 3  # bump this up since the storage model is making lots of assumptions
     storage:
       # This is a rough estimate.
@@ -471,7 +471,7 @@ services:
       ram_per_node: 128
 
   pg_warehouse_citus:
-    usage_capacity_per_node: 250000
+    usage_capacity_per_node: 150000
     redundancy_factor: 2
     storage:
       group: 'SSD'
@@ -493,17 +493,17 @@ services:
       ram_per_sub_process: 0.7
       sub_processes:
         - name: 'other'
-          capacity: 15000  # covers all other pillows
+          capacity: 7000  # covers all other pillows
         - name: 'FormSubmissionMetadataTrackerPillow'
-          capacity: 15000
+          capacity: 7000
         - name: 'XFormToElasticsearchPillow'
-          capacity: 15000
+          capacity: 7000
         - name: 'kafka-ucr-static-forms'
-          capacity: 5000
+          capacity: 2500
         - name: 'kafka-ucr-static-cases'
-          capacity: 2000
+          capacity: 1000
         - name: 'CaseToElasticsearchPillow'
-          capacity: 2000
+          capacity: 1000
     storage:
       group: 'VM_other'
       static_baseline: 100GB
@@ -519,21 +519,21 @@ services:
       ram_per_sub_process: 0.7
       sub_processes:
         - name: 'reminder_case_update_queue'
-          capacity: 2000
+          capacity: 1000
         - name: 'reminder_queue'
-          capacity: 65000
+          capacity: 30000
         - name: 'ucr_indicator_queue'
           capacity: 5000
         - name: 'icds_dashboard_reports_queue'
-          capacity: 15000
+          capacity: 7000
         - name: 'sms_queue'
-          capacity: 32500
+          capacity: 15000
         - name: 'case_rule_queue'
-          capacity: 120000
+          capacity: 60000
         - name: 'reminder_rule_queue'
-          capacity: 120000
+          capacity: 60000
         - name: 'submission_reprocessing_queue'
-          capacity: 120000
+          capacity: 60000
     storage:
       group: 'VM_other'
       static_baseline: 100GB
@@ -541,7 +541,7 @@ services:
       override_estimation_buffer: 0
 
   django:
-    usage_capacity_per_node: 25000
+    usage_capacity_per_node: 15000
     storage_scales_with_nodes: True
     process:
       cores_per_node: 16
@@ -553,7 +553,7 @@ services:
       override_estimation_buffer: 0
 
   redis:
-    usage_capacity_per_node: 400000
+    usage_capacity_per_node: 200000
     min_nodes: 3
     process:
       cores_per_node: 12
@@ -571,7 +571,7 @@ services:
   # potentially deploy redis as a cache for object storage if object storage
   # performance isn't up to scratch
   redis_os_cache:
-    usage_capacity_per_node: 250000
+    usage_capacity_per_node: 150000
     min_nodes: 3
     process:
       cores_per_node: 16  # can run multiple instances per VM if necessary
@@ -587,7 +587,7 @@ services:
           unit_size: 11KB
 
   nginx:  # limits for nginx not clear
-    usage_capacity_per_node: 500000
+    usage_capacity_per_node: 250000
     storage_scales_with_nodes: True
     process:
       cores_per_node: 16
@@ -599,11 +599,11 @@ services:
       override_estimation_buffer: 0
 
   rabbitmq:  # limits for rabbitmq not clear
-    static_number: 2
+    static_number: 4
     storage_scales_with_nodes: True
     process:
       cores_per_node: 32
-      ram_per_node: 64
+      ram_per_node: 128
     storage:  # don't have a model for rabbitmq storage
       group: 'SAS'
       static_baseline: 500GB
@@ -611,19 +611,19 @@ services:
       override_estimation_buffer: 0
 
   formplayer:
-    usage_capacity_per_node: 1000
+    usage_capacity_per_node: 500
     usage_field: 'formplayer_users'
     process:
-      cores_per_node: 4
-      ram_per_node: 8
+      cores_per_node: 8
+      ram_per_node: 16
     storage:
       group: 'SAS'
       data_models:
         - referenced_field: 'formplayer_users'
-          unit_size: 100MB
+          unit_size: 200MB
 
   airflow:
-    static_number: 2
+    static_number: 4
     storage_scales_with_nodes: True
     process:
       cores_per_node: 8
