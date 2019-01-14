@@ -439,8 +439,8 @@ services:
         - referenced_field: 'cases_total'  # cumulative
           unit_size: 4000  # to account for monthly data etc.
     process:
-      cores_per_node: 64
-      ram_per_node: 128
+      cores_per_node: 32
+      ram_per_node: 256
 
   pg_ucr_citus:
     usage_capacity_per_node: 50000
