@@ -231,8 +231,9 @@ usage:
       - 'sms_aww'
       - 'sms_ls'
   sms_total:
-    model: 'cumulative'
+    model: 'cumulative_limited_lifespan'
     dependant_field: 'sms_monthly_total'
+    lifespan: 3
   sms_models_total:
     model: 'derived_factor'
     dependant_field: 'sms_total'
