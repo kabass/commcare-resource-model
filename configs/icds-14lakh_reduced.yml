@@ -1,5 +1,5 @@
 estimation_buffer: 0.5
-estimation_growth_factor: 0.025  # buffer increases by 2.5% per month
+estimation_growth_factor: 0.01  # buffer increases by 1% per month
 storage_buffer: 0.33  # keep max storage at 75% of disk
 storage_display_unit: TB
 
