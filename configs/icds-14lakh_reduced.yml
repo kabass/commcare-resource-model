@@ -261,6 +261,7 @@ usage:
 
 services:
   pg_shards:
+    # this should have standbys for HA
     # need higher performing SSDs
     usage_capacity_per_node: 25000
     storage:
@@ -444,12 +445,14 @@ services:
       ram_per_node: 256
 
   pg_ucr_citus:
+    # This should have standby nodes
     usage_capacity_per_node: 50000
-    redundancy_factor: 3  # bump this up since the storage model is making lots of assumptions
     storage:
       # This is a rough estimate.
       # The person case UCR is 35% of total UCR usage.
       group: 'SSD'
+      # this was in the wrong place so got left out by mistake
+      # redundancy_factor: 3  # bump this up since the storage model is making lots of assumptions
       data_models:
         - referenced_field: 'person_cases_total'
           unit_size: 9000  # inflated to account for others UCRs
@@ -472,10 +475,12 @@ services:
       ram_per_node: 128
 
   pg_warehouse_citus:
+    # this should have replica nodes
     usage_capacity_per_node: 150000
-    redundancy_factor: 2
     storage:
       group: 'SSD'
+      # this got left out by mistakes
+      # redundancy_factor: 2
       data_models:
         - referenced_field: 'forms_total'
           unit_size: 4000  # to account for monthly data etc.
