@@ -204,15 +204,15 @@ usage:
   sms_adolescent_girls:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 432  # 144 adolescent girls per aws x 3 messages per month
+    factor: 60  # 20 adolescent girls per aws x 3 messages per month
   sms_pregnancies:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 600  # 40 pregnancies per awc X 5 messages per month
+    factor: 20  # 4 pregnancies per awc X 5 messages per month
   sms_lactating_women:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 570  # 95 lactating women per awc X 5 messages per month
+    factor: 35  # 7 lactating women per awc X 5 messages per month
   sms_aww:
     model: 'derived_factor'
     dependant_field: 'users'
