@@ -8,7 +8,7 @@ from core.config import config_from_path
 from core.generate import generate_usage_data, generate_service_data
 from core.output import write_raw_data, write_summary_comparisons, write_summary_data
 from core.summarize import incremental_summaries, \
-    summarize_service_data, compare_summaries
+    summarize_service_data, compare_summaries, get_summary_data
 from core.writers import ConsoleWriter
 from core.writers import ExcelWriter
 
@@ -53,9 +53,9 @@ if __name__ == '__main__':
         summaries = {}
         user_count = {}
         date_list = list(usage.index.to_series())
+        summary_data = get_summary_data(config, service_data)
         for date in summary_dates:
-            date_number = date_list.index(date)
-            summaries[date] = summarize_service_data(config, service_data, date, date_number)
+            summaries[date] = summarize_service_data(config, summary_data, date)
             user_count[date] = usage.loc[date]['users']
 
         if len(summary_dates) == 1:
@@ -65,8 +65,8 @@ if __name__ == '__main__':
         else:
             summary_comparisons = compare_summaries(config, summaries)
             incrementals = incremental_summaries(summary_comparisons, summary_dates)
-            write_summary_comparisons(config, writer, user_count, incrementals, prefix='Incremental ')
             write_summary_comparisons(config, writer, user_count, summary_comparisons)
+            write_summary_comparisons(config, writer, user_count, incrementals, prefix='Incremental ')
 
             for date in sorted(summaries):
                 write_summary_data(config, writer, date, summaries[date], user_count[date])
