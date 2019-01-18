@@ -43,11 +43,11 @@ def storage_display_to_bytes(display_value):
 
 def tenth_round(value):
     """Remove some precision by rounding to the power of 10 nearest
-    to 10% of the value
+    to 1% of the value
     """
     if not value:
         return value
-    tenth = value * 0.1
+    tenth = value * 0.01
     pow = round(math.log10(tenth))
     round_val = 10 ** pow
     return math.ceil(value / round_val) * round_val
