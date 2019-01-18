@@ -55,6 +55,7 @@ def summarize_service_data(config, service_data, summary_date, date_number):
         storage_estimation_buffer = estimation_buffer
         if service_def.storage.override_estimation_buffer is not None:
             storage_estimation_buffer = service_def.storage.override_estimation_buffer
+
         if service_def.storage_scales_with_nodes:
             data_storage_buffer = data_storage * float(storage_estimation_buffer)
             data_storage_per_vm = data_storage + data_storage_buffer
@@ -73,18 +74,39 @@ def summarize_service_data(config, service_data, summary_date, date_number):
             data_storage_per_vm = data_storage / compute['VMs']
             data_storage_total = data_storage_per_vm * vms_total
 
+        include_ha_resources = service_def.include_ha_resources
+        data_storage_ha = data_storage_total if include_ha_resources else 0
+        data_storage_total = data_storage_total + data_storage_ha
+
+        cores = vms_total * service_def.process.cores_per_node if vms_total else 0
+        cores_ha = cores if include_ha_resources else 0
+        cores_total = cores + cores_ha
+
+        ram = vms_total * service_def.process.ram_per_node if vms_total else 0
+        ram_ha = ram if include_ha_resources else 0
+        ram_total = ram + ram_ha
+
+        vms_ha = vms_total if include_ha_resources else 0
+        vms_total = vms_total + vms_ha
+
         os_storage = vms_total * config.vm_os_storage_gb * (1000.0 ** 3)
+        os_storage_ha = vms_ha * config.vm_os_storage_gb * (1000.0 ** 3)
         data = OrderedDict([
             ('Cores Per VM', service_def.process.cores_per_node),
-            ('Cores Total', vms_total * service_def.process.cores_per_node if vms_total else 0),
+            ('Cores HA', cores_ha),
+            ('Cores Total', cores_total),
             ('RAM Per VM', service_def.process.ram_per_node),
-            ('RAM Total (GB)', vms_total * service_def.process.ram_per_node if vms_total else 0),
+            ('RAM HA (GB)', ram_ha),
+            ('RAM Total (GB)', ram_total),
             ('Data Storage Per VM (GB)', tenth_round(to_gb((data_storage_per_vm) if compute['VMs'] else 0))),
+            ('Data Storage HA (%s)' % storage_units, tenth_round(to_display(math.ceil(data_storage_ha)))),
             ('Data Storage Total (%s)' % storage_units, tenth_round(to_display(math.ceil(data_storage_total)))),
-            ('Data Storage RAW (%s)' % storage_units, to_display(data_storage)),
+            ('Data Storage RAW (includes HA) (%s)' % storage_units, to_display(data_storage + data_storage_ha)),
+            ('VMs HA', vms_ha),
             ('VMs Total', vms_total),
             ('VM Buffer', node_buffer),
             ('Buffer %', estimation_buffer),
+            ('OS Storage HA (GB)', math.ceil(to_gb(os_storage_ha))),
             ('OS Storage Total (Bytes)', os_storage),
             ('OS Storage Total (GB)', math.ceil(to_gb(os_storage))),
             ('Storage Group', service_def.storage.group),

@@ -87,6 +87,7 @@ class ServiceDef(jsonobject.JsonObject):
     storage_scales_with_nodes = jsonobject.BooleanProperty(default=False)
     max_storage_per_node = jsonobject.DefaultProperty()
     min_nodes = jsonobject.IntegerProperty(default=0)
+    include_ha_resources = jsonobject.BooleanProperty(default=False)
     storage = jsonobject.ObjectProperty(StorageDef)
     process = jsonobject.ObjectProperty(ProcessDef)
 
