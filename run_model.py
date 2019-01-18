@@ -6,7 +6,7 @@ import pandas as pd
 
 from core.config import config_from_path
 from core.generate import generate_usage_data, generate_service_data
-from core.output import write_raw_data, write_summary_comparisons, write_summary_data
+from core.output import write_raw_data, write_summary_comparisons, write_summary_data, write_raw_service_data
 from core.summarize import incremental_summaries, \
     summarize_service_data, compare_summaries, get_summary_data
 from core.writers import ConsoleWriter
@@ -74,7 +74,7 @@ if __name__ == '__main__':
         if is_excel:
             # only write raw data if writing to Excel
             write_raw_data(writer, usage, 'Usage')
-            write_raw_data(writer, service_data, 'Raw Data', split=True)
+            write_raw_service_data(writer, service_data, summary_data, 'Raw Data')
 
             with open(args.config, 'r') as f:
                 config_string = 'Git commit: {}\n\n{}'.format(
