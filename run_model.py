@@ -60,8 +60,8 @@ if __name__ == '__main__':
 
         if len(summary_dates) == 1:
             date = summary_dates[0]
-            summary_data = summaries[date]
-            write_summary_data(config, writer, date, summary_data, user_count[date])
+            summary_data_snapshot = summaries[date]
+            write_summary_data(config, writer, date, summary_data_snapshot, user_count[date])
         else:
             summary_comparisons = compare_summaries(config, summaries)
             incrementals = incremental_summaries(summary_comparisons, summary_dates)
