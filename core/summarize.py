@@ -140,7 +140,7 @@ def get_summary_data(config, service_data):
         ram_ha = ram if include_ha_resources else zero.copy()
         ram_total = ram + ram_ha
 
-        vms_ha = vms_total if include_ha_resources else zero.copy()
+        vms_ha = vms_total.copy() if include_ha_resources else zero.copy()
         vms_total = vms_total + vms_ha
 
         os_storage = vms_total * config.vm_os_storage_gb * (1000.0 ** 3)
