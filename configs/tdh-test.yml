@@ -45,9 +45,9 @@ usage:
   cases_total:
     model: 'baseline_with_growth'
     dependant_field: 'users'
-    baseline: 8000  # inflated number by MWCD. Actual probably closer to 1000
-    monthly_growth: 100  # guess (4 cases for every new person case)
-    start_with: 204427935   # from ES case index (total docs)
+    baseline: 0  # inflated number by MWCD. Actual probably closer to 1000
+    monthly_growth: 0  # guess (4 cases for every new person case)
+    start_with: 19000000   # from ES case index (total docs)
 
   # Number of cases updated per user per month
   case_transactions:
