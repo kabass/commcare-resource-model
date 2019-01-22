@@ -1,5 +1,6 @@
-import math
 import re
+
+import numpy as np
 
 byte_map = {
     'KB': 1000.0,
@@ -41,13 +42,12 @@ def storage_display_to_bytes(display_value):
     return from_storage_display_unit(units)(value)
 
 
-def tenth_round(value):
+def tenth_round(series):
     """Remove some precision by rounding to the power of 10 nearest
     to 1% of the value
     """
-    if not value:
-        return value
-    tenth = value * 0.01
-    pow = round(math.log10(tenth))
+    tenth = series * 0.01
+    pow = tenth.map(np.log10).map(np.round)
+    # pow = round(math.log10(tenth))
     round_val = 10 ** pow
-    return math.ceil(value / round_val) * round_val
+    return (series / round_val).map(np.ceil) * round_val

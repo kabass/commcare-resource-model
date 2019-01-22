@@ -66,12 +66,15 @@ def write_summary_data(config, writer, summary_date, summary_data, user_count):
     )
 
 
-def write_raw_data(writer, usage, title, split=False):
-    if split:
-        sections = list(sorted({d[0] for d in usage}))
-        for section in sections:
-            writer.write_data_frame(usage[section], "{} ({})".format(title, section), 'Dates')
-    else:
+def write_raw_service_data(writer, service_data, summary_data, title):
+    sections = list(sorted({d[0] for d in service_data}))
+    for section in sections:
+        sdata = service_data[section]
+        sdata.columns = sdata.columns.get_level_values(1)
+        combined = sdata.join(summary_data[section])
+        writer.write_data_frame(combined, "{} ({})".format(title, section), 'Dates')
+
+def write_raw_data(writer, usage, title):
         writer.write_data_frame(usage, title, 'Dates')
 
 
