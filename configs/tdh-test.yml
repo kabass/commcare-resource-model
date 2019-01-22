@@ -30,16 +30,16 @@ usage:
   forms_monthly:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 4000  # https://docs.google.com/spreadsheets/d/1cvgcihfE0oOrkAPW6RlmSLzGcsaD-3nDAOKVCYjyAeE/edit#gid=1011017089
+    factor: 0  # https://docs.google.com/spreadsheets/d/1cvgcihfE0oOrkAPW6RlmSLzGcsaD-3nDAOKVCYjyAeE/edit#gid=1011017089
   forms_daily:
     model: 'derived_factor'
     dependant_field: 'forms_monthly'
-    factor: 0.03
+    factor: 0
   # Total Forms ever created
   forms_total:
     model: 'cumulative'
     dependant_field: 'forms_monthly'
-    start_with: 329680028   # from ES form index (total docs)
+    start_with: 16000000   # from ES form index (total docs)
 
   #Number of cases per user per month
   cases_total:
