@@ -48,8 +48,8 @@ services:
         - referenced_field: 'cases_total'
           unit_size: 1800
     process:
-      cores_per_node: 32
-      ram_per_node: 128
+      cores_per_node: 2
+      ram_per_node: 8
 
   pg_proxy:
     usage_capacity_per_node: 150000
@@ -60,8 +60,8 @@ services:
       override_storage_buffer: 0
       override_estimation_buffer: 0
     process:
-      cores_per_node: 16
-      ram_per_node: 64
+      cores_per_node: 2
+      ram_per_node: 8
 
   pg_main:
     usage_capacity_per_node: 150000
@@ -74,8 +74,8 @@ services:
         - referenced_field: 'users'
           unit_size: 1600
     process:
-      cores_per_node: 32
-      ram_per_node: 128
+      cores_per_node: 4
+      ram_per_node: 16
 
   couchdb:
     usage_capacity_per_node: 50000
@@ -89,8 +89,8 @@ services:
         - referenced_field: 'users'
           unit_size: 600000   # disk size / doc count of icds @ 2017-12-13
     process:
-      cores_per_node: 16
-      ram_per_node: 64
+      cores_per_node: 4
+      ram_per_node: 8
 
   es_datanode:
     usage_capacity_per_node: 15000
@@ -104,8 +104,8 @@ services:
         - referenced_field: 'cases_total'
           unit_size: 1800
     process:
-      cores_per_node: 16
-      ram_per_node: 64
+      cores_per_node: 8
+      ram_per_node: 32
 
   es_master:
     static_number: 6
@@ -116,8 +116,8 @@ services:
       override_storage_buffer: 0
       override_estimation_buffer: 0
     process:
-      cores_per_node: 8
-      ram_per_node: 16
+      cores_per_node: 2
+      ram_per_node: 8
 
   riakcs:
     usage_capacity_per_node: 50000
@@ -136,10 +136,10 @@ services:
           unit_size: 11000
     process:
       # current load quite low (~15%) (2018-10-11)
-      cores_per_node: 32
+      cores_per_node: 4
       # need to be able to fit all keys in RAM since we're using bitcask backend
       # Current usage is at 30% (2018-10-11)
-      ram_per_node: 128
+      ram_per_node: 4
       ram_model:
       - referenced_field: 'forms_total'
         # key size (45 + 6 + 79) (overhead + bucket + key)
@@ -163,8 +163,8 @@ services:
         - referenced_field: 'cases_total'  # cumulative
           unit_size: 4000  # to account for monthly data etc.
     process:
-      cores_per_node: 32
-      ram_per_node: 256
+      cores_per_node: 4
+      ram_per_node: 16
 
   pg_warehouse:
     usage_capacity_per_node: 300000
@@ -175,14 +175,14 @@ services:
         - referenced_field: 'forms_total'
           unit_size: 4000  # to account for monthly data etc.
     process:
-      cores_per_node: 16
-      ram_per_node: 128
+      cores_per_node: 4
+      ram_per_node: 16
 
   pillowtop:  # will need to revamp this once combined pillows are rolled out
     storage_scales_with_nodes: True
     process:
       cores_per_node: 16
-      ram_per_node: 48
+      ram_per_node: 128
       cores_per_sub_process: 0.5
       ram_per_sub_process: 0.7
       sub_processes:
@@ -207,8 +207,8 @@ services:
   celery:
     storage_scales_with_nodes: True
     process:
-      cores_per_node: 16
-      ram_per_node: 48
+      cores_per_node: 8
+      ram_per_node: 32
       cores_per_sub_process: 0.7  # reduced from 1 since we use django VMs as well
       ram_per_sub_process: 0.5  # reduced from 0.7 since we use django VMs as well
       sub_processes:
@@ -236,8 +236,8 @@ services:
     usage_capacity_per_node: 15000
     storage_scales_with_nodes: True
     process:
-      cores_per_node: 16
-      ram_per_node: 48
+      cores_per_node: 4
+      ram_per_node: 8
     storage:
       group: 'VM_other'
       static_baseline: 100GB
@@ -248,8 +248,8 @@ services:
     usage_capacity_per_node: 200000
     min_nodes: 3
     process:
-      cores_per_node: 12
-      ram_per_node: 96
+      cores_per_node: 2
+      ram_per_node: 16
       ram_model:
         - referenced_field: 'users'
           unit_size: 50KB
@@ -264,8 +264,8 @@ services:
     usage_capacity_per_node: 250000
     storage_scales_with_nodes: True
     process:
-      cores_per_node: 16
-      ram_per_node: 64
+      cores_per_node: 2
+      ram_per_node: 4
     storage:
       group: 'VM_other'
       static_baseline: 250GB  # logs etc
@@ -276,8 +276,8 @@ services:
     static_number: 1
     storage_scales_with_nodes: True
     process:
-      cores_per_node: 32
-      ram_per_node: 64
+      cores_per_node: 2
+      ram_per_node: 8
     storage:  # don't have a model for rabbitmq storage
       group: 'SAS'
       static_baseline: 500GB
@@ -292,5 +292,5 @@ services:
       override_storage_buffer: 0
       override_estimation_buffer: 0
     process:
-      cores_per_node: 4
-      ram_per_node: 8
+      cores_per_node: 2
+      ram_per_node: 4
