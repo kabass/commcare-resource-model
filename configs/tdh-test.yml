@@ -419,24 +419,6 @@ services:
       cores_per_node: 32
       ram_per_node: 256
 
-  pg_ucr_citus:
-    # This should have standby nodes
-    usage_capacity_per_node: 50000
-    include_ha_resources: True
-    storage:
-      # This is a rough estimate.
-      # The person case UCR is 35% of total UCR usage.
-      group: 'SSD'
-      # this was in the wrong place so got left out by mistake
-      data_models:
-        - referenced_field: 'person_cases_total'
-          unit_size: 9000  # inflated to account for others UCRs
-        - referenced_field: 'cases_total'  # cumulative
-          unit_size: 8000  # to account for monthly data etc.
-    process:
-      cores_per_node: 32
-      ram_per_node: 256
-
   pg_warehouse:
     usage_capacity_per_node: 300000
     storage_scales_with_nodes: True
@@ -448,22 +430,6 @@ services:
     process:
       cores_per_node: 16
       ram_per_node: 128
-
-  pg_warehouse_citus:
-    # this should have replica nodes
-    usage_capacity_per_node: 150000
-    include_ha_resources: True
-    storage:
-      group: 'SSD'
-      # this got left out by mistakes
-      data_models:
-        - referenced_field: 'forms_total'
-          unit_size: 4000  # to account for monthly data etc.
-        - referenced_field: 'cases_total'  # add cases in case we add them later
-          unit_size: 4000
-    process:
-      cores_per_node: 32
-      ram_per_node: 256
 
   pillowtop:  # will need to revamp this once combined pillows are rolled out
     storage_scales_with_nodes: True
