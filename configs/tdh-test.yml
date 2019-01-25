@@ -49,190 +49,6 @@ usage:
     monthly_growth: 0  # guess (4 cases for every new person case)
     start_with: 19000000   # from ES case index (total docs)
 
-  # Number of cases updated per user per month
-  case_transactions:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 2000  # inflated number by MWCD. Actual closer to 1000
-  # Total Case Transaction
-  case_transactions_total:
-    model: 'cumulative'
-    dependant_field: 'case_transactions'
-    start_with: 1240906740
-
-  # Case indexes ever created
-  case_indices:
-    model: 'derived_factor'
-    dependant_field: 'cases_total'
-    factor: 1  # case index count (from SQL) / case count
-
-  # used for SMS & UCR calculations
-  person_cases_total:
-    model: 'baseline_with_growth'
-    dependant_field: 'users'
-    baseline: 1000
-    monthly_growth: 28  # https://confluence.dimagi.com/display/ICDS/Case+Structure+and+Workflow#CaseStructureandWorkflow-CASCaseSizingEstimates
-
-  # assume 100% phone number capture rate
-  beneficiary_phone_numbers:
-    model: 'derived_factor'
-    dependant_field: 'person_cases_total'
-    factor: 1  # 100% seeding
-  phone_numbers:
-    model: 'derived_sum'
-    dependant_fields:
-      - 'beneficiary_phone_numbers'
-      - 'users'  # 100% seeding
-      - 'ls_users'  # 100% seeding
-
-  pregancy_cases:
-    model: 'baseline_with_growth'
-    dependant_field: 'users'
-    baseline: 6
-    monthly_growth: 1
-  child_cases:
-    model: 'baseline_with_growth'
-    dependant_field: 'users'
-    baseline: 100
-    monthly_growth: 1
-  ledgers_preg:
-    model: 'derived_factor'
-    dependant_field: 'pregancy_cases'
-    factor: 5
-  ledgers_child:
-    model: 'derived_factor'
-    dependant_field: 'child_cases'
-    factor: 35
-  ledgers_total:
-    model: 'derived_sum'
-    dependant_fields:
-      - 'ledgers_preg'
-      - 'ledgers_child'
-  ledger_transactions:
-    model: 'derived_factor'
-    dependant_field: 'ledgers_total'
-    factor: 2  # 2 transactions per ledger (ever)
-  ledger_updates_preg:
-    model: 'derived_factor'
-    dependant_field: 'pregancy_cases_baseline'  # active pregnancy cases
-    factor: 0.6
-  ledger_updates_child:
-    model: 'derived_factor'
-    dependant_field: 'child_cases_baseline'  # active child cases
-    factor: 0.6
-  ledger_updates_monthly:
-    model: 'derived_sum'
-    dependant_fields:
-      - 'ledger_updates_preg'
-      - 'ledger_updates_child'
-
-  synclogs:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 60  # estimate from data analysis (SQL)
-  synclogs_total:
-    model: 'cumulative_limited_lifespan'
-    dependant_field: 'synclogs'
-    lifespan: 2  # we only keep synclogs for 2 months
-
-  images:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 650  # daily feeding + THR + AG
-  images_total:
-    model: 'cumulative_limited_lifespan'
-    dependant_field: 'images'
-    lifespan: 3  # we only keep images for 3 months
-
-  # This is modelled because it accounts for significant storage in the main PG database
-  # This model could be improved or we find another way to account for this data
-  # Data taken from datadog in Jan 2019. Table size peaks at 1.2M rows (120K active users)
-  async_indicators:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 50  # inflated to be safe
-
-  # See https://docs.google.com/spreadsheets/d/1vzp5kLHBm6IXKI39LTDS2pN69uMryXuBkpl7c8sxik8/edit#gid=1536669590 for sms estimates
-  # (old https://docs.google.com/spreadsheets/d/16evR_N95TUBFlIr3D3ojasX7yN4odDOxH5mgcF6VCkQ/edit#gid=0)
-### PHASE 1 SMS
-#  sms_beneficiary:
-#    model: 'derived_factor'
-#    dependant_field: 'phone_numbers'
-#    factor: 0.02
-#  sms_aww:
-#    model: 'derived_factor'
-#    dependant_field: 'users'
-#    factor: 1  # 2 per month (divide by 2 assuming 50% phone capture rate)
-#  sms_ls:
-#    model: 'derived_factor'
-#    dependant_field: 'ls_users'
-#    factor: 1.6  # 3 per month per user as well as 1 more every 6 months (divide by 2 assuming 50% phone capture rate)
-#  sms_monthly_total:
-#    model: 'derived_sum'
-#    start_with: 0
-#    dependant_fields:
-#      - 'sms_beneficiary'
-#      - 'sms_aww'
-#      - 'sms_ls'
-### PHASE 2 SMS (assuming 100% phone number capture rate)
-  sms_adolescent_girls:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 60  # 20 adolescent girls per aws x 3 messages per month
-  sms_pregnancies:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 20  # 4 pregnancies per awc X 5 messages per month
-  sms_lactating_women:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 35  # 7 lactating women per awc X 5 messages per month
-  sms_aww:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 7  # 7 per month per user
-  sms_ls:
-    model: 'derived_factor'
-    dependant_field: 'ls_users'
-    factor: 5  # 5 per month per user
-  sms_monthly_total:
-    model: 'derived_sum'
-    start_with: 3438200
-    dependant_fields:
-      - 'sms_adolescent_girls'
-      - 'sms_pregnancies'
-      - 'sms_lactating_women'
-      - 'sms_aww'
-      - 'sms_ls'
-  sms_total:
-    model: 'cumulative_limited_lifespan'
-    dependant_field: 'sms_monthly_total'
-    lifespan: 3
-  sms_models_total:
-    model: 'derived_factor'
-    dependant_field: 'sms_total'
-    factor: 10  # sms (1) + smsbillables (1) + messagingevent (4) + messagingsubevent (4)
-
-  # casetimedscheduleinstance table in shard database
-  sms_schedule_instances_total:
-    model: 'derived_factor'
-    dependant_field: 'person_cases_total'
-    factor: 1  # rough guess
-
-  kafka_changes:
-    model: 'derived_sum'
-    dependant_fields:
-      - 'forms_monthly'
-      - 'cases_total_monthly'
-      - 'case_transactions'
-      - 'ledger_updates_monthly'
-      - 'synclogs'
-      - 'sms_monthly_total'
-  kafka_changes_total:
-    model: 'cumulative_limited_lifespan'
-    dependant_field: 'kafka_changes'
-    lifespan: 2  # keep kafka changes for 2 months
-
 services:
   pg_shards:
     # this should have standbys for HA
@@ -246,18 +62,6 @@ services:
           unit_size: 1200
         - referenced_field: 'cases_total'
           unit_size: 1800
-        - referenced_field: 'case_indices'
-          unit_size: 380
-        - referenced_field: 'case_transactions_total'
-          unit_size: 515
-        - referenced_field: 'ledgers_total'
-          unit_size: 450
-        - referenced_field: 'ledger_transactions'
-          unit_size: 420
-        - referenced_field: 'images_total'
-          unit_size: 370
-        - referenced_field: 'sms_schedule_instances_total'
-          unit_size: 683
     process:
       cores_per_node: 32
       ram_per_node: 128
@@ -282,26 +86,8 @@ services:
       group: 'SSD'
       static_baseline: 250GB  # to account for other static tables
       data_models:
-        - referenced_field: 'phone_numbers'
-          unit_size: 550
         - referenced_field: 'users'
           unit_size: 1600
-        - referenced_field: 'async_indicators'
-          unit_size: 6626
-        - referenced_field: 'sms_models_total'
-          unit_size: 510  # averaged over all models taking model ratios into account
-    process:
-      cores_per_node: 32
-      ram_per_node: 128
-
-  # planning to shard this
-  pg_synclogs:
-    usage_capacity_per_node: 250000
-    storage:
-      group: 'SSD'
-      data_models:
-        - referenced_field: 'synclogs'
-          unit_size: 210000
     process:
       cores_per_node: 32
       ram_per_node: 128
@@ -332,12 +118,6 @@ services:
           unit_size: 5500
         - referenced_field: 'cases_total'
           unit_size: 1800
-        - referenced_field: 'case_transactions_total'
-          unit_size: 250
-        - referenced_field: 'ledgers_total'
-          unit_size: 500
-        - referenced_field: 'sms_total'
-          unit_size: 675
     process:
       cores_per_node: 16
       ram_per_node: 64
@@ -354,18 +134,6 @@ services:
       cores_per_node: 8
       ram_per_node: 16
 
-  kafka:
-    usage_capacity_per_node: 200000
-    min_nodes: 3
-    storage:
-      group: 'SAS'
-      data_models:
-        - referenced_field: 'kafka_changes_total'
-          unit_size: 500
-    process:
-      cores_per_node: 16
-      ram_per_node: 32
-
   riakcs:
     usage_capacity_per_node: 50000
     # avg attachment size of 12560 bytes (11000*0.96 + 50000*0.04)
@@ -381,8 +149,6 @@ services:
       data_models:
         - referenced_field: 'forms_total'  # 96% of objects
           unit_size: 11000
-        - referenced_field: 'images_total'  # 4% of objects
-          unit_size: 50000
     process:
       # current load quite low (~15%) (2018-10-11)
       cores_per_node: 32
@@ -397,8 +163,6 @@ services:
         #   new: form/xxxxxxxxxxxxxxuuidxxxxxxxxxxxxxx/Xpi-XM9CZvQ
         #   old: form/xxxxxxxxxxxxxxuuidxxxxxxxxxxxxxx/form.xml.xxxxxxxxxxxxxxuuidxxxxxxxxxxxxxx
         unit_size: 130
-      - referenced_field: 'images_total'
-        unit_size: 130
       ram_redundancy_factor: 3
       ram_static_baseline: 1  # per node
 
@@ -411,8 +175,6 @@ services:
       # The person case UCR is 35% of total UCR usage.
       group: 'SSD'
       data_models:
-        - referenced_field: 'person_cases_total'
-          unit_size: 9000  # inflated to account for others UCRs
         - referenced_field: 'cases_total'  # cumulative
           unit_size: 4000  # to account for monthly data etc.
     process:
@@ -515,24 +277,6 @@ services:
         - referenced_field: 'users'
           unit_size: 50KB
 
-  # potentially deploy redis as a cache for object storage if object storage
-  # performance isn't up to scratch
-  redis_os_cache:
-    usage_capacity_per_node: 150000
-    min_nodes: 3
-    process:
-      cores_per_node: 16  # can run multiple instances per VM if necessary
-      ram_per_node: 128
-      ram_model:
-        - referenced_field: 'forms_daily'
-          unit_size: 11KB
-      ram_static_baseline: 33  # per node (assume only 50% ram is usable)
-    storage:
-      group: 'SAS'
-      data_models:
-        - referenced_field: 'forms_daily'
-          unit_size: 11KB
-
   nginx:  # limits for nginx not clear
     usage_capacity_per_node: 250000
     storage_scales_with_nodes: True
@@ -556,18 +300,6 @@ services:
       static_baseline: 500GB
       override_storage_buffer: 0
       override_estimation_buffer: 0
-
-  formplayer:
-    usage_capacity_per_node: 500
-    usage_field: 'formplayer_users'
-    process:
-      cores_per_node: 8
-      ram_per_node: 16
-    storage:
-      group: 'SAS'
-      data_models:
-        - referenced_field: 'formplayer_users'
-          unit_size: 200MB
 
   airflow:
     static_number: 4
