@@ -13,7 +13,7 @@ usage:
   users:
     model: 'date_range_value'
     ranges:
-      - ['20180101', '20201201', 1132]
+      - ['20201101', '20201201', 1132]
 
   #Number of forms per user per month
   forms_monthly:
