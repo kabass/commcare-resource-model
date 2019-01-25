@@ -126,7 +126,7 @@ services:
     # num keys = 10TB / (12560b x 3<redundancy factor>)
     # RAM needed = 130b x num keys = 35GB (64GB avail per node)
     max_storage_per_node: 25TB
-    min_nodes: 10
+    min_nodes: 5
     storage:
       group: 'SSD'
       redundancy_factor: 3
