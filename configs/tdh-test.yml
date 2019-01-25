@@ -19,7 +19,7 @@ usage:
   forms_monthly:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 0
+    factor: 14134 # Forms per user per month (16000000 forms / 1132 users)
   # Total Forms ever created
   forms_total:
     model: 'cumulative'
