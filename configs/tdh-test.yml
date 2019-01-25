@@ -39,7 +39,7 @@ services:
     # this should have standbys for HA
     # need higher performing SSDs
     usage_capacity_per_node: 25000
-    include_ha_resources: True
+    # include_ha_resources: True
     storage:
       group: 'SSD'
       data_models:
@@ -52,6 +52,7 @@ services:
       ram_per_node: 8
 
   pg_proxy:
+    static_number: 1
     usage_capacity_per_node: 150000
     storage_scales_with_nodes: True
     storage:
@@ -66,7 +67,7 @@ services:
   pg_main:
     usage_capacity_per_node: 150000
     storage_scales_with_nodes: True
-    min_nodes: 2
+    static_number: 1
     storage:
       group: 'SSD'
       static_baseline: 250GB  # to account for other static tables
@@ -94,7 +95,7 @@ services:
 
   es_datanode:
     usage_capacity_per_node: 15000
-    min_nodes: 3
+    min_nodes: 1
     storage:
       group: 'SAS'
       redundancy_factor: 2
@@ -106,18 +107,6 @@ services:
     process:
       cores_per_node: 8
       ram_per_node: 32
-
-  es_master:
-    static_number: 6
-    storage_scales_with_nodes: True
-    storage:
-      group: 'VM_other'
-      static_baseline: 100GB
-      override_storage_buffer: 0
-      override_estimation_buffer: 0
-    process:
-      cores_per_node: 2
-      ram_per_node: 8
 
   riakcs:
     usage_capacity_per_node: 50000
@@ -154,7 +143,7 @@ services:
   pg_ucr:
     usage_capacity_per_node: 100000
     storage_scales_with_nodes: True
-    min_nodes: 2
+    min_nodes: 1
     storage:
       # This is a rough estimate.
       # The person case UCR is 35% of total UCR usage.
@@ -231,7 +220,7 @@ services:
 
   redis:
     usage_capacity_per_node: 200000
-    min_nodes: 3
+    static_number: 1
     process:
       cores_per_node: 2
       ram_per_node: 16
@@ -248,6 +237,7 @@ services:
   nginx:  # limits for nginx not clear
     usage_capacity_per_node: 250000
     storage_scales_with_nodes: True
+    static_number: 1
     process:
       cores_per_node: 2
       ram_per_node: 4
