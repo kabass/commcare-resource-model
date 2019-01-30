@@ -45,12 +45,21 @@ usage:
     monthly_growth: 0
     start_with: 19000000
 
+  # Number of cases updated per user per month
+  case_transactions:
+    model: 'derived_factor'
+    dependant_field: 'forms_monthly'
+    factor: 3  # 3 cases per form
+  # Total Case Transaction
+  case_transactions_total:
+    model: 'cumulative'
+    dependant_field: 'case_transactions'
+    start_with: 1900000000   # 10 per case?
+
 services:
   pg_shards:
-    # this should have standbys for HA
-    # need higher performing SSDs
-    usage_capacity_per_node: 25000
-    # include_ha_resources: True
+    static_number: 1
+    include_ha_resources: True
     storage:
       group: 'SSD'
       data_models:
