@@ -29,13 +29,8 @@ usage:
 
   forms_per_sec_max:
     model: 'derived_factor'
-      dependant_field: 'users'
-      factor: 0.0025  # 2 forms per second for 755 users
-
-  restores_per_second:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 0.00003  # 0.03 restores per second for 755 users
+    dependant_field: 'forms_monthly'
+    factor: 0.000000182  # 2 forms per second for 1.1M forms per month
 
   #Number of cases per user per month
   cases_total:
