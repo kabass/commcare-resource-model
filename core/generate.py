@@ -77,7 +77,7 @@ class ComputeModel(object):
         if process_def.static_number:
             return pd.Series([process_def.static_number] * len(usage_data), index=usage_data.index)
         else:
-            return (usage_data / process_def.capacity).map(np.ceil)
+            return (usage_data / float(process_def.capacity)).map(np.ceil)
 
     def data_frame(self, current_data_frame, data_storage):
         usage = current_data_frame[self.service_def.usage_field]
