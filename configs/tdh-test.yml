@@ -151,20 +151,18 @@ services:
     # num keys = 10TB / (12560b x 3<redundancy factor>)
     # RAM needed = 130b x num keys = 35GB (64GB avail per node)
     max_storage_per_node: 25TB
-    min_nodes: 3
+#    min_nodes: 3
     storage:
       group: 'SSD'
       redundancy_factor: 3
-      static_baseline: 1TB  # to account for exports etc
+      static_baseline: 250GB  # to account for exports etc
       data_models:
         - referenced_field: 'forms_total'  # 96% of objects
-          unit_size: 11000
+          unit_size: 15700
     process:
-      # current load quite low (~15%) (2018-10-11)
       cores_per_node: 4
       # need to be able to fit all keys in RAM since we're using bitcask backend
-      # Current usage is at 30% (2018-10-11)
-      ram_per_node: 4
+      ram_per_node: 16
       ram_model:
       - referenced_field: 'forms_total'
         # key size (45 + 6 + 79) (overhead + bucket + key)
