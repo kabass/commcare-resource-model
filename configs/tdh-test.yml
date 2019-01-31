@@ -51,6 +51,25 @@ usage:
     dependant_field: 'case_transactions'
     start_with: 1900000000   # 10 per case?
 
+  case_indices:
+    model: 'derived_factor'
+    dependant_field: 'cases_total'
+    factor: 1  # guess
+
+  synclogs_monthly:
+    model: 'derived_factor'
+    dependant_field: 'users'
+    factor: 30  # guess
+  synclogs_total:
+    model: 'cumulative_limited_lifespan'
+    dependant_field: 'synclogs_monthly'
+    lifespan: 2  # we only keep synclogs for 2 months
+
+  restores_per_second:
+    model: 'derived_factor'
+    dependant_field: 'synclogs_monthly'
+    factor: 0.000001325  # 0.03 restores per second for 22650 restores per month
+
 services:
   pg_shards:
     static_number: 1
