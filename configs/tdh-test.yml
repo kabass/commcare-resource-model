@@ -59,7 +59,7 @@ usage:
   synclogs_monthly:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 30  # guess
+    factor: 30  # from prod data Jan 2019
   synclogs_total:
     model: 'cumulative_limited_lifespan'
     dependant_field: 'synclogs_monthly'
@@ -69,6 +69,12 @@ usage:
     model: 'derived_factor'
     dependant_field: 'synclogs_monthly'
     factor: 0.000001325  # 0.03 restores per second for 22650 restores per month
+
+  requests_per_second:
+    model: 'derived_sum'
+    dependant_fields:
+      - 'restores_per_second'
+      - 'forms_per_sec_max'
 
 services:
   pg_shards:
