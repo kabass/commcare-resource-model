@@ -76,6 +76,18 @@ usage:
       - 'restores_per_second'
       - 'forms_per_sec_max'
 
+  kafka_changes:
+    model: 'derived_sum'
+    dependant_fields:
+      - 'forms_monthly'
+      - 'cases_total_monthly'
+      - 'case_transactions'
+      - 'synclogs_monthly'
+  kafka_changes_total:
+    model: 'cumulative_limited_lifespan'
+    dependant_field: 'kafka_changes'
+    lifespan: 2  # keep kafka changes for 2 months
+
 services:
   pg_shards:
     static_number: 1
@@ -274,5 +286,27 @@ services:
     storage:  # don't have a model for rabbitmq storage
       group: 'SAS'
       static_baseline: 50GB
+      override_storage_buffer: 0
+      override_estimation_buffer: 0
+
+  kafka:
+    static_number: 1
+    storage:
+      group: 'SAS'
+      data_models:
+        - referenced_field: 'kafka_changes_total'
+          unit_size: 500
+    process:
+      cores_per_node: 2
+      ram_per_node: 4
+
+  formplayer:
+    static_number: 1
+    process:
+      cores_per_node: 2
+      ram_per_node: 4
+    storage:
+      group: 'SAS'
+      static_baseline: 100GB
       override_storage_buffer: 0
       override_estimation_buffer: 0
