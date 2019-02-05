@@ -124,8 +124,8 @@ def get_summary_data(config, service_data):
             data_storage_total = data_storage + storage_buffer + storage_estimation_buffer
         else:
             # data is spread across all VMs
-            data_storage_per_vm = data_storage / compute['VMs']
-            data_storage_total = data_storage_per_vm * vms_total
+            data_storage_total = data_storage
+            data_storage_per_vm = data_storage_total / vms_total
 
         zero = pd.Series([0] * len(vms_suggested), index=vms_suggested.index)
         include_ha_resources = service_def.include_ha_resources

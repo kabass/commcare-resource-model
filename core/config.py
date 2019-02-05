@@ -36,7 +36,7 @@ class SubProcessDef(jsonobject.JsonObject):
     """
     name = jsonobject.StringProperty()
     static_number = jsonobject.IntegerProperty()
-    capacity = jsonobject.IntegerProperty()
+    capacity = jsonobject.DecimalProperty()
 
     def validate(self, required=True):
         if self.static_number:
