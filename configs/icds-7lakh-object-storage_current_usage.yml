@@ -37,7 +37,7 @@ usage:
   forms_monthly:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 1000
+    factor: 350
   forms_total:
     model: 'cumulative'
     dependant_field: 'forms_monthly'
@@ -46,7 +46,7 @@ usage:
   images:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 600  # daily feeding + THR + AG
+    factor: 35
   images_total:
     model: 'cumulative_limited_lifespan'
     dependant_field: 'images'
