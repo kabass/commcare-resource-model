@@ -31,15 +31,15 @@ usage:
 #      - ['20190101', 120000]
       - ['20180901', '20181201', 115000]
       - ['20190101', '20190201', 140000]
-      - ['20190301', '20190401', 140000]
-      - ['20190501', '20191201', 700000]
+      - ['20190301', '20190501', 400000]
+      - ['20190601', '20191201', 700000]
 
   # LS User as a percent of total User
   ls_users:
     model: 'derived_factor'
     dependant_field: 'users'
     factor: 0.05
-  # Number of formaplayer user from X date to Y
+  # Number of formplayer user from X date to Y
   formplayer_users:
     model: 'date_range_value'
     ranges:
@@ -388,8 +388,8 @@ services:
     min_nodes: 10
     storage:
       group: 'blob'
-      redundancy_factor: 3
-      static_baseline: 10TB  # to account for exports etc
+#      redundancy_factor: 3
+      static_baseline: 1TB  # to account for exports etc
       data_models:
         - referenced_field: 'forms_total'  # 96% of objects
           unit_size: 11000
