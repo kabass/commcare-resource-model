@@ -1,0 +1,9 @@
+SMS queue:
+
+- 2 gevent workers with concurrency of 10: 120K tasks (messages) per hour
+
+reminder queue:
+ - 2 genvent workers with concurrency of 5: 30 tasks per second
+
+reminder case update queue:
+ - 72 workers with concurrency of 5: 40 tasks per second (20 comfortably)
