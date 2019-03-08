@@ -434,16 +434,16 @@ services:
           unit_size: 8000  # to account for monthly data etc.
     process:
       cores_per_node: 32
-      ram_per_node: 256
+      ram_per_node: 128
 
   pg_warehouse:
-    usage_capacity_per_node: 300000
+    usage_capacity_per_node: 400000
     storage_scales_with_nodes: True
     storage:
       group: 'SSD'
       data_models:
         - referenced_field: 'forms_total'
-          unit_size: 4000  # to account for monthly data etc.
+          unit_size: 4000
     process:
       cores_per_node: 16
       ram_per_node: 128
