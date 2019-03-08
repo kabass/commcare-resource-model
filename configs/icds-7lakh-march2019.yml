@@ -223,6 +223,8 @@ usage:
       - 'sms_lactating_women'
       - 'sms_aww'
       - 'sms_ls'
+  # TODO: break this down into SMS and then the other models so that they can
+  # have separate lifecycles (keep SMS for 3 months but only keep others for 1 month
   sms_total:
     model: 'cumulative_limited_lifespan'
     dependant_field: 'sms_monthly_total'
