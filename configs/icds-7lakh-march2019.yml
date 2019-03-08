@@ -96,7 +96,7 @@ usage:
   case_transactions:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 1000  # inflated number by MWCD. Actual closer to 1000
+    factor: 1500  # based off kafka changes over a month
   # Total Case Transaction
   case_transactions_total:
     model: 'cumulative'
