@@ -115,11 +115,10 @@ usage:
     baseline: 1000
     monthly_growth: 28  # https://confluence.dimagi.com/display/ICDS/Case+Structure+and+Workflow#CaseStructureandWorkflow-CASCaseSizingEstimates
 
-  # assume 100% phone number capture rate
   beneficiary_phone_numbers:
     model: 'derived_factor'
     dependant_field: 'person_cases_total'
-    factor: 1  # 100% seeding
+    factor: 0.2  # 20% seeding
   phone_numbers:
     model: 'derived_sum'
     dependant_fields:
