@@ -280,15 +280,15 @@ services:
       ram_per_node: 128
 
   pg_proxy:
-    usage_capacity_per_node: 150000
+    usage_capacity_per_node: 700000
     storage_scales_with_nodes: True
     storage:
       group: 'VM_other'
-      static_baseline: 200GB
+      static_baseline: 50GB
       override_storage_buffer: 0
       override_estimation_buffer: 0
     process:
-      cores_per_node: 16
+      cores_per_node: 32
       ram_per_node: 64
 
   pg_main:
