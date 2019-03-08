@@ -464,26 +464,53 @@ services:
 #      cores_per_node: 32
 #      ram_per_node: 256
 
-  pillowtop:  # will need to revamp this once combined pillows are rolled out
+  # cover other pillows that don't need to be scaled
+  pillowtop_static:
+    static_number: 3
     storage_scales_with_nodes: True
     process:
       cores_per_node: 16
-      ram_per_node: 48
+      ram_per_node: 32
+    storage:
+      group: 'VM_other'
+      static_baseline: 100GB
+      override_storage_buffer: 0
+      override_estimation_buffer: 0
+
+  pillowtop_cases:
+    usage_field: 'case_transactions'
+    storage_scales_with_nodes: True
+    process:
+      cores_per_node: 16
+      ram_per_node: 32
       cores_per_sub_process: 0.5
       ram_per_sub_process: 0.7
       sub_processes:
-        - name: 'other'
-          capacity: 7000  # covers all other pillows
-        - name: 'FormSubmissionMetadataTrackerPillow'
-          capacity: 7000
-        - name: 'XFormToElasticsearchPillow'
-          capacity: 7000
-        - name: 'kafka-ucr-static-forms'
-          capacity: 2500
         - name: 'kafka-ucr-static-cases'
-          capacity: 1000
+          capacity: 1750000  # this is largely dependent on the UCR DB performance
         - name: 'CaseToElasticsearchPillow'
-          capacity: 1000
+          capacity: 3000000
+    storage:
+      group: 'VM_other'
+      static_baseline: 100GB
+      override_storage_buffer: 0
+      override_estimation_buffer: 0
+
+  pillowtop_forms:
+    usage_field: 'forms_monthly'
+    storage_scales_with_nodes: True
+    process:
+      cores_per_node: 16
+      ram_per_node: 32
+      cores_per_sub_process: 0.5
+      ram_per_sub_process: 0.7
+      sub_processes:
+        - name: 'FormSubmissionMetadataTrackerPillow'
+          capacity: 5000000
+        - name: 'XFormToElasticsearchPillow'
+          capacity: 5000000
+        - name: 'kafka-ucr-static-forms'
+          capacity: 2000000   # this is largely dependent on the UCR DB performance
     storage:
       group: 'VM_other'
       static_baseline: 100GB
