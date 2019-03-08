@@ -24,6 +24,7 @@ if __name__ == '__main__':
     parser.add_argument('config', help='Path to config file')
     parser.add_argument('-o', '--output', help='Write output to Excel file at this path.')
     parser.add_argument('-s', '--service', help='Only output data for specific service.')
+    parser.add_argument('-u', '--usage', help='Print a specific usage field.')
 
     args = parser.parse_args()
 
@@ -31,6 +32,9 @@ if __name__ == '__main__':
 
     config = config_from_path(args.config)
     usage = generate_usage_data(config)
+    if args.usage:
+        print(usage[args.usage])
+
     if args.service:
         config.services = {
             args.service: config.services[args.service]
