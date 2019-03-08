@@ -297,7 +297,7 @@ services:
     min_nodes: 2
     storage:
       group: 'SSD'
-      static_baseline: 250GB  # to account for other static tables
+      static_baseline: 50GB  # to account for other static tables
       data_models:
         - referenced_field: 'phone_numbers'
           unit_size: 550
@@ -424,9 +424,7 @@ services:
     include_ha_resources: True
     storage:
       # This is a rough estimate.
-      # The person case UCR is 35% of total UCR usage.
       group: 'SSD'
-      # this was in the wrong place so got left out by mistake
       data_models:
         - referenced_field: 'person_cases_total'
           unit_size: 9000  # inflated to account for others UCRs
