@@ -254,9 +254,7 @@ usage:
 
 services:
   pg_shards:
-    # this should have standbys for HA
-    # need higher performing SSDs
-    usage_capacity_per_node: 25000
+    usage_capacity_per_node: 50000
     include_ha_resources: True
     storage:
       group: 'SSD'
