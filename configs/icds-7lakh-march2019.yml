@@ -607,11 +607,12 @@ services:
       override_estimation_buffer: 0
 
   redis:
-    usage_capacity_per_node: 200000
+    usage_capacity_per_node: 250000
+    usage_field: 'preak_requests_per_15_min'
     min_nodes: 3
     process:
-      cores_per_node: 12
-      ram_per_node: 96
+      cores_per_node: 8
+      ram_per_node: 64
       ram_model:
         - referenced_field: 'users'
           unit_size: 50KB
@@ -621,24 +622,6 @@ services:
       data_models:
         - referenced_field: 'users'
           unit_size: 50KB
-
-  # potentially deploy redis as a cache for object storage if object storage
-  # performance isn't up to scratch
-  redis_os_cache:
-    usage_capacity_per_node: 150000
-    min_nodes: 3
-    process:
-      cores_per_node: 16  # can run multiple instances per VM if necessary
-      ram_per_node: 128
-      ram_model:
-        - referenced_field: 'forms_daily'
-          unit_size: 11KB
-      ram_static_baseline: 33  # per node (assume only 50% ram is usable)
-    storage:
-      group: 'SAS'
-      data_models:
-        - referenced_field: 'forms_daily'
-          unit_size: 11KB
 
   nginx:  # limits for nginx not clear
     usage_capacity_per_node: 250000
