@@ -372,7 +372,7 @@ services:
       ram_per_node: 16
 
   kafka:
-    usage_capacity_per_node: 200000
+    usage_capacity_per_node: 100000
     min_nodes: 3
     storage:
       group: 'SAS'
