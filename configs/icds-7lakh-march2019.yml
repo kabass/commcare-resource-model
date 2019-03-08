@@ -624,14 +624,14 @@ services:
           unit_size: 50KB
 
   nginx:  # limits for nginx not clear
-    usage_capacity_per_node: 250000
+    usage_capacity_per_node: 500000
     storage_scales_with_nodes: True
     process:
       cores_per_node: 16
-      ram_per_node: 64
+      ram_per_node: 32
     storage:
       group: 'VM_other'
-      static_baseline: 250GB  # logs etc
+      static_baseline: 200GB  # logs etc
       override_storage_buffer: 0
       override_estimation_buffer: 0
 
@@ -640,10 +640,10 @@ services:
     storage_scales_with_nodes: True
     process:
       cores_per_node: 32
-      ram_per_node: 128
+      ram_per_node: 64
     storage:  # don't have a model for rabbitmq storage
       group: 'SAS'
-      static_baseline: 500GB
+      static_baseline: 100GB
       override_storage_buffer: 0
       override_estimation_buffer: 0
 
