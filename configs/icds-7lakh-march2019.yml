@@ -4,31 +4,15 @@ storage_buffer: 0.33  # keep max storage at 75% of disk
 storage_display_unit: TB
 
 summary_dates:
-#  - '2018-10'
-#  - '2018-12'
-#  - '2019-02'
-#  - '2019-04'
-#  - '2019-06'
   - '2019-12'
 
 vm_os_storage_gb: 50
 vm_os_storage_group: 'VM_os'
 
 usage:
-  # TODO: adjust to match https://docs.google.com/spreadsheets/d/1PbLrv70Cp4gablzGyLdGEgxApw5376oNslZKlncT8iM/edit#gid=2043695881
   users:
     model: 'date_range_value'
     ranges:
-      # User counts based on historical data
-#      - ['20170101', '20170201', 500]
-#      - ['20170301', 20000]
-#      - ['20170401', 40000]
-#      - ['20170501', '20171001', 50000]
-#      - ['20171101', 60000]
-#      - ['20171201', '20180301', 90000]
-#      - ['20180401', '20180501', 100000]
-#      - ['20180601', '20181201', 115000]
-#      - ['20190101', 120000]
       - ['20180901', '20181201', 115000]
       - ['20190101', '20190201', 140000]
       - ['20190301', '20190401', 200000]
