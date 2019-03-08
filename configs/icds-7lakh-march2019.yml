@@ -37,12 +37,51 @@ usage:
   forms_daily:
     model: 'derived_factor'
     dependant_field: 'forms_monthly'
-    factor: 0.03
+    factor: 0.04  # 26 days in a month (exclude Sunday)
   # Total Forms ever created
   forms_total:
     model: 'cumulative'
     dependant_field: 'forms_monthly'
     start_with: 329680028   # from ES form index (total docs)
+
+  peak_forms_per_15_min:
+    model: 'derived_factor'
+    dependant_field: 'forms_daily'
+    # # Ratio of daily forms to max forms in 15 min interval
+    # See https://docs.google.com/spreadsheets/d/1MQ0pmrVqBKacDbyo5-PBAeMZ-Lm2z8GZ6oexV65iVL4/edit#gid=1860153301
+    factor: 0.05
+
+  synclogs_monthly:
+    model: 'derived_factor'
+    dependant_field: 'users'
+    factor: 60  # estimate from data analysis (SQL)
+  synclogs_total:
+    model: 'cumulative_limited_lifespan'
+    dependant_field: 'synclogs_monthly'
+    lifespan: 2  # we only keep synclogs for 2 months
+  synclog_requests_per_day:
+    model: 'derived_factor'
+    dependant_field: 'synclogs_monthly'
+    factor: 0.04  # 26 days in a month (exclude Sunday)
+  peak_synclog_requests_per_15min:
+    model: 'derived_factor'
+    dependant_field: 'synclog_requests_per_day'
+    # # Ratio of daily syncs to max syncs in 15 min interval
+    # https://docs.google.com/spreadsheets/d/1MQ0pmrVqBKacDbyo5-PBAeMZ-Lm2z8GZ6oexV65iVL4/edit#gid=193271304
+    factor: 0.05
+
+  peak_other_requests_per_15min:
+    model: 'derived_factor'
+    dependant_field: 'peak_synclog_requests_per_15min'
+    factor: 3  # heartbeat and app update checks roughly save volume as syncs
+
+  preak_requests_per_15_min:
+    model: 'derived_sum'
+    dependant_fields:
+      - 'peak_forms_per_15_min'
+      - 'peak_synclog_requests_per_15min'
+      - 'peak_other_requests_per_15min'
+
 
   #Number of cases per user per month
   cases_total:
@@ -129,15 +168,6 @@ usage:
       - 'ledger_updates_preg'
       - 'ledger_updates_child'
 
-  synclogs:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 60  # estimate from data analysis (SQL)
-  synclogs_total:
-    model: 'cumulative_limited_lifespan'
-    dependant_field: 'synclogs'
-    lifespan: 2  # we only keep synclogs for 2 months
-
   images:
     model: 'derived_factor'
     dependant_field: 'users'
@@ -215,7 +245,7 @@ usage:
       - 'cases_total_monthly'
       - 'case_transactions'
       - 'ledger_updates_monthly'
-      - 'synclogs'
+      - 'synclogs_monthly'
       - 'sms_monthly_total'
   kafka_changes_total:
     model: 'cumulative_limited_lifespan'
@@ -289,7 +319,7 @@ services:
     storage:
       group: 'SSD'
       data_models:
-        - referenced_field: 'synclogs'
+        - referenced_field: 'synclogs_monthly'
           unit_size: 210000
     process:
       cores_per_node: 32
@@ -511,11 +541,16 @@ services:
       override_estimation_buffer: 0
 
   django:
-    usage_capacity_per_node: 15000
+    usage_field: 'preak_requests_per_15_min'
     storage_scales_with_nodes: True
     process:
       cores_per_node: 16
-      ram_per_node: 48
+      ram_per_node: 32
+      cores_per_sub_process: 0.7
+      ram_per_sub_process: 0.7
+      sub_processes:
+        - name: 'gunicorn_worker'
+          capacity: 900  # 900 requests per 15 min (1 per s)
     storage:
       group: 'VM_other'
       static_baseline: 100GB
