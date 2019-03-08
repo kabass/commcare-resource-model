@@ -339,7 +339,7 @@ services:
       ram_per_node: 64
 
   es_datanode:
-    usage_capacity_per_node: 15000
+    usage_capacity_per_node: 25000
     min_nodes: 3
     storage:
       group: 'SAS'
@@ -360,11 +360,11 @@ services:
       ram_per_node: 64
 
   es_master:
-    static_number: 6
+    static_number: 3
     storage_scales_with_nodes: True
     storage:
       group: 'VM_other'
-      static_baseline: 100GB
+      static_baseline: 50GB
       override_storage_buffer: 0
       override_estimation_buffer: 0
     process:
