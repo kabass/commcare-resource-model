@@ -490,30 +490,72 @@ services:
       override_storage_buffer: 0
       override_estimation_buffer: 0
 
-  celery:
+  # queues that scale with # users
+  celery_users:
     storage_scales_with_nodes: True
     process:
       cores_per_node: 16
-      ram_per_node: 48
+      ram_per_node: 32
+      cores_per_sub_process: 1
+      ram_per_sub_process: 0.7
+      sub_processes:
+        - name: 'icds_dashboard_reports_queue'
+          capacity: 15000  # scales with dashboard users which we don't have input data for
+        - name: 'submission_reprocessing_queue'
+          capacity: 100000  # not really true but OK
+    storage:
+      group: 'VM_other'
+      static_baseline: 100GB
+      override_storage_buffer: 0
+      override_estimation_buffer: 0
+
+  # cover other celery queues that don't need to be scaled
+  celery_static:
+    static_number: 3
+    storage_scales_with_nodes: True
+    process:
+      cores_per_node: 16
+      ram_per_node: 32
+    storage:
+      group: 'VM_other'
+      static_baseline: 100GB
+      override_storage_buffer: 0
+      override_estimation_buffer: 0
+
+  # queues that scale with case transactions
+  celery_cases:
+    usage_field: 'case_transactions'
+    storage_scales_with_nodes: True
+    process:
+      cores_per_node: 16
+      ram_per_node: 32
       cores_per_sub_process: 0.7  # reduced from 1 since we use django VMs as well
       ram_per_sub_process: 0.5  # reduced from 0.7 since we use django VMs as well
       sub_processes:
         - name: 'reminder_case_update_queue'
-          capacity: 1000
-        - name: 'reminder_queue'
-          capacity: 30000
+          capacity: 6000000  # 6M changes per month (300M / 50 workers : Feb 2019)
         - name: 'ucr_indicator_queue'
-          capacity: 5000
-        - name: 'icds_dashboard_reports_queue'
-          capacity: 7000
+          capacity: 2500000  # 2.5M per worker only processes ~50% of cases (ccs_record / child_cases)
+    storage:
+      group: 'VM_other'
+      static_baseline: 100GB
+      override_storage_buffer: 0
+      override_estimation_buffer: 0
+
+  celery_sms:
+    # https://docs.google.com/spreadsheets/d/18La8-RZkkjOJ3uhwmJVXK9LLOc0dP5esQETgQ8eqcGw/edit#gid=126849162 ("Load supported per worker" table)
+    usage_field: 'sms_monthly_total'
+    storage_scales_with_nodes: True
+    process:
+      cores_per_node: 16
+      ram_per_node: 32
+      cores_per_sub_process: 1
+      ram_per_sub_process: 0.7
+      sub_processes:
+        - name: 'reminder_queue'
+          capacity: 1100000
         - name: 'sms_queue'
-          capacity: 15000
-        - name: 'case_rule_queue'
-          capacity: 60000
-        - name: 'reminder_rule_queue'
-          capacity: 60000
-        - name: 'submission_reprocessing_queue'
-          capacity: 60000
+          capacity: 800000
     storage:
       group: 'VM_other'
       static_baseline: 100GB
