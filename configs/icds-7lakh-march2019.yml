@@ -433,7 +433,8 @@ services:
   blob:
     storage:
       group: 'blob'
-      static_baseline: 10TB  # to account for exports etc
+      static_baseline: 1TB  # to account for exports etc
+      override_storage_buffer: 0
       data_models:
         - referenced_field: 'forms_total'  # 96% of objects
           unit_size: 11000
