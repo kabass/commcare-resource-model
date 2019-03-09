@@ -177,13 +177,20 @@ usage:
       - 'ledger_updates_preg'
       - 'ledger_updates_child'
 
-  images:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 600  # daily feeding + THR + AG
+  images_per_user:
+    model: 'date_range_value'
+    ranges:
+      - ['20180901', '20190301', 35]  # daily feeding
+      - ['20190401', 35]
+      - ['20190501', '20191201', 600]  # daily feeding + THR + AG
+  images_monthly:
+    model: 'product'
+    dependant_fields:
+      - 'users'
+      - 'images_per_user'
   images_total:
     model: 'cumulative_limited_lifespan'
-    dependant_field: 'images'
+    dependant_field: 'images_monthly'
     lifespan: 3  # we only keep images for 3 months
 
   # This is modelled because it accounts for significant storage in the main PG database
