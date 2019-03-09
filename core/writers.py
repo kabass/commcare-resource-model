@@ -138,16 +138,17 @@ class ExcelWriter(BaseWriter):
         def get_col_widths(dataframe):
             idx_max = max([len(str(s)) for s in dataframe.index.values] + [len(str(dataframe.index.name))])
             columns = list(dataframe.columns)
-            if isinstance(dataframe.columns[0], tuple):
-                # for multi-indexes get the longest column text
-                columns = [
-                    sorted(cols, key=lambda c: len(c), reverse=True)[0]
-                    for cols in columns
+            if isinstance(columns[0], tuple):
+                lengths = [
+                    max([len(str(s)) for s in dataframe[col[0]][col[1]].values] + [len(col[0]), len(col[1])])
+                    for col in columns
                 ]
-            return (
-                    [idx_max] +
-                    [max([len(str(s)) for s in dataframe[col].values] + [len(col)]) for col in columns]
-            )
+            else:
+                lengths = [
+                    max([len(str(s)) for s in dataframe[col].values] + [len(col)])
+                    for col in columns
+                ]
+            return [idx_max] + lengths
 
         current_col_widths = self.sheet_col_widths[sheet_name]
         col_widths = get_col_widths(data_frame)
