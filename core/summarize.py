@@ -119,8 +119,10 @@ def get_summary_data(config, service_data):
             # but only where vm_total_gt = False
 
             # 1. calculate storage per VM and total for case where ``vms_total <= vms_suggested``
+            # per vm storage = storage / vms_suggested
+            # total storage = per vm storage * vms_total
             vm_total_lte = np.invert(vm_total_gt)
-            data_storage_per_vm_lt = data_storage / compute['VMs'] * vm_total_lte
+            data_storage_per_vm_lt = (data_storage + data_storage_buffer) / compute['VMs'] * vm_total_lte
             data_storage_total_lt = data_storage_per_vm_lt * vms_total * vm_total_lte
 
             # 2. calculate storage per VM and total for case where ``vms_total > vms_suggested``
