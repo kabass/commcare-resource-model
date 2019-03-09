@@ -5,6 +5,7 @@ storage_display_unit: TB
 
 summary_dates:
   - '2019-12'
+  - '2019-03'
 
 vm_os_storage_gb: 50
 vm_os_storage_group: 'VM_os'
@@ -30,11 +31,19 @@ usage:
     ranges:
       - ['20180901', '20191201', 1000]
 
+  forms_per_user:
+    model: 'date_range_value'
+    ranges:
+      - ['20180901', '20190301', 350]
+      - ['20190401', 400]
+      - ['20190501', '20191201', 1000]
+
   #Number of forms per user per month
   forms_monthly:
-    model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 1000
+    model: 'product'
+    dependant_fields:
+      - 'users'
+      - 'forms_per_user'
   forms_daily:
     model: 'derived_factor'
     dependant_field: 'forms_monthly'

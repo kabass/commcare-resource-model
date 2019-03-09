@@ -5,7 +5,7 @@ import pandas as pd
 from pandas.util.testing import assert_frame_equal
 
 from core.models import CumulativeModel, LimitedLifetimeModel, DerivedSum, \
-    DerivedFactor, DateValueModel, BaselineWithGrowth
+    DerivedFactor, DateValueModel, BaselineWithGrowth, DerivedProduct
 
 
 class UsageModelTests(TestCase):
@@ -76,6 +76,22 @@ class UsageModelTests(TestCase):
         """
         assert_frame_equal(result, self._from_csv(expected))
 
+    def test_derived_product(self):
+        factor = DateValueModel('factor', [
+            ['20170101', '20170201', 2],
+            ['20170301', '20170401', 5],
+        ]).data_frame(pd.DataFrame())
+        user_data = _get_user_data(factor)
+        print(user_data)
+        result = DerivedProduct('product', ['users', 'factor']).data_frame(user_data)
+        expected = """,product
+            2017-01-01,200
+            2017-02-01,200
+            2017-03-01,1000
+            2017-04-01,1000
+        """
+        assert_frame_equal(result, self._from_csv(expected))
+
     def test_derived_factor(self):
         user_data = _get_user_data()
         result = DerivedFactor('2x', dependant_field='users', factor=2).data_frame(user_data)
@@ -104,9 +120,9 @@ class UsageModelTests(TestCase):
         assert_frame_equal(result, self._from_csv(expected))
 
 
-def _get_user_data():
+def _get_user_data(*others):
     model = DateValueModel('users', [
         ['20170101', '20170201', 100],
         ['20170301', '20170401', 200],
     ])
-    return model.data_frame(pd.DataFrame())
+    return pd.concat([model.data_frame(pd.DataFrame())] + list(others), axis=1)

@@ -13,6 +13,7 @@ def models_by_slug():
         CumulativeModel,
         LimitedLifetimeModel,
         DerivedSum,
+        DerivedProduct,
         DerivedFactor,
         BaselineWithGrowth,
     ]
@@ -140,6 +141,18 @@ class DerivedSum(DerivedModel):
     """Sum multiple fields"""
     slug = 'derived_sum'
     func = sum
+
+
+class DerivedProduct(DerivedModel):
+    """Multiply multiple fields"""
+    slug = 'product'
+
+    @property
+    def func(self):
+        def _prod(fields):
+            return fields.product()
+
+        return _prod
 
 
 class DerivedFactor(DerivedModel):
