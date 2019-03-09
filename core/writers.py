@@ -146,8 +146,7 @@ class ExcelWriter(BaseWriter):
                 ]
             return (
                     [idx_max] +
-                    [max([len(str(s)) for dc in dataframe.columns for s in dataframe[dc].values] +
-                         [len(col)]) for col in columns]
+                    [max([len(str(s)) for s in dataframe[col].values] + [len(col)]) for col in columns]
             )
 
         current_col_widths = self.sheet_col_widths[sheet_name]
