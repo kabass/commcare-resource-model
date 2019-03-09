@@ -75,10 +75,19 @@ def write_summary_data(config, writer, summary_date, summary_data, user_count):
 
 
 def write_raw_service_data(writer, service_data, summary_data, title):
+    def _get_cols(headers):
+        cols = []
+        for header in headers:
+            if isinstance(header, tuple):
+                cols.append(': '.join(header))
+            else:
+                cols.append(header)
+        return cols
+
     sections = list(sorted({d[0] for d in service_data}))
     for section in sections:
         sdata = service_data[section]
-        sdata.columns = sdata.columns.get_level_values(1)
+        sdata.columns = _get_cols(list(sdata))
         combined = sdata.join(summary_data[section])
         writer.write_data_frame(combined, "{} ({})".format(title, section), 'Dates')
 

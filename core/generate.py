@@ -39,6 +39,15 @@ def generate_service_data(config, usage_data):
 
 
 def _service_storage_data(config, service_def, usage_data):
+    def _to_df(storage, raw=None):
+        df = pd.DataFrame({
+            'storage': storage,
+        })
+        if raw is not None:
+            return pd.concat([df, raw], axis=1)
+        else:
+            return df
+
     if service_def.storage.data_models:
         data_storage = _service_data_size(
             service_def.storage.data_models,
@@ -49,14 +58,12 @@ def _service_storage_data(config, service_def, usage_data):
         buffer = config.storage_buffer
         if service_def.storage.override_storage_buffer != None:
             buffer = service_def.storage.override_storage_buffer
-        data_storage = data_storage * float(1 + buffer)
+        total = data_storage.sum(axis=1) * float(1 + buffer)
+        return _to_df(total, data_storage)
     else:
         static = service_def.storage.static_baseline_bytes * service_def.storage.redundancy_factor
         data_storage = pd.Series([static] * len(usage_data), index=usage_data.index)
-
-    return pd.DataFrame({
-        'storage': data_storage
-    })
+        return _to_df(data_storage)
 
 
 def _service_data_size(data_models, static_baseline_bytes, usage_data, redundancy_factor=1):
@@ -68,8 +75,7 @@ def _service_data_size(data_models, static_baseline_bytes, usage_data, redundanc
         [static_baseline_bytes * redundancy_factor] * len(usage_data),
         index=usage_data.index, name='static_baseline'
     )
-    requires = pd.concat([_service_requirement(model) for model in data_models] + [baseline], axis=1)
-    return requires.sum(axis=1)
+    return pd.concat([_service_requirement(model) for model in data_models] + [baseline], axis=1)
 
 
 class ComputeModel(object):
@@ -126,7 +132,7 @@ class ComputeModel(object):
                 0,
                 current_data_frame,
                 self.service_def.process.ram_redundancy_factor,
-            )
+            ).sum(axis=1)
             ram_requirement = ram_requirement / byte_map['GB']
             ram_per_node_excl_baseline = self.service_def.process.ram_per_node - self.service_def.process.ram_static_baseline
             current_allocation = compute['VMs'] * ram_per_node_excl_baseline
