@@ -64,8 +64,12 @@ def _service_data_size(data_models, static_baseline_bytes, usage_data, redundanc
         bytes = usage_data[size_def.referenced_field] * size_def.unit_bytes
         return bytes * redundancy_factor
 
-    requires = pd.concat([_service_requirement(model) for model in data_models], axis=1)
-    return requires.sum(axis=1) + static_baseline_bytes * redundancy_factor
+    baseline = pd.Series(
+        [static_baseline_bytes * redundancy_factor] * len(usage_data),
+        index=usage_data.index, name='static_baseline'
+    )
+    requires = pd.concat([_service_requirement(model) for model in data_models] + [baseline], axis=1)
+    return requires.sum(axis=1)
 
 
 class ComputeModel(object):
