@@ -31,9 +31,6 @@ def write_summary_comparisons(config, writer, user_counts, comparisons, prefix='
     storage_cat_header = '%sStorage by Service (%s)' % (prefix, config.storage_display_unit)
     writer.write_data_frame(storage_by_cat, sheet, STORAGE_CAT_INDEX, storage_cat_header)
 
-    for category in categories:
-        comparison_header = '%s%s' % (prefix, category)
-        writer.write_data_frame(compute.xs(category, axis=1, level=1), sheet, SERVICE_INDEX, comparison_header, has_total_row=True)
     writer.write_data_frame(compute, sheet, SERVICE_INDEX, '%sCompute Combined' % prefix, has_total_row=True)
 
 
