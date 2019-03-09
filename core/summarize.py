@@ -44,18 +44,18 @@ def summarize_service_data(config, summary_data, summary_date):
     summary_by_service = summary_data[:, summary_date].T
     summary_by_service.sort_index(inplace=True)
 
-    vm_slabs = summary_by_service.groupby('VM Slab')['VMs Total'].sum()
-    vm_slabs.index.name = None
+    vm_types = summary_by_service.groupby('VM Type')['VMs Total'].sum()
+    vm_types.index.name = None
     try:
-        del vm_slabs['NonexNone']
+        del vm_types['NonexNone']
     except KeyError:
         pass
 
     vms_by_type = pd.DataFrame({
-        'Count': vm_slabs,
+        'Count': vm_types,
     })
     vms_by_type.sort_index(inplace=True)
-    summary_by_service.drop('VM Slab', axis=1, inplace=True)
+    summary_by_service.drop('VM Type', axis=1, inplace=True)
 
     by_type = summary_by_service.groupby('Storage Group')['Data Storage Total (%s)' % storage_units].sum()
     if config.vm_os_storage_group not in by_type:
@@ -158,8 +158,12 @@ def get_summary_data(config, service_data):
 
         os_storage = vms_total * config.vm_os_storage_gb * (1000.0 ** 3)
         os_storage_ha = vms_ha * config.vm_os_storage_gb * (1000.0 ** 3)
+        if service_def.process.cores_per_node:
+            vm_type = '{}x{}'.format(service_def.process.cores_per_node, service_def.process.ram_per_node)
+        else:
+            vm_type = ''
         data = OrderedDict([
-            ('VM Slab', '{}x{}'.format(service_def.process.cores_per_node, service_def.process.ram_per_node)),
+            ('VM Type', vm_type),
             ('Cores Per VM', service_def.process.cores_per_node),
             ('Cores HA', cores_ha),
             ('Cores Total', cores_total),
