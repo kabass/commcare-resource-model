@@ -46,7 +46,11 @@ def summarize_service_data(config, summary_data, summary_date):
 
     vm_slabs = summary_by_service.groupby('VM Slab')['VMs Total'].sum()
     vm_slabs.index.name = None
-    del vm_slabs['NonexNone']
+    try:
+        del vm_slabs['NonexNone']
+    except KeyError:
+        pass
+
     vms_by_type = pd.DataFrame({
         'Count': vm_slabs,
     })
