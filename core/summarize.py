@@ -132,9 +132,7 @@ def get_summary_data(config, service_data):
             data_storage_per_vm = data_storage_per_vm_lt + data_storage_per_vm_gt
         elif not compute['VMs'].any():
             # if this service doesn't have any compute resources
-            storage_buffer = data_storage * storage_estimation_buffer
-            storage_estimation_buffer = data_storage * estimation_buffer
-            data_storage_total = data_storage + storage_buffer + storage_estimation_buffer
+            data_storage_total = data_storage + data_storage_buffer
         else:
             # data is spread across all VMs
             data_storage_total = data_storage
