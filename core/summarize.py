@@ -6,7 +6,7 @@ import numpy as np
 
 from core.utils import format_date, to_storage_display_unit, tenth_round
 
-ServiceSummary = namedtuple('ServiceSummary', 'service_summary storage_by_group')
+ServiceSummary = namedtuple('ServiceSummary', 'service_summary storage_by_group vm_slabs')
 SummaryComparison = namedtuple('SummaryComparison', 'storage_by_category storage_by_group compute')
 
 
@@ -44,6 +44,14 @@ def summarize_service_data(config, summary_data, summary_date):
     summary_by_service = summary_data[:, summary_date].T
     summary_by_service.sort_index(inplace=True)
 
+    vm_slabs = summary_by_service.groupby('VM Slab')['VMs Total'].sum()
+    vm_slabs.index.name = None
+    vms_by_type = pd.DataFrame({
+        'Count': vm_slabs,
+    })
+    vms_by_type.sort_index(inplace=True)
+    summary_by_service.drop('VM Slab', axis=1, inplace=True)
+
     by_type = summary_by_service.groupby('Storage Group')['Data Storage Total (%s)' % storage_units].sum()
     if config.vm_os_storage_group not in by_type:
         by_type[config.vm_os_storage_group] = 0
@@ -53,14 +61,14 @@ def summarize_service_data(config, summary_data, summary_date):
     storage_by_group = pd.DataFrame({
         'Rounded Total (%s)' % storage_units: by_type,
     })
+    storage_by_group.sort_index(inplace=True)
 
     summary_by_service.drop('OS Storage Total (Bytes)', axis=1, inplace=True)
     total = summary_by_service.sum()
     total.name = 'Total'
     summary_by_service = summary_by_service.append(total, ignore_index=False)
 
-    storage_by_group.sort_index(inplace=True)
-    return ServiceSummary(summary_by_service, storage_by_group)
+    return ServiceSummary(summary_by_service, storage_by_group, vms_by_type)
 
 
 def get_summary_data(config, service_data):
@@ -146,6 +154,7 @@ def get_summary_data(config, service_data):
         os_storage = vms_total * config.vm_os_storage_gb * (1000.0 ** 3)
         os_storage_ha = vms_ha * config.vm_os_storage_gb * (1000.0 ** 3)
         data = OrderedDict([
+            ('VM Slab', '{}x{}'.format(service_def.process.cores_per_node, service_def.process.ram_per_node)),
             ('Cores Per VM', service_def.process.cores_per_node),
             ('Cores HA', cores_ha),
             ('Cores Total', cores_total),
