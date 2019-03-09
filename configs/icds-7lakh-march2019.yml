@@ -295,7 +295,7 @@ services:
           unit_size: 683
     process:
       cores_per_node: 32
-      ram_per_node: 128
+      ram_per_node: 156
 
   pg_proxy:
     usage_capacity_per_node: 700000
@@ -327,7 +327,7 @@ services:
           unit_size: 510  # averaged over all models taking model ratios into account
     process:
       cores_per_node: 32
-      ram_per_node: 128
+      ram_per_node: 156
 
   # planning to shard this
   pg_synclogs:
@@ -357,7 +357,7 @@ services:
       ram_per_node: 64
 
   es_datanode:
-    usage_capacity_per_node: 25000
+    usage_capacity_per_node: 30000
     min_nodes: 3
     storage:
       group: 'SAS'
@@ -375,7 +375,7 @@ services:
           unit_size: 675
     process:
       cores_per_node: 16
-      ram_per_node: 64
+      ram_per_node: 80
 
   es_master:
     static_number: 3
@@ -461,7 +461,7 @@ services:
           unit_size: 5000  # to account for monthly data etc.
     process:
       cores_per_node: 32
-      ram_per_node: 128
+      ram_per_node: 156
 
   pg_warehouse:
     usage_capacity_per_node: 400000
@@ -472,8 +472,8 @@ services:
         - referenced_field: 'forms_total'
           unit_size: 4000
     process:
-      cores_per_node: 16
-      ram_per_node: 128
+      cores_per_node: 32
+      ram_per_node: 156
 
 #  pg_warehouse_citus:
 #    # this should have replica nodes
@@ -691,7 +691,7 @@ services:
     storage_scales_with_nodes: True
     process:
       cores_per_node: 8
-      ram_per_node: 32
+      ram_per_node: 24
     storage:
       group: 'VM_other'
       static_baseline: 100GB
