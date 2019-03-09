@@ -616,7 +616,7 @@ services:
       override_storage_buffer: 0
       override_estimation_buffer: 0
 
-  django:
+  web:
     usage_field: 'preak_requests_per_15_min'
     storage_scales_with_nodes: True
     process:
