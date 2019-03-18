@@ -221,6 +221,16 @@ usage:
     model: 'derived_factor'
     dependant_field: 'users'
     factor: 35  # 7 lactating women per awc X 5 messages per month
+  beneficiary_sms_monthly_total:
+    model: 'derived_sum'
+    dependant_fields:
+      - 'sms_adolescent_girls'
+      - 'sms_pregnancies'
+      - 'sms_lactating_women'
+  beneficiary_sms_monthly_total_seeded:
+    model: 'derived_factor'
+    dependant_field: 'beneficiary_sms_monthly_total'
+    factor: 0.2  # 20% seeding
   sms_aww:
     model: 'derived_factor'
     dependant_field: 'users'
@@ -234,9 +244,7 @@ usage:
     start_with: 3438200
     dependant_fields:
       - 'sms_monthly_phase1'
-      - 'sms_adolescent_girls'
-      - 'sms_pregnancies'
-      - 'sms_lactating_women'
+      - 'beneficiary_sms_monthly_total_seeded'
       - 'sms_aww'
       - 'sms_ls'
   # TODO: break this down into SMS and then the other models so that they can
