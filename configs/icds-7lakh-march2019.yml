@@ -347,7 +347,7 @@ services:
           unit_size: 210000
     process:
       cores_per_node: 16
-      ram_per_node: 32
+      ram_per_node: 48
 
   couchdb:
     usage_capacity_per_node: 50000
