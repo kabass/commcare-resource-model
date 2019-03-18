@@ -47,6 +47,8 @@ if __name__ == '__main__':
     else:
         summary_dates = [usage.iloc[-1].name]  # summarize at final date
 
+    summary_dates = sorted(summary_dates)
+
     is_excel = bool(args.output)
     if is_excel:
         writer = ExcelWriter(args.output)
