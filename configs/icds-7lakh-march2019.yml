@@ -699,7 +699,7 @@ services:
     storage_scales_with_nodes: True
     process:
       cores_per_node: 8
-      ram_per_node: 24
+      ram_per_node: 32
     storage:
       group: 'VM_other'
       static_baseline: 100GB
