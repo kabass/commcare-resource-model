@@ -85,6 +85,7 @@ class ServiceDef(jsonobject.JsonObject):
     usage_capacity_per_node = jsonobject.IntegerProperty()
     usage_field = jsonobject.StringProperty(default='users')
     storage_scales_with_nodes = jsonobject.BooleanProperty(default=False)
+    min_storage_per_node = jsonobject.DefaultProperty()
     max_storage_per_node = jsonobject.DefaultProperty()
     min_nodes = jsonobject.IntegerProperty(default=0)
     include_ha_resources = jsonobject.BooleanProperty(default=False)
@@ -95,9 +96,15 @@ class ServiceDef(jsonobject.JsonObject):
         super(ServiceDef, self).validate(required=required)
         if not self.usage_capacity_per_node:
             assert self.process.sub_processes, 'Service is missing capacity configuration'
-        if self.max_storage_per_node:
+        if self.max_storage_per_node or self.min_storage_per_node:
             assert not self.storage_scales_with_nodes, 'max_storage_per_node not compatible ' \
                                                        'with "storage_scales_with_nodes"'
+
+    @property
+    def min_storage_per_node_bytes(self):
+        if not self.min_storage_per_node:
+            return 0
+        return storage_display_to_bytes(str(self.min_storage_per_node))
 
     @property
     def max_storage_per_node_bytes(self):

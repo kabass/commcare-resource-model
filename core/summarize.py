@@ -109,6 +109,7 @@ def get_summary_data(config, service_data):
         vm_total_gt = vms_total > vms_suggested
         data_storage_buffer = data_storage * storage_estimation_buffer
 
+        min_storage_per_node = service_def.min_storage_per_node_bytes
         if service_def.storage_scales_with_nodes:
             # in this case total storage = storage * VM number
             data_storage_per_vm = data_storage + data_storage_buffer
@@ -123,11 +124,15 @@ def get_summary_data(config, service_data):
             # total storage = per vm storage * vms_total
             vm_total_lte = np.invert(vm_total_gt)
             data_storage_per_vm_lt = (data_storage + data_storage_buffer) / compute['VMs'] * vm_total_lte
+            if min_storage_per_node:
+                data_storage_per_vm_lt = data_storage_per_vm_lt.map(lambda x: max(x, min_storage_per_node))
             data_storage_total_lt = data_storage_per_vm_lt * vms_total * vm_total_lte
 
             # 2. calculate storage per VM and total for case where ``vms_total > vms_suggested``
             data_storage_total_gt = (data_storage + data_storage_buffer) * vm_total_gt
             data_storage_per_vm_gt = data_storage_total_gt / vms_total * vm_total_gt
+            if min_storage_per_node:
+                data_storage_per_vm_gt = data_storage_per_vm_gt.map(lambda x: max(x, min_storage_per_node))
 
             # combine 1 & 2 and select values according to vm_total_gt
             data_storage_total = data_storage_total_lt + data_storage_total_gt
@@ -139,6 +144,9 @@ def get_summary_data(config, service_data):
             # data is spread across all VMs
             data_storage_total = data_storage
             data_storage_per_vm = data_storage_total / vms_total
+            if min_storage_per_node and any(data_storage_per_vm < min_storage_per_node):
+                data_storage_per_vm = data_storage_per_vm.map(lambda x: max(x, min_storage_per_node))
+                data_storage_total = data_storage_per_vm * vms_total
 
         zero = pd.Series([0] * len(vms_suggested), index=vms_suggested.index)
         include_ha_resources = service_def.include_ha_resources

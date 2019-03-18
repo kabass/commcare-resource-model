@@ -658,6 +658,7 @@ services:
     usage_capacity_per_node: 250000
     usage_field: 'preak_requests_per_15_min'
     min_nodes: 3
+    min_storage_per_node: 50GB
     process:
       cores_per_node: 8
       ram_per_node: 64
