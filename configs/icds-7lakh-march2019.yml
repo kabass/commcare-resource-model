@@ -471,6 +471,19 @@ services:
       cores_per_node: 32
       ram_per_node: 156
 
+  pg_ucr_citus_control:
+    static_number: 2
+    storage_scales_with_nodes: True
+    storage:
+      # This is a rough estimate.
+      group: 'SSD'
+      data_models:
+        - referenced_field: 'person_cases_total'
+          unit_size: 3000
+    process:
+      cores_per_node: 32
+      ram_per_node: 156
+
   pg_warehouse:
     usage_capacity_per_node: 400000
     storage_scales_with_nodes: True
