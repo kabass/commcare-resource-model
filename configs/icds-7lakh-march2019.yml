@@ -230,7 +230,7 @@ usage:
   beneficiary_sms_monthly_total_seeded:
     model: 'derived_factor'
     dependant_field: 'beneficiary_sms_monthly_total'
-    factor: 0.2  # 20% seeding
+    factor: 0.5  # 50% seeding
   sms_aww:
     model: 'derived_factor'
     dependant_field: 'users'
@@ -628,9 +628,9 @@ services:
       ram_per_sub_process: 0.7
       sub_processes:
         - name: 'reminder_queue'
-          capacity: 1100000
+          capacity: 600000
         - name: 'sms_queue'
-          capacity: 800000
+          capacity: 400000
     storage:
       group: 'VM_other'
       static_baseline: 100GB
