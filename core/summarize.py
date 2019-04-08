@@ -6,7 +6,7 @@ import numpy as np
 
 from core.utils import format_date, to_storage_display_unit, tenth_round
 
-ServiceSummary = namedtuple('ServiceSummary', 'service_summary storage_by_group vm_slabs')
+ServiceSummary = namedtuple('ServiceSummary', 'service_summary storage_by_group vm_slabs, vm_aggs')
 SummaryComparison = namedtuple('SummaryComparison', 'storage_by_category storage_by_group compute')
 
 
@@ -68,12 +68,15 @@ def summarize_service_data(config, summary_data, summary_date):
     })
     storage_by_group.sort_index(inplace=True)
 
+    vm_aggs = summary_by_service.groupby('Aggregation Key')['Cores Total', 'RAM Total (GB)', 'VMs Total'].sum()
+    vm_aggs.index.name = None
+
     summary_by_service.drop('OS Storage Total (Bytes)', axis=1, inplace=True)
     total = summary_by_service.sum()
     total.name = 'Total'
     summary_by_service = summary_by_service.append(total, ignore_index=False)
 
-    return ServiceSummary(summary_by_service, storage_by_group, vms_by_type)
+    return ServiceSummary(summary_by_service, storage_by_group, vms_by_type, vm_aggs)
 
 
 def get_summary_data(config, service_data):
@@ -190,6 +193,7 @@ def get_summary_data(config, service_data):
             ('OS Storage Total (Bytes)', os_storage),
             ('OS Storage Total (GB)', (to_gb(os_storage)).map(np.ceil)),
             ('Storage Group', service_def.storage.group),
+            ('Aggregation Key', service_def.aggregation_key or service_name),
         ])
         combined = pd.DataFrame(data=data)
         summary_df[service_name] = combined

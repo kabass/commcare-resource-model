@@ -280,6 +280,7 @@ usage:
 
 services:
   pg_shards:
+    aggregation_key: PostgreSQL
     usage_capacity_per_node: 50000
     include_ha_resources: True
     storage:
@@ -306,6 +307,7 @@ services:
       ram_per_node: 156
 
   pg_proxy:
+    aggregation_key: PostgreSQL
     usage_capacity_per_node: 700000
     storage_scales_with_nodes: True
     storage:
@@ -318,6 +320,7 @@ services:
       ram_per_node: 64
 
   pg_main:
+    aggregation_key: PostgreSQL
     usage_capacity_per_node: 400000
     storage_scales_with_nodes: True
     min_nodes: 2
@@ -339,6 +342,7 @@ services:
 
   # planning to shard this
   pg_synclogs:
+    aggregation_key: PostgreSQL
     usage_capacity_per_node: 250000
     storage:
       group: 'SSD'
@@ -350,6 +354,7 @@ services:
       ram_per_node: 48
 
   couchdb:
+    aggregation_key: CouchDB
     usage_capacity_per_node: 50000
     min_nodes: 3
     storage:
@@ -365,6 +370,7 @@ services:
       ram_per_node: 64
 
   es_datanode:
+    aggregation_key: Elasticsearch
     usage_capacity_per_node: 30000
     min_nodes: 3
     storage:
@@ -386,6 +392,7 @@ services:
       ram_per_node: 80
 
   es_master:
+    aggregation_key: Elasticsearch
     static_number: 3
     storage_scales_with_nodes: True
     storage:
@@ -398,6 +405,7 @@ services:
       ram_per_node: 16
 
   kafka:
+    aggregation_key: Message Queue
     usage_capacity_per_node: 100000
     min_nodes: 3
     storage:
@@ -446,6 +454,7 @@ services:
 #      ram_static_baseline: 1  # per node
 
   blob:
+    aggregation_key: Object Storage
     storage:
       group: 'blob'
       static_baseline: 1TB  # to account for exports etc
@@ -457,6 +466,7 @@ services:
           unit_size: 50000
 
   pg_ucr_citus:
+    aggregation_key: PostgreSQL
     usage_capacity_per_node: 70000
     include_ha_resources: True
     storage:
@@ -472,6 +482,7 @@ services:
       ram_per_node: 156
 
   pg_ucr_citus_control:
+    aggregation_key: PostgreSQL
     static_number: 2
     storage_scales_with_nodes: True
     storage:
@@ -485,6 +496,7 @@ services:
       ram_per_node: 156
 
   pg_warehouse:
+    aggregation_key: PostgreSQL
     usage_capacity_per_node: 400000
     storage_scales_with_nodes: True
     storage:
@@ -514,6 +526,7 @@ services:
 
   # cover other pillows that don't need to be scaled
   pillowtop_static:
+    aggregation_key: Application
     static_number: 3
     storage_scales_with_nodes: True
     process:
@@ -526,6 +539,7 @@ services:
       override_estimation_buffer: 0
 
   pillowtop_cases:
+    aggregation_key: Application
     usage_field: 'case_transactions'
     storage_scales_with_nodes: True
     process:
@@ -545,6 +559,7 @@ services:
       override_estimation_buffer: 0
 
   pillowtop_forms:
+    aggregation_key: Application
     usage_field: 'forms_monthly'
     storage_scales_with_nodes: True
     process:
@@ -567,6 +582,7 @@ services:
 
   # queues that scale with # users
   celery_users:
+    aggregation_key: Application
     storage_scales_with_nodes: True
     process:
       cores_per_node: 16
@@ -586,6 +602,7 @@ services:
 
   # cover other celery queues that don't need to be scaled
   celery_static:
+    aggregation_key: Application
     static_number: 3
     storage_scales_with_nodes: True
     process:
@@ -599,6 +616,7 @@ services:
 
   # queues that scale with case transactions
   celery_cases:
+    aggregation_key: Application
     usage_field: 'case_transactions'
     storage_scales_with_nodes: True
     process:
@@ -619,6 +637,7 @@ services:
 
   celery_sms:
     # https://docs.google.com/spreadsheets/d/18La8-RZkkjOJ3uhwmJVXK9LLOc0dP5esQETgQ8eqcGw/edit#gid=126849162 ("Load supported per worker" table)
+    aggregation_key: Application
     usage_field: 'sms_monthly_total'
     storage_scales_with_nodes: True
     process:
@@ -638,6 +657,7 @@ services:
       override_estimation_buffer: 0
 
   web:
+    aggregation_key: Application
     usage_field: 'preak_requests_per_15_min'
     storage_scales_with_nodes: True
     process:
@@ -655,6 +675,7 @@ services:
       override_estimation_buffer: 0
 
   redis:
+    aggregation_key: Cache
     usage_capacity_per_node: 250000
     usage_field: 'preak_requests_per_15_min'
     min_nodes: 3
@@ -673,6 +694,7 @@ services:
           unit_size: 50KB
 
   nginx:  # limits for nginx not clear
+    aggregation_key: Proxy
     usage_capacity_per_node: 500000
     storage_scales_with_nodes: True
     process:
@@ -685,6 +707,7 @@ services:
       override_estimation_buffer: 0
 
   rabbitmq:  # limits for rabbitmq not clear
+    aggregation_key: Message Queue
     static_number: 4
     storage_scales_with_nodes: True
     process:
@@ -697,6 +720,7 @@ services:
       override_estimation_buffer: 0
 
   formplayer:
+    aggregation_key: Application
     usage_capacity_per_node: 500
     usage_field: 'formplayer_users'
     process:
@@ -709,6 +733,7 @@ services:
           unit_size: 200MB
 
   airflow:
+    aggregation_key: Application
     static_number: 4
     storage_scales_with_nodes: True
     process:
@@ -721,6 +746,7 @@ services:
       override_estimation_buffer: 0
 
   control:
+    aggregation_key: Application
     static_number: 1
     storage:
       group: 'VM_other'

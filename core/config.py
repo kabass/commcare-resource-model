@@ -81,6 +81,7 @@ class ProcessDef(jsonobject.JsonObject):
 
 class ServiceDef(jsonobject.JsonObject):
     _allow_dynamic_properties = False
+    aggregation_key = jsonobject.StringProperty()
     static_number = jsonobject.IntegerProperty(default=0)
     usage_capacity_per_node = jsonobject.IntegerProperty()
     usage_field = jsonobject.StringProperty(default='users')

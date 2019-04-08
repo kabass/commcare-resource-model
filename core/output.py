@@ -6,6 +6,7 @@ COMPARISONS_SHEET = 'Comparisons'
 SUMMARY_SHEET = '%s - %s users'
 
 STORAGE_GROUP_INDEX = 'Storage Group'
+VM_SIZE_INDEX = 'VM Size'
 VM_TYPE_INDEX = 'VM Type'
 STORAGE_CAT_INDEX = 'Service'
 SERVICE_INDEX = 'Service'
@@ -48,6 +49,13 @@ def write_summary_data(config, writer, summary_date, summary_data, user_count):
 
     writer.write_data_frame(
         summary_data.vm_slabs,
+        sheet_name,
+        VM_SIZE_INDEX,
+        'VMs by Size'
+    )
+
+    writer.write_data_frame(
+        summary_data.vm_aggs,
         sheet_name,
         VM_TYPE_INDEX,
         'VMs by Type'
