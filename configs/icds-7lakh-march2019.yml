@@ -102,6 +102,7 @@ usage:
     start_with: 204427935   # from ES case index (total docs)
 
   # Number of cases updated per user per month
+  # TODO: this should be linked with number of forms per month
   case_transactions:
     model: 'derived_factor'
     dependant_field: 'users'
