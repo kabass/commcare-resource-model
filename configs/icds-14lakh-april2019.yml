@@ -308,7 +308,7 @@ services:
           unit_size: 683
     process:
       cores_per_node: 32
-      ram_per_node: 156
+      ram_per_node: 128
 
   pg_proxy:
     aggregation_key: PostgreSQL
@@ -342,7 +342,7 @@ services:
           unit_size: 510  # averaged over all models taking model ratios into account
     process:
       cores_per_node: 32
-      ram_per_node: 156
+      ram_per_node: 256
 
   # planning to shard this
   pg_synclogs:
@@ -354,8 +354,8 @@ services:
         - referenced_field: 'synclogs_monthly'
           unit_size: 210000
     process:
-      cores_per_node: 16
-      ram_per_node: 48
+      cores_per_node: 32
+      ram_per_node: 128
 
   couchdb:
     aggregation_key: CouchDB
@@ -393,7 +393,7 @@ services:
           unit_size: 675
     process:
       cores_per_node: 16
-      ram_per_node: 80
+      ram_per_node: 64
 
   es_master:
     aggregation_key: Elasticsearch
@@ -497,7 +497,7 @@ services:
           unit_size: 3000
     process:
       cores_per_node: 32
-      ram_per_node: 156
+      ram_per_node: 256
 
   pg_warehouse:
     aggregation_key: PostgreSQL
@@ -510,23 +510,7 @@ services:
           unit_size: 4000
     process:
       cores_per_node: 32
-      ram_per_node: 156
-
-#  pg_warehouse_citus:
-#    # this should have replica nodes
-#    usage_capacity_per_node: 150000
-#    include_ha_resources: True
-#    storage:
-#      group: 'SSD'
-#      # this got left out by mistakes
-#      data_models:
-#        - referenced_field: 'forms_total'
-#          unit_size: 4000  # to account for monthly data etc.
-#        - referenced_field: 'cases_total'  # add cases in case we add them later
-#          unit_size: 4000
-#    process:
-#      cores_per_node: 32
-#      ram_per_node: 256
+      ram_per_node: 256
 
   # cover other pillows that don't need to be scaled
   pillowtop_static:
