@@ -239,7 +239,7 @@ usage:
   beneficiary_sms_monthly_total_seeded:
     model: 'derived_factor'
     dependant_field: 'beneficiary_sms_monthly_total'
-    factor: 0.5  # 50% seeding
+    factor: 1  # 100% seeding
   sms_aww:
     model: 'derived_factor'
     dependant_field: 'users'
