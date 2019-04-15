@@ -1,4 +1,4 @@
-estimation_buffer: 0.3
+estimation_buffer: 0.24
 estimation_growth_factor: 0.01  # buffer increases by 1% per month
 storage_buffer: 0.33  # keep max storage at 75% of disk
 storage_display_unit: TB
@@ -62,7 +62,7 @@ usage:
     dependant_field: 'forms_daily'
     # # Ratio of daily forms to max forms in 15 min interval
     # See https://docs.google.com/spreadsheets/d/1MQ0pmrVqBKacDbyo5-PBAeMZ-Lm2z8GZ6oexV65iVL4/edit#gid=1860153301
-    factor: 0.05
+    factor: 0.03
 
   synclogs_monthly:
     model: 'derived_factor'
@@ -132,7 +132,7 @@ usage:
   beneficiary_phone_numbers:
     model: 'derived_factor'
     dependant_field: 'person_cases_total'
-    factor: 1  # 100% seeding
+    factor: .75  # 75% seeding
   phone_numbers:
     model: 'derived_sum'
     dependant_fields:
@@ -239,7 +239,7 @@ usage:
   beneficiary_sms_monthly_total_seeded:
     model: 'derived_factor'
     dependant_field: 'beneficiary_sms_monthly_total'
-    factor: 1  # 100% seeding
+    factor: .75  # 75% seeding
   sms_aww:
     model: 'derived_factor'
     dependant_field: 'users'
@@ -631,7 +631,7 @@ services:
       ram_per_sub_process: 0.7
       sub_processes:
         - name: 'gunicorn_worker'
-          capacity: 900  # 900 requests per 15 min (1 per s)
+          capacity: 1080  # 1080 requests per 15 min (1 per s) - Forecast from current throughput
     storage:
       group: 'VM_other'
       static_baseline: 100GB
