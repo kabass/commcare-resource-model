@@ -213,10 +213,14 @@ usage:
     dependant_field: 'users'
     factor: 10  # current usage of 10 messages per user per month (avg)
 ### PHASE 2 SMS (assuming 100% phone number capture rate)
+  sms_thr:
+    model: 'derived_factor'
+    dependant_field: 'users'
+    factor: 120  # 5 messages per AWC per day x 24 days per month
   sms_adolescent_girls:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 60  # 20 adolescent girls per aws x 3 messages per month
+    factor: 60  # 20 adolescent girls per awc x 3 messages per month
   sms_pregnancies:
     model: 'derived_factor'
     dependant_field: 'users'
@@ -228,6 +232,7 @@ usage:
   beneficiary_sms_monthly_total:
     model: 'derived_sum'
     dependant_fields:
+      - 'sms_thr'
       - 'sms_adolescent_girls'
       - 'sms_pregnancies'
       - 'sms_lactating_women'
