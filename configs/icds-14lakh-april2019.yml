@@ -4,8 +4,7 @@ storage_buffer: 0.33  # keep max storage at 75% of disk
 storage_display_unit: TB
 
 summary_dates:
-  - '2019-12'
-  - '2019-03'
+  - '2020-12'
 
 vm_os_storage_gb: 70
 vm_os_storage_group: 'VM_os'
@@ -18,7 +17,11 @@ usage:
       - ['20190101', '20190201', 140000]
       - ['20190301', 200000]
       - ['20190401', 400000]
-      - ['20190501', '20191201', 700000]
+      - ['20190501', '20190601', 500000]
+      - ['20190701', '20190801', 600000]
+      - ['20190901', '20191001', 700000]
+      - ['20191101', '20191201', 1000000]
+      - ['20200101', '20201201', 1400000]
 
   # LS User as a percent of total User
   ls_users:
@@ -29,14 +32,14 @@ usage:
   formplayer_users:
     model: 'date_range_value'
     ranges:
-      - ['20180901', '20191201', 1000]
+      - ['20180901', '20201201', 1000]
 
   forms_per_user:
     model: 'date_range_value'
     ranges:
       - ['20180901', '20190301', 350]
       - ['20190401', 400]
-      - ['20190501', '20191201', 1500]
+      - ['20190501', '20201201', 3000]  # MWCD
 
   #Number of forms per user per month
   forms_monthly:
@@ -97,7 +100,7 @@ usage:
   cases_total:
     model: 'baseline_with_growth'
     dependant_field: 'users'
-    baseline: 4000  # inflated number by MWCD. Actual probably closer to 1000
+    baseline: 8000  # MWCD
     monthly_growth: 100  # guess (4 cases for every new person case)
     start_with: 204427935   # from ES case index (total docs)
 
@@ -129,7 +132,7 @@ usage:
   beneficiary_phone_numbers:
     model: 'derived_factor'
     dependant_field: 'person_cases_total'
-    factor: 0.2  # 20% seeding
+    factor: 1  # 100% seeding
   phone_numbers:
     model: 'derived_sum'
     dependant_fields:
