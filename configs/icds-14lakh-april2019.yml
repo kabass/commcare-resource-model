@@ -452,7 +452,7 @@ services:
           unit_size: 5000  # to account for monthly data etc.
     process:
       cores_per_node: 32
-      ram_per_node: 156
+      ram_per_node: 256
 
   pg_ucr_citus_control:
     aggregation_key: PostgreSQL
