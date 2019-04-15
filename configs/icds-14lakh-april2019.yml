@@ -457,7 +457,7 @@ services:
 #      ram_redundancy_factor: 3
 #      ram_static_baseline: 1  # per node
 
-  blob:
+  object_storage:
     aggregation_key: Object Storage
     storage:
       group: 'blob'
