@@ -421,42 +421,6 @@ services:
       cores_per_node: 16
       ram_per_node: 32
 
-#  riakcs:
-#    usage_capacity_per_node: 50000
-#    # avg attachment size of 12560 bytes (11000*0.96 + 50000*0.04)
-#    # RAM requirement per key = 130b
-#    # num keys = 10TB / (12560b x 3<redundancy factor>)
-#    # RAM needed = 130b x num keys = 35GB (64GB avail per node)
-#    max_storage_per_node: 25TB
-#    min_nodes: 10
-#    storage:
-#      group: 'blob'
-#      redundancy_factor: 3
-#      static_baseline: 10TB  # to account for exports etc
-#      data_models:
-#        - referenced_field: 'forms_total'  # 96% of objects
-#          unit_size: 11000
-#        - referenced_field: 'images_total'  # 4% of objects
-#          unit_size: 50000
-#    process:
-#      # current load quite low (~15%) (2018-10-11)
-#      cores_per_node: 16
-#      # need to be able to fit all keys in RAM since we're using bitcask backend
-#      # Current usage is at 30% (2018-10-11)
-#      ram_per_node: 64
-#      ram_model:
-#      - referenced_field: 'forms_total'
-#        # key size (45 + 6 + 79) (overhead + bucket + key)
-#        # bucket = 'blobdb'
-#        # new keys are smaller but stick with old key length for safety:
-#        #   new: form/xxxxxxxxxxxxxxuuidxxxxxxxxxxxxxx/Xpi-XM9CZvQ
-#        #   old: form/xxxxxxxxxxxxxxuuidxxxxxxxxxxxxxx/form.xml.xxxxxxxxxxxxxxuuidxxxxxxxxxxxxxx
-#        unit_size: 130
-#      - referenced_field: 'images_total'
-#        unit_size: 130
-#      ram_redundancy_factor: 3
-#      ram_static_baseline: 1  # per node
-
   object_storage:
     aggregation_key: Object Storage
     storage:
