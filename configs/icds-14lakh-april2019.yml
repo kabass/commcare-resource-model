@@ -62,7 +62,11 @@ usage:
     dependant_field: 'forms_daily'
     # # Ratio of daily forms to max forms in 15 min interval
     # See https://docs.google.com/spreadsheets/d/1MQ0pmrVqBKacDbyo5-PBAeMZ-Lm2z8GZ6oexV65iVL4/edit#gid=1860153301
-    factor: 0.03
+    factor: 0.035
+    # ^ This is currently adjusted to eliminate some amount of buffer uniquely from workers since the bufffer 
+    # algorithm is quite sensitive on webworkers, and buffer on throughput is included in the model. It's
+    # equivalent to the 1 std-dev-above-baseline number, but with almost no additional buffer applied beyond that
+    # We should likely recalibrate if we make big changes to the topline baseline.
 
   synclogs_monthly:
     model: 'derived_factor'
@@ -132,7 +136,7 @@ usage:
   beneficiary_phone_numbers:
     model: 'derived_factor'
     dependant_field: 'person_cases_total'
-    factor: .75  # 75% seeding
+    factor: .70  # 70% seeding
   phone_numbers:
     model: 'derived_sum'
     dependant_fields:
@@ -239,7 +243,7 @@ usage:
   beneficiary_sms_monthly_total_seeded:
     model: 'derived_factor'
     dependant_field: 'beneficiary_sms_monthly_total'
-    factor: .75  # 75% seeding
+    factor: .70  # 70% seeding
   sms_aww:
     model: 'derived_factor'
     dependant_field: 'users'
@@ -586,7 +590,7 @@ services:
     process:
       cores_per_node: 16
       ram_per_node: 32
-      cores_per_sub_process: 0.7  # reduced from 1 since we use django VMs as well
+      cores_per_sub_process: 0.6  # reduced from 1 since we use django VMs as well
       ram_per_sub_process: 0.5  # reduced from 0.7 since we use django VMs as well
       sub_processes:
         - name: 'reminder_case_update_queue'
