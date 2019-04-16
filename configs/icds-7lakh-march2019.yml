@@ -305,7 +305,7 @@ services:
           unit_size: 683
     process:
       cores_per_node: 32
-      ram_per_node: 156
+      ram_per_node: 160
 
   pg_proxy:
     aggregation_key: PostgreSQL
@@ -339,7 +339,7 @@ services:
           unit_size: 510  # averaged over all models taking model ratios into account
     process:
       cores_per_node: 32
-      ram_per_node: 156
+      ram_per_node: 160
 
   # planning to shard this
   pg_synclogs:
@@ -480,7 +480,7 @@ services:
           unit_size: 5000  # to account for monthly data etc.
     process:
       cores_per_node: 32
-      ram_per_node: 156
+      ram_per_node: 160
 
   pg_ucr_citus_control:
     aggregation_key: PostgreSQL
@@ -494,7 +494,7 @@ services:
           unit_size: 3000
     process:
       cores_per_node: 32
-      ram_per_node: 156
+      ram_per_node: 160
 
   pg_warehouse:
     aggregation_key: PostgreSQL
@@ -507,7 +507,7 @@ services:
           unit_size: 4000
     process:
       cores_per_node: 32
-      ram_per_node: 156
+      ram_per_node: 160
 
 #  pg_warehouse_citus:
 #    # this should have replica nodes
