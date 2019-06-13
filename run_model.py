@@ -1,4 +1,5 @@
 import argparse
+import os
 import subprocess
 from collections import namedtuple
 
@@ -30,7 +31,9 @@ if __name__ == '__main__':
 
     pd.options.display.float_format = '{:.1f}'.format
 
-    config = config_from_path(args.config)
+    config_path = args.config
+    config_name = os.path.basename(config_path)
+    config = config_from_path(config_path)
     usage = generate_usage_data(config)
     if args.usage:
         print(usage[args.usage])
@@ -82,8 +85,9 @@ if __name__ == '__main__':
             write_raw_data(writer, usage, 'Usage')
             write_raw_service_data(writer, service_data, summary_data, 'Raw Data')
 
-            with open(args.config, 'r') as f:
-                config_string = 'Git commit: {}\n\n{}'.format(
+            with open(config_path, 'r') as f:
+                config_string = 'Config filename: {}\nGit commit: {}\n\n{}'.format(
+                    config_name,
                     get_git_revision_hash(),
                     f.read()
                 )
