@@ -24,7 +24,7 @@ usage:
   formplayer_users:
     model: 'date_range_value'
     ranges:
-      - ['20180901', '20201201', 1000]
+      - ['20190901', '20191201', 1000]
 
   #Number of forms per user per month
   forms_monthly:
