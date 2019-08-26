@@ -3,6 +3,7 @@ from collections import namedtuple, OrderedDict
 
 import pandas as pd
 import numpy as np
+from pandas import DataFrame
 
 from core.utils import format_date, to_storage_display_unit, tenth_round
 
@@ -41,7 +42,7 @@ def summarize_service_data(config, summary_data, summary_date):
     storage_units = config.storage_display_unit
     to_display = to_storage_display_unit(storage_units)
 
-    summary_by_service = summary_data[:, summary_date].T
+    summary_by_service = summary_data.T[summary_date].unstack()
     summary_by_service.sort_index(inplace=True)
 
     vm_types = summary_by_service.groupby('VM Type')['VMs Total'].sum()
@@ -90,7 +91,7 @@ def get_summary_data(config, service_data):
     storage_units = config.storage_display_unit
     to_display = to_storage_display_unit(storage_units)
     to_gb = to_storage_display_unit('GB')
-    summary_df = dict()
+    summary_df = {}
     for service_name, service_def in config.services.items():
         service_snapshot = service_data[service_name]
         compute = service_snapshot['Compute']
@@ -198,7 +199,7 @@ def get_summary_data(config, service_data):
         combined = pd.DataFrame(data=data)
         summary_df[service_name] = combined
 
-    return pd.Panel(summary_df)  # toto: use multiindex dataframe
+    return pd.concat(list(summary_df.values()), axis=1, keys=list(summary_df))
 
 
 def compare_summaries(config, summaries_by_date):
