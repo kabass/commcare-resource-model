@@ -1,3 +1,4 @@
+import os
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from datetime import datetime
@@ -5,7 +6,6 @@ from itertools import zip_longest
 from numbers import Number
 
 import pandas as pd
-from pandas.io.formats.terminal import get_terminal_size
 
 from core.utils import format_date
 
@@ -181,7 +181,7 @@ class ExcelWriter(BaseWriter):
 class ConsoleWriter(BaseWriter):
     def __init__(self):
         self.sheets = set()
-        pd.set_option('display.width', get_terminal_size().columns)
+        pd.set_option('display.width', int(os.getenv('COLUMNS', '80')))
 
     def write_data_frame(self, data_frame, sheet_name, index_label, header=None, has_total_row=False):
         if sheet_name not in self.sheets:
