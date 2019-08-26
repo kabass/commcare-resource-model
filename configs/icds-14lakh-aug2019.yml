@@ -113,11 +113,10 @@ usage:
     start_with: 204427935   # from ES case index (total docs)
 
   # Number of cases updated per user per month
-  # TODO: this should be linked with number of forms per month
   case_transactions:
     model: 'derived_factor'
-    dependant_field: 'users'
-    factor: 2000  # based off kafka changes over a month
+    dependant_field: 'forms_monthly'
+    factor: 4
   # Total Case Transaction
   case_transactions_total:
     model: 'cumulative'
