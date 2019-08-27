@@ -319,8 +319,8 @@ services:
         - referenced_field: 'sms_schedule_instances_total'
           unit_size: 683
     process:
-      cores_per_node: 32
-      ram_per_node: 128
+      cores_per_node: 20
+      ram_per_node: 80
 
   pg_proxy:
     aggregation_key: PostgreSQL
@@ -353,8 +353,8 @@ services:
         - referenced_field: 'sms_models_total'
           unit_size: 510  # averaged over all models taking model ratios into account
     process:
-      cores_per_node: 32
-      ram_per_node: 256
+      cores_per_node: 20
+      ram_per_node: 80
 
   # planning to shard this
   pg_synclogs:
@@ -366,8 +366,8 @@ services:
         - referenced_field: 'synclogs_monthly'
           unit_size: 210000
     process:
-      cores_per_node: 32
-      ram_per_node: 128
+      cores_per_node: 20
+      ram_per_node: 80
 
   couchdb:
     aggregation_key: CouchDB
@@ -430,8 +430,8 @@ services:
         - referenced_field: 'kafka_changes_total'
           unit_size: 500
     process:
-      cores_per_node: 16
-      ram_per_node: 32
+      cores_per_node: 4
+      ram_per_node: 8
 
   object_storage:
     aggregation_key: Object Storage
@@ -458,8 +458,8 @@ services:
         - referenced_field: 'cases_total'  # cumulative
           unit_size: 5000  # to account for monthly data etc.
     process:
-      cores_per_node: 32
-      ram_per_node: 256
+      cores_per_node: 16
+      ram_per_node: 80
 
   pg_ucr_citus_control:
     aggregation_key: PostgreSQL
@@ -472,8 +472,8 @@ services:
         - referenced_field: 'person_cases_total'
           unit_size: 3000
     process:
-      cores_per_node: 32
-      ram_per_node: 256
+      cores_per_node: 16
+      ram_per_node: 80
 
   pg_warehouse:
     aggregation_key: PostgreSQL
@@ -705,7 +705,7 @@ services:
 
   airflow:
     aggregation_key: Application
-    static_number: 4
+    static_number: 2
     storage_scales_with_nodes: True
     process:
       cores_per_node: 8
