@@ -520,7 +520,7 @@ services:
       ram_per_sub_process: 0.7
       sub_processes:
         - name: 'kafka-ucr-static-cases'
-          capacity: 1750000  # this is largely dependent on the UCR DB performance
+          capacity: 3000000  # 3M per process per month
         - name: 'CaseToElasticsearchPillow'
           capacity: 3000000
     storage:
@@ -599,7 +599,7 @@ services:
         - name: 'reminder_case_update_queue'
           capacity: 6000000  # 6M changes per month (300M / 50 workers : Feb 2019)
         - name: 'ucr_indicator_queue'
-          capacity: 2500000  # 2.5M per worker only processes ~50% of cases (ccs_record / child_cases)
+          capacity: 6000000  # ?
     storage:
       group: 'VM_other'
       static_baseline: 100GB
