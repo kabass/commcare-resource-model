@@ -382,8 +382,8 @@ services:
         - referenced_field: 'users'
           unit_size: 600000   # disk size / doc count of icds @ 2017-12-13
     process:
-      cores_per_node: 16
-      ram_per_node: 64
+      cores_per_node: 4
+      ram_per_node: 16
 
   es_datanode:
     aggregation_key: Elasticsearch
@@ -404,7 +404,7 @@ services:
         - referenced_field: 'sms_total'
           unit_size: 675
     process:
-      cores_per_node: 16
+      cores_per_node: 8
       ram_per_node: 64
 
   es_master:
@@ -417,8 +417,8 @@ services:
       override_storage_buffer: 0
       override_estimation_buffer: 0
     process:
-      cores_per_node: 8
-      ram_per_node: 16
+      cores_per_node: 4
+      ram_per_node: 8
 
   kafka:
     aggregation_key: Message Queue
@@ -472,8 +472,8 @@ services:
         - referenced_field: 'person_cases_total'
           unit_size: 3000
     process:
-      cores_per_node: 16
-      ram_per_node: 80
+      cores_per_node: 32
+      ram_per_node: 160
 
   pg_warehouse:
     aggregation_key: PostgreSQL
@@ -493,7 +493,7 @@ services:
           unit_size: 450
     process:
       cores_per_node: 32
-      ram_per_node: 256
+      ram_per_node: 160
 
   # cover other pillows that don't need to be scaled
   pillowtop_static:
@@ -669,8 +669,8 @@ services:
     usage_capacity_per_node: 500000
     storage_scales_with_nodes: True
     process:
-      cores_per_node: 16
-      ram_per_node: 32
+      cores_per_node: 8
+      ram_per_node: 16
     storage:
       group: 'VM_other'
       static_baseline: 200GB  # logs etc
@@ -679,11 +679,11 @@ services:
 
   rabbitmq:  # limits for rabbitmq not clear
     aggregation_key: Message Queue
-    static_number: 4
+    static_number: 2
     storage_scales_with_nodes: True
     process:
-      cores_per_node: 32
-      ram_per_node: 64
+      cores_per_node: 8
+      ram_per_node: 16
     storage:  # don't have a model for rabbitmq storage
       group: 'SAS'
       static_baseline: 100GB
@@ -695,8 +695,8 @@ services:
     usage_capacity_per_node: 500
     usage_field: 'formplayer_users'
     process:
-      cores_per_node: 8
-      ram_per_node: 16
+      cores_per_node: 4
+      ram_per_node: 8
     storage:
       group: 'SAS'
       data_models:
@@ -708,8 +708,8 @@ services:
     static_number: 2
     storage_scales_with_nodes: True
     process:
-      cores_per_node: 8
-      ram_per_node: 32
+      cores_per_node: 4
+      ram_per_node: 8
     storage:
       group: 'VM_other'
       static_baseline: 100GB
