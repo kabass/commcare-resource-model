@@ -523,6 +523,8 @@ services:
           capacity: 3000000  # 3M per process per month
         - name: 'CaseToElasticsearchPillow'
           capacity: 3000000
+        - name: 'case_messaging_sync_pillow'
+          capacity: 6000000
     storage:
       group: 'VM_other'
       static_baseline: 100GB
@@ -596,8 +598,6 @@ services:
       cores_per_sub_process: 0.6  # reduced from 1 since we use django VMs as well
       ram_per_sub_process: 0.5  # reduced from 0.7 since we use django VMs as well
       sub_processes:
-        - name: 'reminder_case_update_queue'
-          capacity: 6000000  # 6M changes per month (300M / 50 workers : Feb 2019)
         - name: 'ucr_indicator_queue'
           capacity: 6000000  # ?
     storage:
