@@ -271,7 +271,7 @@ usage:
   sms_schedule_instances_total:
     model: 'derived_factor'
     dependant_field: 'person_cases_total'
-    factor: 1  # rough guess
+    factor: 0.5  # rough guess
 
   kafka_changes:
     model: 'derived_sum'
