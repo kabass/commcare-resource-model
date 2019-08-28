@@ -477,13 +477,14 @@ services:
       group: 'SSD'
       data_models:
         - referenced_field: 'forms_total'
-          unit_size: 1200
-        - referenced_field: 'cases_total'
-          unit_size: 1800
-        - referenced_field: 'case_indices'
-          unit_size: 380
-        - referenced_field: 'ledgers_total'
-          unit_size: 450
+          unit_size: 650  # based on size measurement 2019-08
+          # remove future models that may never happen
+#        - referenced_field: 'cases_total'
+#          unit_size: 1800
+#        - referenced_field: 'case_indices'
+#          unit_size: 380
+#        - referenced_field: 'ledgers_total'
+#          unit_size: 450
     process:
       cores_per_node: 32
       ram_per_node: 160
