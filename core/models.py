@@ -2,7 +2,9 @@ from abc import ABC, abstractmethod, abstractproperty
 from collections import namedtuple
 
 import pandas as pd
-import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
 
 DateRange = namedtuple('DateRange', 'start, end')
 
@@ -61,10 +63,13 @@ class DateValueModel(DFModel):
             elif len(range_) == 3:
                 return pd.DataFrame({self.name: range_[2]}, index=pd.date_range(range_[0], range_[1], freq='MS'))
 
-        return pd.concat([
+        df = pd.concat([
             get_dataframe_for_range(range_)
             for range_ in self.ranges]
         )
+        if len(current_data_frame.index) and len(df.index) != len(current_data_frame.index):
+            logger.warning(f"[WARNING] Dataframe for '{self.name}' has different index")
+        return df
 
 
 class CumulativeModel(DFModel):
