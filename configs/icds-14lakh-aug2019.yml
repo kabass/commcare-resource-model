@@ -628,7 +628,7 @@ services:
     process:
       cores_per_node: 16
       ram_per_node: 32
-      cores_per_sub_process: 0.7
+      cores_per_sub_process: 1
       ram_per_sub_process: 0.7
       sub_processes:
         - name: 'gunicorn_worker'
