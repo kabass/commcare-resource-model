@@ -296,21 +296,21 @@ services:
       group: 'SSD'
       data_models:
         - referenced_field: 'forms_total'
-          unit_size: 1200
+          unit_size: 1150  # 800 + 350 for attachment
         - referenced_field: 'cases_total'
-          unit_size: 1800
+          unit_size: 1056
         - referenced_field: 'case_indices'
           unit_size: 380
         - referenced_field: 'case_transactions_total'
-          unit_size: 515
+          unit_size: 500
         - referenced_field: 'ledgers_total'
-          unit_size: 450
+          unit_size: 400
         - referenced_field: 'ledger_transactions'
-          unit_size: 420
+          unit_size: 450
         - referenced_field: 'images_total'
-          unit_size: 370
+          unit_size: 350
         - referenced_field: 'sms_schedule_instances_total'
-          unit_size: 683
+          unit_size: 650
     process:
       cores_per_node: 20
       ram_per_node: 80
