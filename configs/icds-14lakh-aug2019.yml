@@ -104,7 +104,6 @@ usage:
     dependant_field: 'users'
     baseline: 8000  # MWCD
     monthly_growth: 100  # guess (4 cases for every new person case)
-    start_with: 204427935   # from ES case index (total docs)
 
   # Number of cases updated per user per month
   case_transactions:
