@@ -35,8 +35,8 @@ usage:
   forms_per_user:
     model: 'date_range_value'
     ranges:
-      - ['20180901', '20190301', 350]
-      - ['20190401', '20190801', 500]
+      - ['20180901', '20190301', 200]
+      - ['20190401', '20190801', 350]
       - ['20190901', '20200301', 2000]
 
   #Number of forms per user per month
@@ -186,8 +186,8 @@ usage:
     model: 'date_range_value'
     ranges:
       - ['20180901', '20190301', 35]  # daily feeding
-      - ['20190401', 35]
-      - ['20190501', '20191201', 650]  # daily feeding + THR + AG
+      - ['20190401', '20190801', 60]
+      - ['20190901', '20200301', 650]  # daily feeding + THR + AG
   images_monthly:
     model: 'product'
     dependant_fields:
