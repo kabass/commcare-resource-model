@@ -297,7 +297,7 @@ usage:
 services:
   pg_shards:
     aggregation_key: PostgreSQL
-    usage_capacity_per_node: 50000
+    usage_capacity_per_node: 60000
     include_ha_resources: True
     storage:
       group: 'SSD'
@@ -337,7 +337,7 @@ services:
 
   pg_main:
     aggregation_key: PostgreSQL
-    usage_capacity_per_node: 400000
+    usage_capacity_per_node: 200000
     storage_scales_with_nodes: True
     min_nodes: 2
     storage:
@@ -359,7 +359,7 @@ services:
   # planning to shard this
   pg_synclogs:
     aggregation_key: PostgreSQL
-    usage_capacity_per_node: 250000
+    usage_capacity_per_node: 300000
     storage:
       group: 'SSD'
       data_models:
@@ -422,7 +422,7 @@ services:
 
   kafka:
     aggregation_key: Message Queue
-    usage_capacity_per_node: 100000
+    usage_capacity_per_node: 125000
     min_nodes: 3
     storage:
       group: 'SAS'
@@ -445,9 +445,9 @@ services:
         - referenced_field: 'images_total'  # 4% of objects
           unit_size: 50000
 
-  pg_ucr_citus:
+  citus_workers:
     aggregation_key: PostgreSQL
-    usage_capacity_per_node: 70000
+    usage_capacity_per_node: 150000
     include_ha_resources: True
     storage:
       # This is a rough estimate.
@@ -461,7 +461,7 @@ services:
       cores_per_node: 16
       ram_per_node: 80
 
-  pg_ucr_citus_control:
+  citus_control:
     aggregation_key: PostgreSQL
     static_number: 2
     storage_scales_with_nodes: True
