@@ -114,6 +114,10 @@ class ServiceDef(jsonobject.JsonObject):
         return storage_display_to_bytes(str(self.max_storage_per_node))
 
 
+class SetContext(jsonobject.JsonObject):
+    name = jsonobject.StringProperty(required=True)
+
+
 class ClusterConfig(jsonobject.JsonObject):
     estimation_buffer = jsonobject.DecimalProperty(required=True)
     estimation_growth_factor = jsonobject.DecimalProperty(default=0)
@@ -123,6 +127,7 @@ class ClusterConfig(jsonobject.JsonObject):
     vm_os_storage_gb = jsonobject.IntegerProperty(required=True)
     vm_os_storage_group = jsonobject.StringProperty(required=True)
 
+    sets = jsonobject.DictProperty(jsonobject.ListProperty(SetContext))
     usage = jsonobject.DictProperty(UsageModelDef)
     services = jsonobject.DictProperty(ServiceDef)
 
@@ -140,4 +145,4 @@ class ClusterConfig(jsonobject.JsonObject):
 
 def config_from_path(config_path):
     with open(config_path, 'r') as f:
-        return ClusterConfig(yaml.load(f))
+        return ClusterConfig(yaml.safe_load(f))

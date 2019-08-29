@@ -51,3 +51,12 @@ def tenth_round(series):
     # pow = round(math.log10(tenth))
     round_val = 10 ** pow
     return (series / round_val).map(np.ceil) * round_val
+
+
+context_pattern = re.compile('{\w*\}')
+
+
+def apply_context(context, val, type_conversion=str):
+    if isinstance(val, str) and context_pattern.findall(val):
+        return type_conversion(val.format(**context))
+    return val

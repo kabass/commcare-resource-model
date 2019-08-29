@@ -1,8 +1,10 @@
-from abc import ABC, abstractmethod, abstractproperty
+import logging
+from abc import ABC, abstractmethod
 from collections import namedtuple
 
 import pandas as pd
-import logging
+
+from core.utils import apply_context
 
 logger = logging.getLogger(__name__)
 
@@ -50,9 +52,13 @@ class DFModel(ABC):
 class DateValueModel(DFModel):
     slug = 'date_range_value'
 
-    def __init__(self, name, ranges):
+    def __init__(self, context, name, ranges):
+        self.context = context
         self.name = name
-        self.ranges = ranges
+        self.ranges = [
+            [apply_context(context, item, int) for item in range_]
+            for range_ in ranges
+        ]
 
     def data_frame(self, current_data_frame):
 
@@ -77,7 +83,8 @@ class CumulativeModel(DFModel):
     For example form submissions."""
     slug = 'cumulative'
 
-    def __init__(self, name, dependant_field, start_with=0):
+    def __init__(self, context, name, dependant_field, start_with=0):
+        self.context = context
         self.name = name
         self.dependant_field = dependant_field
         self.start_with = start_with
@@ -103,8 +110,8 @@ class LimitedLifetimeModel(CumulativeModel):
     """Extends the cumulative model by giving items a finite lifespan"""
     slug = 'cumulative_limited_lifespan'
 
-    def __init__(self, name, dependant_field, lifespan, start_with=0):
-        super(LimitedLifetimeModel, self).__init__(name, dependant_field, start_with=start_with)
+    def __init__(self, context, name, dependant_field, lifespan, start_with=0):
+        super(LimitedLifetimeModel, self).__init__(context, name, dependant_field, start_with=start_with)
         self.lifespan = lifespan
 
     def data_frame(self, current_data_frame):
@@ -122,7 +129,8 @@ class DerivedModel(DFModel):
     def func(self):
         raise NotImplemented
 
-    def __init__(self, name, dependant_fields, start_with=None):
+    def __init__(self, context, name, dependant_fields, start_with=None):
+        self.context = context
         self.name = name
         self._dependant_fields = dependant_fields
         self.start_with = start_with
@@ -164,8 +172,8 @@ class DerivedFactor(DerivedModel):
     """Multiply a single other field by a static factor"""
     slug = 'derived_factor'
 
-    def __init__(self, name, dependant_field, factor, start_with=0):
-        super(DerivedFactor, self).__init__(name, [dependant_field], start_with)
+    def __init__(self, context, name, dependant_field, factor, start_with=0):
+        super(DerivedFactor, self).__init__(context, name, [dependant_field], start_with)
         self.factor = factor
 
     @property
@@ -182,7 +190,7 @@ class BaselineWithGrowth(DFModel):
     """
     slug = 'baseline_with_growth'
 
-    def __init__(self, name, dependant_field, baseline, monthly_growth, start_with=0):
+    def __init__(self, context, name, dependant_field, baseline, monthly_growth, start_with=0):
         """
         :param name:
         :param dependant_field: Field to apply baseline and monthly growth against
@@ -190,6 +198,7 @@ class BaselineWithGrowth(DFModel):
         :param monthly_growth: Number of new items per month
         :param start_with:  Int used to account for existing data
         """
+        self.context = context
         self.name = name
         self.dependant_field = dependant_field
         self.baseline = baseline
@@ -202,11 +211,11 @@ class BaselineWithGrowth(DFModel):
 
     def data_frame(self, current_data_frame):
         baseline_name = '{}_baseline'.format(self.name)
-        baseline_model = DerivedFactor(baseline_name, self.dependant_field, self.baseline)
+        baseline_model = DerivedFactor(self.context, baseline_name, self.dependant_field, self.baseline)
         baseline = baseline_model.data_frame(current_data_frame)[baseline_name]
 
         monthly_name = '{}_monthly'.format(self.name)
-        monthly_model = DerivedFactor(monthly_name, self.dependant_field, self.monthly_growth)
+        monthly_model = DerivedFactor(self.context, monthly_name, self.dependant_field, self.monthly_growth)
         monthly = monthly_model.data_frame(current_data_frame)[monthly_name]
 
         cumulative_monthly = _get_cumulative_data('cumulative'.format(self.name), monthly, self.start_with)

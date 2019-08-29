@@ -5,11 +5,11 @@ from core.models import models_by_slug
 from core.utils import byte_map
 
 
-def generate_usage_data(config):
+def generate_usage_data(config, set_context):
     model_classes = models_by_slug()
 
     models = [
-        model_classes[model_def.model](name, **model_def.model_params)
+        model_classes[model_def.model](set_context, name, **model_def.model_params)
         for name, model_def in config.usage.items()
     ]
     usage_df = pd.DataFrame()

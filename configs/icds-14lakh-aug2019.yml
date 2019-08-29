@@ -4,11 +4,28 @@ storage_buffer: 0.33  # keep max storage at 75% of disk
 storage_display_unit: TB
 
 summary_dates:
-  - '2019-08'
+#  - '2019-08'
   - '2020-03'  # 6 months from now
 
 vm_os_storage_gb: 70
 vm_os_storage_group: 'VM_os'
+
+sets:
+  users:
+    - name: 7lakh
+      users: 7000
+    - name: 8lakh
+      users: 8000
+    - name: 9lakh
+      users: 9000
+    - name: 10lakh
+      users: 10000
+
+  forms_per_user:
+    - name: 1500fpu
+      forms_per_user: 1500
+    - name: 2000fpu
+      forms_per_user: 2000
 
 usage:
   users:
@@ -19,7 +36,7 @@ usage:
       - ['20190301', 200000]
       - ['20190401', '20190501', 300000]
       - ['20190601', '20190801', 350000]
-      - ['20190901', '20200301', 1000000]
+      - ['20190901', '20200301', '{users}']
 
   # LS User as a percent of total User
   ls_users:
@@ -37,7 +54,7 @@ usage:
     ranges:
       - ['20180901', '20190301', 200]
       - ['20190401', '20190801', 350]
-      - ['20190901', '20200301', 2000]
+      - ['20190901', '20200301', '{forms_per_user}']
 
   #Number of forms per user per month
   forms_monthly:

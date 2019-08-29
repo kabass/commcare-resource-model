@@ -45,9 +45,75 @@ The config file is split into 4 sections:
 | vm_os_storage_gb     | GB storage per VM for OS etc |
 | vm_os_storage_group  | Group name for OS storage |
 | summary_dates        | List of dates to generate summaries at. Date format: YYYY-MM |
+| sets                 | See [Sets Config](#sets-config) section below |
 | usage                | See [Usage Config](#usage-config) section below |
 | service              | See [Service Config](#service-config) section below |
 
+
+## Sets config
+Sets allow you to split out variables from the main configuration and to generate multiple outputs
+from a single run.
+
+Each set is combined with the other sets to produce to produce the final output.
+
+```yaml
+sets:
+  varA:
+    - name: a
+      varA: 1
+
+    - name: b
+      varA: 2
+  
+  varB_C:
+    - name: c
+      varB: 3
+      varC: 0
+
+    - name: d
+      varB: 4
+      varC: 1
+```
+
+Output sets:
+```
+[
+    {
+        'name': 'a-c',
+        'varA': 1,
+        'varB': 3,
+        'varC': 0
+    },
+    {
+        'name': 'a-d',
+        'varA': 1,
+        'varB': 4,
+        'varC': 1
+    },
+    {
+        'name': 'b-c',
+        'varA': 2,
+        'varB': 3,
+        'varC': 0
+    },
+    {
+        'name': 'b-d',
+        'varA': 2,
+        'varB': 4,
+        'varC': 1
+    }
+```
+
+The variables defined in sets may be used in various places throughout the config by using the `'{var}'` syntax:
+
+```yaml
+usage:
+  users:
+    model: 'date_range_value'
+    ranges:
+      - ['20190901', '20200301', '{users}']
+
+```
 
 ## Usage config
 This sections describes the usage of the system e.g. number of users, volume of transactions etc.
