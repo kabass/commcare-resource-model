@@ -380,7 +380,7 @@ services:
 
   es_datanode:
     aggregation_key: Elasticsearch
-    usage_capacity_per_node: 30000
+    usage_capacity_per_node: 60000
     min_nodes: 3
     storage:
       group: 'SAS'
@@ -641,7 +641,7 @@ services:
 
   redis:
     aggregation_key: Cache
-    usage_capacity_per_node: 250000
+    usage_capacity_per_node: 1000000
     usage_field: 'preak_requests_per_15_min'
     min_nodes: 3
     min_storage_per_node: 50GB
