@@ -127,6 +127,7 @@ class ClusterConfig(jsonobject.JsonObject):
     vm_os_storage_gb = jsonobject.IntegerProperty(required=True)
     vm_os_storage_group = jsonobject.StringProperty(required=True)
 
+    sets_summary_date = jsonobject.StringProperty()
     sets = jsonobject.DictProperty(jsonobject.ListProperty(SetContext))
     usage = jsonobject.DictProperty(UsageModelDef)
     services = jsonobject.DictProperty(ServiceDef)
@@ -134,6 +135,7 @@ class ClusterConfig(jsonobject.JsonObject):
     def validate(self, required=True):
         super(ClusterConfig, self).validate(required=required)
         self.summary_date_vals
+        self.sets_summary_date_val
 
     @property
     def summary_date_vals(self):
@@ -141,6 +143,10 @@ class ClusterConfig(jsonobject.JsonObject):
             datetime.strptime(date, "%Y-%m")
             for date in self.summary_dates
         ]
+
+    @property
+    def sets_summary_date_val(self):
+        return datetime.strptime(self.sets_summary_date, "%Y-%m") if self.sets_summary_date else None
 
 
 def config_from_path(config_path):

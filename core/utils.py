@@ -11,7 +11,7 @@ byte_map = {
 
 
 def format_date(date):
-    return date.strftime('%Y-%m-%d')
+    return date.strftime('%Y-%m-%d') if hasattr(date, 'strftime') else date
 
 
 def to_storage_display_unit(unit):

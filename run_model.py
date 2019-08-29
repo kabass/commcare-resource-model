@@ -2,7 +2,7 @@ import argparse
 import itertools
 import os
 import subprocess
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 
 import pandas as pd
 
@@ -61,11 +61,12 @@ if __name__ == '__main__':
             args.service: config.services[args.service]
         }
 
-    combined_sets = get_combined_sets(config.sets) if config.sets else [{}]
+    combined_sets = get_combined_sets(config.sets) if config.sets else [{'name': 'default'}]
 
     if args.set:
         combined_sets = [s for s in combined_sets if s['name'] == args.set]
 
+    sets_snapshots = OrderedDict()
     for set_context in combined_sets:
 
         usage = generate_usage_data(config, set_context)
@@ -91,13 +92,16 @@ if __name__ == '__main__':
             writer = ConsoleWriter()
 
         with writer:
-            summaries = {}
+            summaries = OrderedDict()
             user_count = {}
             date_list = list(usage.index.to_series())
             summary_data = get_summary_data(config, service_data)
             for date in summary_dates:
                 summaries[date] = summarize_service_data(config, summary_data, date)
                 user_count[date] = usage.loc[date]['users']
+
+            if len(combined_sets) > 1 and config.sets_summary_date_val:
+                sets_snapshots[set_context['name']] = summaries[config.sets_summary_date_val]
 
             if len(summary_dates) == 1:
                 date = summary_dates[0]
@@ -124,3 +128,11 @@ if __name__ == '__main__':
                         f.read()
                     )
                     writer.write_config_string(config_string)
+
+    if sets_snapshots:
+        output_path = apply_context({'name': 'comparison'}, args.output)
+        print(f'Writing comparison output to "{output_path}"')
+        set_comparisons = compare_summaries(config, sets_snapshots)
+        comparison_writer = ExcelWriter(output_path)
+        with comparison_writer:
+            write_summary_comparisons(config, comparison_writer, {}, set_comparisons)

@@ -206,9 +206,8 @@ def compare_summaries(config, summaries_by_date):
     data_storage_series = []
     storage_by_group_series = []
     compute_series = []
-    dates = sorted(list(summaries_by_date))
     storage_units = config.storage_display_unit
-    for date in dates:
+    for date in summaries_by_date:
         summary_data = summaries_by_date[date]
         data_storage_series.append(summary_data.service_summary['Data Storage Total (%s)' % storage_units])
         storage_by_group_series.append(summary_data.storage_by_group)
@@ -220,7 +219,7 @@ def compare_summaries(config, summaries_by_date):
     group_series = summaries_by_date[first_date].service_summary['Storage Group']
     data_storage_series.append(group_series)
 
-    keys = [format_date(date) for date in dates]
+    keys = [format_date(date) for date in summaries_by_date]
 
     storage_by_cat = pd.concat(data_storage_series, axis=1, keys=keys + ['Group'])
     storage_by_cat = storage_by_cat[storage_by_cat != 0.0].dropna(how='all')
