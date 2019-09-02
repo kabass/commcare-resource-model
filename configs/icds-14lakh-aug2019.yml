@@ -21,6 +21,10 @@ sets:
       users: 900000
     - name: 10lakh
       users: 1000000
+    - name: 12lakh
+      users: 1200000
+    - name: 14lakh
+      users: 1400000
 
   forms_per_user:
     - name: 1500fpu
