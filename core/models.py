@@ -174,7 +174,7 @@ class DerivedFactor(DerivedModel):
 
     def __init__(self, context, name, dependant_field, factor, start_with=0):
         super(DerivedFactor, self).__init__(context, name, [dependant_field], start_with)
-        self.factor = factor
+        self.factor = apply_context(context, factor, float)
 
     @property
     def func(self):

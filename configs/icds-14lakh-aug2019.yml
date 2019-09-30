@@ -34,6 +34,10 @@ sets:
     - name: 2000fpu
       forms_per_user: 2000
 
+  vars:
+    - name: other vars
+      beneficiary_phone_number_seeding: 0.7
+
 usage:
   users:
     model: 'date_range_value'
@@ -156,7 +160,7 @@ usage:
   beneficiary_phone_numbers:
     model: 'derived_factor'
     dependant_field: 'person_cases_total'
-    factor: .70  # 70% seeding
+    factor: '{beneficiary_phone_number_seeding}'
   phone_numbers:
     model: 'derived_sum'
     dependant_fields:
@@ -263,7 +267,7 @@ usage:
   beneficiary_sms_monthly_total_seeded:
     model: 'derived_factor'
     dependant_field: 'beneficiary_sms_monthly_total'
-    factor: .70  # 70% seeding
+    factor: '{beneficiary_phone_number_seeding}'
   sms_aww:
     model: 'derived_factor'
     dependant_field: 'users'

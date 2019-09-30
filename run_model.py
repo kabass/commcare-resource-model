@@ -129,7 +129,7 @@ if __name__ == '__main__':
                     )
                     writer.write_config_string(config_string)
 
-    if sets_snapshots:
+    if sets_snapshots and args.output:
         output_path = apply_context({'name': 'comparison'}, args.output)
         print(f'Writing comparison output to "{output_path}"')
         set_comparisons = compare_summaries(config, sets_snapshots)
