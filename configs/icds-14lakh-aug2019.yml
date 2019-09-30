@@ -35,8 +35,7 @@ sets:
       forms_per_user: 2000
 
   vars:
-    - name: other vars
-      beneficiary_phone_number_seeding: 0.7
+    - beneficiary_phone_number_seeding: 0.7
 
 usage:
   users:

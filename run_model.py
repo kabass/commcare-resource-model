@@ -29,12 +29,13 @@ def get_combined_sets(sets):
         name = None
         for item in combinations:
             item = item.copy()
-            item_name = item.pop('name')
+            item_name = item.pop('name', None)
             context.update(item)
-            if not name:
-                name = item_name
-            else:
-                name += f'-{item_name}'
+            if item_name:
+                if not name:
+                    name = item_name
+                else:
+                    name += f'-{item_name}'
         context['name'] = name
         combined_sets.append(context)
     return combined_sets
