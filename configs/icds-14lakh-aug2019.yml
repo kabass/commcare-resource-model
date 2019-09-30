@@ -5,12 +5,12 @@ storage_display_unit: TB
 
 summary_dates:
 #  - '2019-08'
-  - '2020-03'  # 6 months from now
+  - '2020-09'  # 12 months from now
 
 vm_os_storage_gb: 70
 vm_os_storage_group: 'VM_os'
 
-sets_summary_date: '2020-03'
+sets_summary_date: '2020-09'
 sets:
   users:
     - name: 7lakh
@@ -21,14 +21,16 @@ sets:
       users: 900000
     - name: 10lakh
       users: 1000000
+    - name: 11lakh
+      users: 1100000
     - name: 12lakh
       users: 1200000
+    - name: 13lakh
+      users: 1300000
     - name: 14lakh
       users: 1400000
 
   forms_per_user:
-    - name: 1500fpu
-      forms_per_user: 1500
     - name: 2000fpu
       forms_per_user: 2000
 
@@ -41,7 +43,7 @@ usage:
       - ['20190301', 200000]
       - ['20190401', '20190501', 300000]
       - ['20190601', '20190801', 350000]
-      - ['20190901', '20200301', '{users}']
+      - ['20190901', '20200901', '{users}']
 
   # LS User as a percent of total User
   ls_users:
@@ -52,14 +54,14 @@ usage:
   formplayer_users:
     model: 'date_range_value'
     ranges:
-      - ['20180901', '20200301', 1000]
+      - ['20180901', '20200901', 1000]
 
   forms_per_user:
     model: 'date_range_value'
     ranges:
       - ['20180901', '20190301', 200]
       - ['20190401', '20190801', 350]
-      - ['20190901', '20200301', '{forms_per_user}']
+      - ['20190901', '20200901', '{forms_per_user}']
 
   #Number of forms per user per month
   forms_monthly:
@@ -208,7 +210,7 @@ usage:
     ranges:
       - ['20180901', '20190301', 35]  # daily feeding
       - ['20190401', '20190801', 60]
-      - ['20190901', '20200301', 650]  # daily feeding + THR + AG
+      - ['20190901', '20200901', 650]  # daily feeding + THR + AG
   images_monthly:
     model: 'product'
     dependant_fields:
