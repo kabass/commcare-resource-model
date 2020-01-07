@@ -2,6 +2,7 @@ import argparse
 import itertools
 import os
 import subprocess
+import sys
 from collections import namedtuple, OrderedDict
 
 import pandas as pd
@@ -11,7 +12,7 @@ from core.generate import generate_usage_data, generate_service_data
 from core.output import write_raw_data, write_summary_comparisons, write_summary_data, write_raw_service_data
 from core.summarize import incremental_summaries, \
     summarize_service_data, compare_summaries, get_summary_data
-from core.utils import apply_context
+from core.utils import apply_context, context_pattern
 from core.writers import ConsoleWriter
 from core.writers import ExcelWriter
 
@@ -67,6 +68,14 @@ if __name__ == '__main__':
     if args.set:
         combined_sets = [s for s in combined_sets if s['name'] == args.set]
 
+    multiple_sets = len(combined_sets) > 1
+    is_excel = bool(args.output)
+    if multiple_sets and is_excel:
+        placeholders = context_pattern.findall(args.output)
+        if '{name}' not in placeholders:
+            print("Add '{name}' placeholder to the output filename create unique files per set.")
+            sys.exit(1)
+
     sets_snapshots = OrderedDict()
     for set_context in combined_sets:
 
@@ -84,7 +93,6 @@ if __name__ == '__main__':
 
         summary_dates = sorted(summary_dates)
 
-        is_excel = bool(args.output)
         if is_excel:
             output_path = apply_context(set_context, args.output)
             print(f'Writing output to "{output_path}"')
@@ -101,7 +109,7 @@ if __name__ == '__main__':
                 summaries[date] = summarize_service_data(config, summary_data, date)
                 user_count[date] = usage.loc[date]['users']
 
-            if len(combined_sets) > 1 and config.sets_summary_date_val:
+            if multiple_sets and config.sets_summary_date_val:
                 sets_snapshots[set_context['name']] = summaries[config.sets_summary_date_val]
 
             if len(summary_dates) == 1:
