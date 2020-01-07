@@ -54,7 +54,12 @@ The config file is split into 4 sections:
 Sets allow you to split out variables from the main configuration and to generate multiple outputs
 from a single run.
 
-Each set is combined with the other sets to produce to produce the final output.
+Each set is combined with the other sets to produce the final output. Each output is written to a separate
+Excel file. To ensure uniqueness of the file you should add the `{name}` placeholder to the file name:
+
+```shell script
+$ python run_model.py <config path with sets> -o my_output-{name}.xlsx
+```
 
 ```yaml
 sets:
