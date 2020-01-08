@@ -243,7 +243,7 @@ usage:
   sms_thr:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 120  # 5 messages per AWC per day x 24 days per month
+    factor: 55  # ~2 messages per AWC per day x 24 days per month
   sms_adolescent_girls:
     model: 'derived_factor'
     dependant_field: 'users'
