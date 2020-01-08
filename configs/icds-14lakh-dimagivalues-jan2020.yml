@@ -255,7 +255,7 @@ usage:
   sms_lactating_women:
     model: 'derived_factor'
     dependant_field: 'users'
-    factor: 35  # 7 lactating women per awc X 5 messages per month
+    factor: 30  # 6 lactating women per awc X 5 messages per month
   beneficiary_sms_monthly_total:
     model: 'derived_sum'
     dependant_fields:
