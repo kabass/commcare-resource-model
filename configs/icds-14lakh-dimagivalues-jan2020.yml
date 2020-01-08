@@ -213,7 +213,7 @@ usage:
     ranges:
       - ['20180901', '20190301', 35]  # daily feeding
       - ['20190401', '20190801', 60]
-      - ['20190901', '20200901', 650]  # daily feeding + THR + AG
+      - ['20190901', '20200901', 60]  # daily feeding + THR + AG
   images_monthly:
     model: 'product'
     dependant_fields:
