@@ -79,6 +79,7 @@ if __name__ == '__main__':
     sets_snapshots = OrderedDict()
     for set_context in combined_sets:
 
+        print(f"Generating data for set '{set_context['name']}'")
         usage = generate_usage_data(config, set_context)
 
         if args.usage:
