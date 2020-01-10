@@ -697,12 +697,12 @@ services:
 
   rabbitmq:  # limits for rabbitmq not clear
     aggregation_key: Message Queue
-    static_number: 2
+    static_number: 2  # master + standby
     storage_scales_with_nodes: True
     process:
       cores_per_node: 8
       ram_per_node: 16
-    storage:  # don't have a model for rabbitmq storage
+    storage:  # don't have a model for rabbitmq storage but it's very small
       group: 'SAS'
       static_baseline: 100GB
       override_storage_buffer: 0
