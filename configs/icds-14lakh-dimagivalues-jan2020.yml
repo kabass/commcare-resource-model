@@ -684,11 +684,11 @@ services:
 
   nginx:  # limits for nginx not clear
     aggregation_key: Proxy
-    usage_capacity_per_node: 500000
+    usage_capacity_per_node: 800000
     storage_scales_with_nodes: True
     process:
       cores_per_node: 8
-      ram_per_node: 16
+      ram_per_node: 16  # might want to increase this for OS cache
     storage:
       group: 'VM_other'
       static_baseline: 200GB  # logs etc
