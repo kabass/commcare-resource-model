@@ -500,7 +500,7 @@ services:
       override_storage_buffer: 0
       override_estimation_buffer: 0
 
-  pillow_cases_non_db:
+  pillow_cases_non_db:  # non-dashboard
     aggregation_key: Application
     usage_field: 'case_transactions'
     storage_scales_with_nodes: True
@@ -511,14 +511,14 @@ services:
       ram_per_sub_process: 0.7
       sub_processes:
         - name: 'case-pillow-non-dashboard'
-          capacity: 14976000
+          capacity: 14976000  # 8/s per process * 20h * 3600s * 26 days
     storage:
       group: 'VM_other'
       static_baseline: 100GB
       override_storage_buffer: 0
       override_estimation_buffer: 0
 
-  pillowtop_cases_db:
+  pillowtop_cases_db:  # dashboard
     aggregation_key: Application
     usage_field: 'case_transactions'
     storage_scales_with_nodes: True
@@ -529,14 +529,14 @@ services:
       ram_per_sub_process: 0.7
       sub_processes:
         - name: 'kafka-ucr-static-cases'
-          capacity: 3000000  # 3M per process per month
+          capacity: 3744000  # 2/s per process * 20h * 3600s * 26 days
     storage:
       group: 'VM_other'
       static_baseline: 100GB
       override_storage_buffer: 0
       override_estimation_buffer: 0
 
-  pillowtop_forms:
+  pillow_forms_non_db:  # non-dashboard
     aggregation_key: Application
     usage_field: 'forms_monthly'
     storage_scales_with_nodes: True
@@ -546,12 +546,26 @@ services:
       cores_per_sub_process: 0.5
       ram_per_sub_process: 0.7
       sub_processes:
-        - name: 'FormSubmissionMetadataTrackerPillow'
-          capacity: 5000000
-        - name: 'XFormToElasticsearchPillow'
-          capacity: 5000000
+        - name: 'form-pillow-non-dashboard'
+          capacity: 5408000  # 4/s per process  * 20h * 3600s * 26 days
+    storage:
+      group: 'VM_other'
+      static_baseline: 100GB
+      override_storage_buffer: 0
+      override_estimation_buffer: 0
+
+  pillow_forms_db:  # dashboard
+    aggregation_key: Application
+    usage_field: 'forms_monthly'
+    storage_scales_with_nodes: True
+    process:
+      cores_per_node: 16
+      ram_per_node: 32
+      cores_per_sub_process: 0.5
+      ram_per_sub_process: 0.7
+      sub_processes:
         - name: 'kafka-ucr-static-forms'
-          capacity: 2000000   # this is largely dependent on the UCR DB performance
+          capacity: 3744000  # 2/s per process  * 20h * 3600s * 26 days
     storage:
       group: 'VM_other'
       static_baseline: 100GB
