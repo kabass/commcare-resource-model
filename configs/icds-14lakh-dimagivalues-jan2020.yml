@@ -664,24 +664,23 @@ services:
       override_storage_buffer: 0
       override_estimation_buffer: 0
 
-  redis:
+  redis:  # TODO: vertically scaling model
     aggregation_key: Cache
-    usage_capacity_per_node: 1000000
-    usage_field: 'preak_requests_per_15_min'
-    min_nodes: 3
+    static_number: 3  # Master + 2 standbys (3 Sentinel nodes)
     min_storage_per_node: 50GB
+    storage_scales_with_nodes: True
     process:
-      cores_per_node: 8
-      ram_per_node: 64
+      cores_per_node: 4  # redis + sentinel
+      ram_per_node: 32
       ram_model:
         - referenced_field: 'users'
-          unit_size: 50KB
-      ram_static_baseline: 33  # per node (assume only 50% ram is usable)
+          unit_size: 10KB
+      ram_static_baseline: 16  # per node (only 50% ram is usable for redis)
     storage:
       group: 'SAS'
       data_models:
         - referenced_field: 'users'
-          unit_size: 50KB
+          unit_size: 10KB
 
   nginx:  # limits for nginx not clear
     aggregation_key: Proxy
