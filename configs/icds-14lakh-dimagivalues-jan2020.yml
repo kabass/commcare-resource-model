@@ -500,7 +500,25 @@ services:
       override_storage_buffer: 0
       override_estimation_buffer: 0
 
-  pillowtop_cases:
+  pillow_cases_non_db:
+    aggregation_key: Application
+    usage_field: 'case_transactions'
+    storage_scales_with_nodes: True
+    process:
+      cores_per_node: 16
+      ram_per_node: 32
+      cores_per_sub_process: 0.5
+      ram_per_sub_process: 0.7
+      sub_processes:
+        - name: 'case-pillow-non-dashboard'
+          capacity: 14976000
+    storage:
+      group: 'VM_other'
+      static_baseline: 100GB
+      override_storage_buffer: 0
+      override_estimation_buffer: 0
+
+  pillowtop_cases_db:
     aggregation_key: Application
     usage_field: 'case_transactions'
     storage_scales_with_nodes: True
@@ -512,10 +530,6 @@ services:
       sub_processes:
         - name: 'kafka-ucr-static-cases'
           capacity: 3000000  # 3M per process per month
-        - name: 'CaseToElasticsearchPillow'
-          capacity: 3000000
-        - name: 'case_messaging_sync_pillow'
-          capacity: 6000000
     storage:
       group: 'VM_other'
       static_baseline: 100GB
