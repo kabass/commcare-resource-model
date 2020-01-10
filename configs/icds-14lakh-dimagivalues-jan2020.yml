@@ -4,7 +4,6 @@ storage_buffer: 0.33  # keep max storage at 75% of disk
 storage_display_unit: TB
 
 summary_dates:
-#  - '2019-08'
   - '2020-09'  # 12 months from now
 
 vm_os_storage_gb: 70
@@ -13,22 +12,12 @@ vm_os_storage_group: 'VM_os'
 sets_summary_date: '2020-09'
 sets:
   users:
+    - name: 6lakh
+      users: 600000
     - name: 7lakh
-      users: 700000
+      users: 800000
     - name: 8lakh
       users: 800000
-    - name: 9lakh
-      users: 900000
-    - name: 10lakh
-      users: 1000000
-    - name: 11lakh
-      users: 1100000
-    - name: 12lakh
-      users: 1200000
-    - name: 13lakh
-      users: 1300000
-    - name: 14lakh
-      users: 1400000
 
   forms_per_user:
     - name: 400fpu
@@ -46,7 +35,8 @@ usage:
       - ['20190301', 200000]
       - ['20190401', '20190501', 300000]
       - ['20190601', '20190801', 350000]
-      - ['20190901', '20200901', '{users}']
+      - ['20190901', '20191201', 450000]
+      - ['20200101', '20200901', '{users}']
 
   # LS User as a percent of total User
   ls_users:
@@ -131,6 +121,7 @@ usage:
     dependant_field: 'users'
     baseline: 2000  # reduced from 8000 WCD figure
     monthly_growth: 160  # guess (4 cases for every new person case)
+    start_with: 204427935   # from ES case index (total docs)
 
   # Number of cases updated per user per month
   case_transactions:
@@ -491,27 +482,6 @@ services:
       data_models:
         - referenced_field: 'person_cases_total'
           unit_size: 3000
-    process:
-      cores_per_node: 32
-      ram_per_node: 160
-
-  pg_warehouse:
-    aggregation_key: PostgreSQL
-    usage_capacity_per_node: 400000
-    storage_scales_with_nodes: True
-    static_number: 3
-    storage:
-      group: 'SSD'
-      data_models:
-        - referenced_field: 'forms_total'
-          unit_size: 650  # based on size measurement 2019-08
-          # remove future models that may never happen
-#        - referenced_field: 'cases_total'
-#          unit_size: 1800
-#        - referenced_field: 'case_indices'
-#          unit_size: 380
-#        - referenced_field: 'ledgers_total'
-#          unit_size: 450
     process:
       cores_per_node: 32
       ram_per_node: 160
