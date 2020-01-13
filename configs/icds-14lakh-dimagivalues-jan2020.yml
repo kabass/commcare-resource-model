@@ -500,7 +500,7 @@ services:
       override_storage_buffer: 0
       override_estimation_buffer: 0
 
-  pillow_cases_non_db:
+  pillow_cases_non_db:  # non-dashboard
     aggregation_key: Application
     usage_field: 'case_transactions'
     storage_scales_with_nodes: True
@@ -511,14 +511,14 @@ services:
       ram_per_sub_process: 0.7
       sub_processes:
         - name: 'case-pillow-non-dashboard'
-          capacity: 14976000
+          capacity: 14976000  # 8/s per process * 20h * 3600s * 26 days
     storage:
       group: 'VM_other'
       static_baseline: 100GB
       override_storage_buffer: 0
       override_estimation_buffer: 0
 
-  pillowtop_cases_db:
+  pillowtop_cases_db:  # dashboard
     aggregation_key: Application
     usage_field: 'case_transactions'
     storage_scales_with_nodes: True
@@ -529,14 +529,14 @@ services:
       ram_per_sub_process: 0.7
       sub_processes:
         - name: 'kafka-ucr-static-cases'
-          capacity: 3000000  # 3M per process per month
+          capacity: 3744000  # 2/s per process * 20h * 3600s * 26 days
     storage:
       group: 'VM_other'
       static_baseline: 100GB
       override_storage_buffer: 0
       override_estimation_buffer: 0
 
-  pillowtop_forms:
+  pillow_forms_non_db:  # non-dashboard
     aggregation_key: Application
     usage_field: 'forms_monthly'
     storage_scales_with_nodes: True
@@ -546,12 +546,26 @@ services:
       cores_per_sub_process: 0.5
       ram_per_sub_process: 0.7
       sub_processes:
-        - name: 'FormSubmissionMetadataTrackerPillow'
-          capacity: 5000000
-        - name: 'XFormToElasticsearchPillow'
-          capacity: 5000000
+        - name: 'form-pillow-non-dashboard'
+          capacity: 5408000  # 4/s per process  * 20h * 3600s * 26 days
+    storage:
+      group: 'VM_other'
+      static_baseline: 100GB
+      override_storage_buffer: 0
+      override_estimation_buffer: 0
+
+  pillow_forms_db:  # dashboard
+    aggregation_key: Application
+    usage_field: 'forms_monthly'
+    storage_scales_with_nodes: True
+    process:
+      cores_per_node: 16
+      ram_per_node: 32
+      cores_per_sub_process: 0.5
+      ram_per_sub_process: 0.7
+      sub_processes:
         - name: 'kafka-ucr-static-forms'
-          capacity: 2000000   # this is largely dependent on the UCR DB performance
+          capacity: 3744000  # 2/s per process  * 20h * 3600s * 26 days
     storage:
       group: 'VM_other'
       static_baseline: 100GB
@@ -650,32 +664,31 @@ services:
       override_storage_buffer: 0
       override_estimation_buffer: 0
 
-  redis:
+  redis:  # TODO: vertically scaling model
     aggregation_key: Cache
-    usage_capacity_per_node: 1000000
-    usage_field: 'preak_requests_per_15_min'
-    min_nodes: 3
+    static_number: 3  # Master + 2 standbys (3 Sentinel nodes)
     min_storage_per_node: 50GB
+    storage_scales_with_nodes: True
     process:
-      cores_per_node: 8
-      ram_per_node: 64
+      cores_per_node: 4  # redis + sentinel
+      ram_per_node: 32
       ram_model:
         - referenced_field: 'users'
-          unit_size: 50KB
-      ram_static_baseline: 33  # per node (assume only 50% ram is usable)
+          unit_size: 10KB
+      ram_static_baseline: 16  # per node (only 50% ram is usable for redis)
     storage:
       group: 'SAS'
       data_models:
         - referenced_field: 'users'
-          unit_size: 50KB
+          unit_size: 10KB
 
   nginx:  # limits for nginx not clear
     aggregation_key: Proxy
-    usage_capacity_per_node: 500000
+    usage_capacity_per_node: 800000
     storage_scales_with_nodes: True
     process:
       cores_per_node: 8
-      ram_per_node: 16
+      ram_per_node: 16  # might want to increase this for OS cache
     storage:
       group: 'VM_other'
       static_baseline: 200GB  # logs etc
@@ -684,12 +697,12 @@ services:
 
   rabbitmq:  # limits for rabbitmq not clear
     aggregation_key: Message Queue
-    static_number: 2
+    static_number: 2  # master + standby
     storage_scales_with_nodes: True
     process:
       cores_per_node: 8
       ram_per_node: 16
-    storage:  # don't have a model for rabbitmq storage
+    storage:  # don't have a model for rabbitmq storage but it's very small
       group: 'SAS'
       static_baseline: 100GB
       override_storage_buffer: 0
