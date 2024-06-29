@@ -169,7 +169,7 @@ class ExcelWriter(BaseWriter):
 
     def save(self):
         self.write_col_widths()
-        self.writer.save()
+        self.writer._save()
 
     def write_col_widths(self):
         for sheet_name, widths in self.sheet_col_widths.items():

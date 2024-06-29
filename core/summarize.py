@@ -69,13 +69,13 @@ def summarize_service_data(config, summary_data, summary_date):
     })
     storage_by_group.sort_index(inplace=True)
 
-    vm_aggs = summary_by_service.groupby('Aggregation Key')['Cores Total', 'RAM Total (GB)', 'VMs Total'].sum()
+    vm_aggs = summary_by_service.groupby('Aggregation Key')[['Cores Total', 'RAM Total (GB)', 'VMs Total']].sum()
     vm_aggs.index.name = None
 
     summary_by_service.drop('OS Storage Total (Bytes)', axis=1, inplace=True)
     total = summary_by_service.sum()
     total.name = 'Total'
-    summary_by_service = summary_by_service.append(total, ignore_index=False)
+    summary_by_service = summary_by_service._append(total, ignore_index=False)
 
     return ServiceSummary(summary_by_service, storage_by_group, vms_by_type, vm_aggs)
 

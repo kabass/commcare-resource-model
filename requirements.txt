@@ -1,4 +1,5 @@
-pandas
+pandas==2.2.2
 pyaml
 XlsxWriter
 jsonobject==0.7.1
+NumPy==1.26.4
